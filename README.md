@@ -12,4 +12,7 @@
 | 4 | Phạm Minh Nhi | 19521967 | Thành Viên |
 | 5 | Phạm Nguyễn Quỳnh Nhi | 19521968 | Thành Viên |
 | 6 | Nguyễn Thị Minh Thư | 19522308 | Thành Viên |
-
+| 7 | Trần Thị Thanh Tuyền | 19522503 | Thành Viên |
+| 8 | Vũ Quốc Huy | 19521642 | Thành Viên |
+| 9 | Nguyễn Chí Cường | 19521299 | Thành Viên | 
+| 10 | Trần Thanh Nguyên | 19520192 | Thành Viên |
