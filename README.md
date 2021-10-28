@@ -4,15 +4,12 @@
 
 #### THÀNH VIÊN NHÓM 8: 
 
-1. THỊ KIM PHƯƠNG - 19522068 - NHÓM TRƯỞNG
-2. TRẦN QUỐC TOÀN - 18520384
-3. TRẦN HỒNG CẨM LY - 19521819
-4. PHẠM MINH NHI - 19521967
-5. PHẠM NGUYỄN QUỲNH NHI - 19521968
-6. NGUYỄN THỊ MINH THƯ - 19522308
-7. TRẦN THỊ THANH TUYỀN - 19522503
-8. VŨ QUỐC HUY - 19521642
-9. NGUYỄN CHÍ CƯỜNG - 19521299
-10. TRẦN THANH NGUYÊN - 19520192
-
+| STT | Họ tên | MSSV | Vai trò | 
+| :---: | --- | --- | --- | 
+| 1 | Thi Kim Phương | 19522068 | Nhóm Trưởng | 
+| 2 | Trần Quốc Toàn | 18520384 | Thành Viên |
+| 3 | Trần Hồng Cẩm Ly | 19521819 | Thành Viên |
+| 4 | Phạm Minh Nhi | 19521967 | Thành Viên |
+| 5 | Phạm Nguyễn Quỳnh Nhi | 19521968 | Thành Viên |
+| 6 | Nguyễn Thị Minh Thư | 19522308 | Thành Viên |
 
