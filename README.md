@@ -6,7 +6,7 @@
 
 | STT | Họ tên | MSSV | Vai trò | 
 | :---: | --- | --- | --- | 
-| 1 | Thi Kim Phương | 19522068 | Nhóm Trưởng | 
+| 1 | Thị Kim Phương | 19522068 | Nhóm Trưởng | 
 | 2 | Trần Quốc Toàn | 18520384 | Thành Viên |
 | 3 | Trần Hồng Cẩm Ly | 19521819 | Thành Viên |
 | 4 | Phạm Minh Nhi | 19521967 | Thành Viên |
