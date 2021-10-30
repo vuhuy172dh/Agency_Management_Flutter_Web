@@ -30,6 +30,17 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Row(
               children: [
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    'DANH SÁCH PHIẾU NHẬP',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(child: Container()),
                 GestureDetector(
                   onTap: () {
                     index = !index;
@@ -124,7 +135,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                     alignment: Alignment.center,
                     height: 50,
                     width: 75,
-                    margin: EdgeInsets.only(left: 20),
+                    margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                         color: Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -135,7 +146,6 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                     ),
                   ),
                 ),
-                Expanded(child: Container()),
                 GestureDetector(
                   onTap: () {
                     print('hello');
@@ -144,25 +154,15 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                     alignment: Alignment.center,
                     margin: EdgeInsets.only(right: 20),
                     height: 50,
+                    width: 75,
                     decoration: BoxDecoration(
                       color: Colors.blueGrey[800],
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          'Search',
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        )
-                      ],
+                    child: Text(
+                      'Sửa',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 )

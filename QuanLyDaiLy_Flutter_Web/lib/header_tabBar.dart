@@ -17,10 +17,10 @@ class TabBarWidget extends StatelessWidget {
           title: Text(
             'QUẢN LÝ ĐẠI LÝ',
             style: TextStyle(
-                color: Colors.white,
-                fontStyle: FontStyle.normal,
-                fontSize: 30,
-                fontWeight: FontWeight.w800),
+              fontFamily: 'BungeeInline',
+              color: Colors.white,
+              fontSize: 40,
+            ),
           ),
           centerTitle: true,
           actions: [

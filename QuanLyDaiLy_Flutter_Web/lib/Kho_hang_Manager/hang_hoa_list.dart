@@ -32,6 +32,18 @@ class _HangHoaListState extends State<HangHoaList> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Row(
               children: [
+                Container(
+                  padding: EdgeInsets.all(10),
+                  width: 300,
+                  child: Text(
+                    'DANH SÁCH MẶT HÀNG',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(child: Container()),
                 GestureDetector(
                   onTap: () {
                     index = !index;
@@ -126,7 +138,7 @@ class _HangHoaListState extends State<HangHoaList> {
                     alignment: Alignment.center,
                     height: 50,
                     width: 75,
-                    margin: EdgeInsets.only(left: 20),
+                    margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                         color: Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -137,7 +149,6 @@ class _HangHoaListState extends State<HangHoaList> {
                     ),
                   ),
                 ),
-                Expanded(child: Container()),
                 GestureDetector(
                   onTap: () {
                     print('hello');
@@ -146,25 +157,15 @@ class _HangHoaListState extends State<HangHoaList> {
                     alignment: Alignment.center,
                     margin: EdgeInsets.only(right: 20),
                     height: 50,
+                    width: 75,
                     decoration: BoxDecoration(
                       color: Colors.blueGrey[800],
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          'Search',
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        )
-                      ],
+                    child: Text(
+                      'Sửa',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 )
@@ -239,7 +240,7 @@ class _HangHoaListState extends State<HangHoaList> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['ma_MH'],
+          temp['ma_MH'] as int?,
           temp['Name_HH'] as String? ?? '',
           temp['Don_vi'] as String? ?? '',
           temp['Gia'] as int
@@ -251,8 +252,8 @@ class _HangHoaListState extends State<HangHoaList> {
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[0])
-                : selectedData.remove(cells[0]);
+                ? selectedData.add(temp['id_MH'])
+                : selectedData.remove(temp['id_MH']);
           }),
         );
       }).toList();

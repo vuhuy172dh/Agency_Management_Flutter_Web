@@ -16,6 +16,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   //List<String> addedData = [];
+  String search = "";
   String newMaDL = "";
   String newName = "";
   String newPhone = "";
@@ -37,6 +38,50 @@ class _TableDaiLyState extends State<TableDaiLy> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Row(
               children: [
+                Container(
+                  width: 400,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "DANH SÁCH CÁC ĐẠI LÝ",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                          width: 250,
+                          height: 30,
+                          padding: EdgeInsets.only(
+                              left: 20, right: 10, bottom: 5, top: 5),
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                              color: Colors.white70),
+                          child: TextField(
+                            onChanged: (value) {
+                              search = value;
+                            },
+                            autofocus: true,
+                            style: TextStyle(color: Colors.blueGrey[800]),
+                            cursorColor: Colors.blueGrey[800],
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Tìm kiếm',
+                                hintStyle: TextStyle(color: Colors.black54),
+                                suffixIcon: Icon(
+                                  Icons.search,
+                                  color: Colors.blueGrey[800],
+                                )),
+                          ))
+                    ],
+                  ),
+                ),
+                Expanded(child: Container()),
                 GestureDetector(
                   onTap: () async {
                     await showDialog(
@@ -175,7 +220,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                     alignment: Alignment.center,
                     height: 50,
                     width: 75,
-                    margin: EdgeInsets.only(left: 20),
+                    margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                         color: Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -186,34 +231,20 @@ class _TableDaiLyState extends State<TableDaiLy> {
                     ),
                   ),
                 ),
-                Expanded(child: Container()),
                 GestureDetector(
-                  onTap: () {
-                    print('hello');
-                  },
+                  onTap: () {},
                   child: Container(
                     alignment: Alignment.center,
-                    margin: EdgeInsets.only(right: 20),
                     height: 50,
+                    width: 75,
+                    margin: EdgeInsets.only(right: 20),
                     decoration: BoxDecoration(
-                      color: Colors.blueGrey[800],
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          'Search',
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        )
-                      ],
+                        color: Colors.blueGrey[800],
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Text(
+                      'Sửa',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 )

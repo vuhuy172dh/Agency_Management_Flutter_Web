@@ -16,12 +16,35 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return TabBarWidget(
       tabs: [
-        Tab(text: 'Đại Lý'),
-        Tab(text: 'Kho Hàng'),
-        Tab(text: 'Tài Chính'),
-        Tab(text: 'Quy Định'),
         Tab(
-          text: 'Nhân Viên',
+          child: Text(
+            'ĐẠI LÝ',
+            style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'KHO HÀNG',
+            style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'TÀI CHÍNH',
+            style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'QUY ĐỊNH',
+            style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'NHÂN VIÊN',
+            style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+          ),
         ),
       ],
       children: [
