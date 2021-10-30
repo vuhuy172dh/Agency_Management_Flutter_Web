@@ -1,4 +1,3 @@
-// import 'package:do_an/home_page.dart';
 import 'package:do_an/splash_screen.dart';
 import 'package:flutter/material.dart';
 

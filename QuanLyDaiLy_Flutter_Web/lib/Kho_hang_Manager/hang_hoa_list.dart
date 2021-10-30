@@ -239,7 +239,7 @@ class _HangHoaListState extends State<HangHoaList> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['id_MH'],
+          temp['ma_MH'],
           temp['Name_HH'] as String? ?? '',
           temp['Don_vi'] as String? ?? '',
           temp['Gia'] as int
