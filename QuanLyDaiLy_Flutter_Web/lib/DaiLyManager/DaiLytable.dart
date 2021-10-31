@@ -11,11 +11,11 @@ class TableDaiLy extends StatefulWidget {
 }
 
 class _TableDaiLyState extends State<TableDaiLy> {
-  int? sortColumnIndex;
+  final formKey = GlobalKey<FormState>();
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
-  //List<String> addedData = [];
+  List<dynamic> selectedRow = [];
   String search = "";
   String newMaDL = "";
   String newName = "";
@@ -82,9 +82,10 @@ class _TableDaiLyState extends State<TableDaiLy> {
                   ),
                 ),
                 Expanded(child: Container()),
+                // Tạo nút thêm (thêm đại lý)
                 GestureDetector(
-                  onTap: () async {
-                    await showDialog(
+                  onTap: () {
+                    showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
@@ -95,20 +96,24 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: ThemDL(),
+                          content: themdaily(),
                           actions: [
                             TextButton(
                               onPressed: () {
-                                supabaseManager.addData(
-                                    int.parse(newMaDL),
-                                    newName,
-                                    int.parse(newPhone),
-                                    newLoca,
-                                    int.parse(newType),
-                                    newDate);
-                                setState(() {
-                                  Navigator.pop(context);
-                                });
+                                final isValid =
+                                    formKey.currentState!.validate();
+                                if (isValid) {
+                                  supabaseManager.addData(
+                                      int.parse(newMaDL),
+                                      newName,
+                                      int.parse(newPhone),
+                                      newLoca,
+                                      int.parse(newType),
+                                      newDate);
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
+                                }
                               },
                               child: Text(
                                 'Submit',
@@ -149,10 +154,12 @@ class _TableDaiLyState extends State<TableDaiLy> {
                 const SizedBox(
                   width: 5,
                 ),
+
+                // Tạo nút xóa (xóa đại lý)
                 GestureDetector(
-                  onTap: () async {
+                  onTap: () {
                     if (selectedData.isEmpty) {
-                      return await showDialog(
+                      showDialog(
                           context: context,
                           builder: (context) {
                             return AlertDialog(
@@ -177,7 +184,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             );
                           });
                     } else {
-                      await showDialog(
+                      showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
@@ -231,8 +238,136 @@ class _TableDaiLyState extends State<TableDaiLy> {
                     ),
                   ),
                 ),
+
+                // Tạo nút sửa (sửa đại lý)
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    if (selectedRow.length < 1) {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text('Bạn chưa chọn đối tượng để sửa'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else if (selectedRow.length > 1) {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text('Bạn chỉ được chọn MỘT đối tượng'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else {
+                      newMaDL = selectedRow[0][1].toString();
+                      newName = selectedRow[0][2].toString();
+                      newPhone = selectedRow[0][3].toString();
+                      newLoca = selectedRow[0][4].toString();
+                      newType = selectedRow[0][5].toString();
+                      newDate = selectedRow[0][6].toString();
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              'SỬA ĐẠI LÝ',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueGrey[800]),
+                            ),
+                            content: themdaily(),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  final isValid =
+                                      formKey.currentState!.validate();
+                                  if (isValid) {
+                                    supabaseManager.updateDaiLyData(
+                                        int.parse(newMaDL),
+                                        newName,
+                                        int.parse(newPhone),
+                                        newLoca,
+                                        int.parse(newType),
+                                        newDate);
+                                    setState(() {
+                                      search = "";
+                                      newMaDL = "";
+                                      newName = "";
+                                      newPhone = "";
+                                      newLoca = "";
+                                      newType = "";
+                                      newDate = "";
+                                      selectedData.clear();
+                                      selectedRow.clear();
+                                      Navigator.pop(context);
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                      color: Colors.blueGrey[800],
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      search = "";
+                                      newMaDL = "";
+                                      newName = "";
+                                      newPhone = "";
+                                      newLoca = "";
+                                      newType = "";
+                                      newDate = "";
+                                      selectedData.clear();
+                                      selectedRow.clear();
+                                      Navigator.pop(context);
+                                    });
+                                  },
+                                  child: Text('Cancel',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold)))
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
                   child: Container(
                     alignment: Alignment.center,
                     height: 50,
@@ -318,13 +453,13 @@ class _TableDaiLyState extends State<TableDaiLy> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['so_tt'] as int,
+          temp['so_tt'],
           temp['id_DaiLy'],
-          temp['name'] as String? ?? '',
-          temp['Phone'] as int,
-          temp['Location'] as String? ?? '',
-          temp['Type'] as int,
-          temp['Date'] as String? ?? '',
+          temp['name'],
+          temp['Phone'],
+          temp['Location'],
+          temp['Type'],
+          temp['Date'],
         ];
 
         return DataRow(
@@ -335,6 +470,10 @@ class _TableDaiLyState extends State<TableDaiLy> {
             isAdding
                 ? selectedData.add(cells[1])
                 : selectedData.remove(cells[1]);
+
+            isAdding
+                ? selectedRow.add(cells)
+                : selectedRow.removeWhere((element) => element[1] == cells[1]);
           }),
         );
       }).toList();
@@ -344,194 +483,277 @@ class _TableDaiLyState extends State<TableDaiLy> {
       }).toList();
 
   //Widget Thêm Đại Lý
-  Widget ThemDL() {
+  Widget themdaily() {
     return Container(
       alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            margin: EdgeInsets.all(5),
-            height: 80,
-            width: 400,
-            decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            child: Row(
-              children: [
-                Text(
-                  'Mã Đại Lý',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: TextFormField(
-                    style: TextStyle(color: Colors.white),
-                    autofocus: true,
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(border: InputBorder.none),
-                    onChanged: (value) {
-                      newMaDL = value;
-                    },
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Tạo hàng để điền thông tin mã đại lý
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'MÃ ĐẠI LÝ',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        initialValue: newMaDL,
+                        style: TextStyle(color: Colors.white),
+                        autofocus: true,
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        onChanged: (value) {
+                          newMaDL = value;
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập MÃ ĐẠI LÝ";
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            margin: EdgeInsets.all(5),
-            height: 80,
-            width: 400,
-            decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            child: Row(
-              children: [
-                Text(
-                  'Tên Đại Lý',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(border: InputBorder.none),
-                    onChanged: (value) {
-                      newName = value;
-                    },
+            // Tạo hàng để điền thông tin TÊN ĐẠI LÝ
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'TÊN ĐẠI LÝ',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        initialValue: newName,
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập TÊN ĐẠI LÝ";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          newName = value;
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            margin: EdgeInsets.all(10),
-            height: 80,
-            width: 400,
-            decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            child: Row(
-              children: [
-                Text(
-                  'Số Điện Thoại',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(border: InputBorder.none),
-                    onChanged: (value) {
-                      newPhone = value;
-                    },
+            // Tạo hàng thêm SỐ ĐIỆN THOẠI
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'SỐ ĐIỆN THOẠI',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        initialValue: newPhone,
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập SỐ ĐIỆN THOẠI";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          newPhone = value;
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            margin: EdgeInsets.all(10),
-            height: 80,
-            width: 400,
-            decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            child: Row(
-              children: [
-                Text(
-                  'Địa Chỉ',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(border: InputBorder.none),
-                    onChanged: (value) {
-                      newLoca = value;
-                    },
+            // Tạo hàng thêm ĐỊA CHỈ
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'Địa Chỉ',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        initialValue: newLoca,
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập ĐỊA CHỈ";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          newLoca = value;
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            margin: EdgeInsets.all(10),
-            height: 80,
-            width: 400,
-            decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            child: Row(
-              children: [
-                Text(
-                  'Loại',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(border: InputBorder.none),
-                    onChanged: (value) {
-                      newType = value;
-                    },
+            // Tạo thàng thêm LOẠI
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'LOẠI',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        initialValue: newType,
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập LOẠI ĐẠI LÝ";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          newType = value;
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 3),
-            margin: EdgeInsets.all(10),
-            height: 80,
-            width: 400,
-            decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            child: Row(
-              children: [
-                Text(
-                  'Ngày Đăng Ký',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(border: InputBorder.none),
-                    onChanged: (value) {
-                      newDate = value;
-                    },
+            // Tạo hàng thêm ngày đăng kí
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'NGÀY ĐĂNG KÍ',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        initialValue: newDate,
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập NGÀY ĐĂNG KÍ";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          newDate = value;
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

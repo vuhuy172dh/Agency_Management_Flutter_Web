@@ -1,3 +1,4 @@
+import 'package:do_an/home_page.dart';
 import 'package:do_an/splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class Main extends StatelessWidget {
       theme: ThemeData(
           brightness: Brightness.light, primaryColor: Colors.blueGrey),
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: HomePage(),
     );
   }
 }

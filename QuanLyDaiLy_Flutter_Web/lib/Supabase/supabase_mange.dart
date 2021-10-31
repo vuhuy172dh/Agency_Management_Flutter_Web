@@ -25,7 +25,7 @@ class SupabaseManager {
   addDataHH(int id, String name, int gia, String dv) async {
     var response = await client.from('Hang_hoa').insert([
       {
-        'id_MH': id,
+        'ma_MH': id,
         'Name_HH': name,
         'Don_vi': dv,
         'Gia': gia,
@@ -69,6 +69,70 @@ class SupabaseManager {
     print(response.data);
     print(response);
     return response;
+  }
+
+  updateDaiLyData(int iddaiLy, String name, int phone, String loca, int type,
+      String date) async {
+    var response = await client
+        .from('DaiLyList')
+        .update({
+          'id_DaiLy': iddaiLy,
+          'name': name,
+          'Phone': phone,
+          'Location': loca,
+          'Type': type,
+          'Date': date
+        })
+        .eq('id_DaiLy', iddaiLy)
+        .execute();
+    print(response);
+  }
+
+  updateHHData(int id, String name, int gia, String dv) async {
+    var response = await client
+        .from('Hang_hoa')
+        .update({
+          'ma_MH': id,
+          'Name_HH': name,
+          'Don_vi': dv,
+          'Gia': gia,
+        })
+        .eq('ma_MH', id)
+        .execute();
+    print(response);
+  }
+
+  updatePhieuNhapData(
+      int idphieu, int idMH, String ngay, int numb, int price) async {
+    var response = await client
+        .from('Phieu_nhap_kho')
+        .update({
+          'id_Phieu': idphieu,
+          'id_MH': idMH,
+          'Ngay_nhap': ngay,
+          'So_luong': numb,
+          'Gia': price,
+        })
+        .eq('id_Phieu', idphieu)
+        .execute();
+    print(response);
+  }
+
+  updatePhieuXuatData(
+      int idphieu, int idDL, int idMH, String ngay, int numb, int price) async {
+    var response = await client
+        .from('Phieu_xuat_kho')
+        .update({
+          'id_MP': idphieu,
+          'Ngay_xuat': ngay,
+          'id_DL': idDL,
+          'id_MH': idMH,
+          'So_luong': numb,
+          'Gia': price,
+        })
+        .eq('id_MP', idphieu)
+        .execute();
+    print(response);
   }
 
   deleteDataDaiLy(int id) async {

@@ -10,14 +10,19 @@ class PhieuNhapList extends StatefulWidget {
   _PhieuNhapListState createState() => _PhieuNhapListState();
 }
 
-List<int> selectedData = [];
-
 class _PhieuNhapListState extends State<PhieuNhapList> {
-  bool index = false;
   final datasets = <String, dynamic>{};
+  List<int> selectedData = [];
+  List<dynamic> selectedRow = [];
+  final formKey = GlobalKey<FormState>();
+  SupabaseManager supabaseManager = SupabaseManager();
+  String _maphieu = "";
+  String _ngay = "";
+  String _mamathang = "";
+  String _soluong = "";
+  String _gia = "";
   @override
   Widget build(BuildContext context) {
-    SupabaseManager supabaseManager = SupabaseManager();
     return Container(
       margin: EdgeInsets.only(top: 5),
       child: Column(
@@ -43,8 +48,55 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                 Expanded(child: Container()),
                 GestureDetector(
                   onTap: () {
-                    index = !index;
-                    setState(() {});
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          insetPadding: EdgeInsets.symmetric(vertical: 100),
+                          title: Text(
+                            'PHIẾU NHẬP KHO',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blueGrey[800]),
+                          ),
+                          content: phieunhap(),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                final isValid =
+                                    formKey.currentState!.validate();
+                                if (isValid) {
+                                  supabaseManager.addDataPhieuNhap(
+                                      int.parse(_maphieu),
+                                      int.parse(_mamathang),
+                                      _ngay,
+                                      int.parse(_soluong),
+                                      int.parse(_gia));
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              },
+                              child: Text(
+                                'Submit',
+                                style: TextStyle(
+                                    color: Colors.blueGrey[800],
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Cancel',
+                                    style: TextStyle(
+                                        color: Colors.blueGrey[800],
+                                        fontWeight: FontWeight.bold)))
+                          ],
+                        );
+                      },
+                    );
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -55,7 +107,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                         color: Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Text(
-                      index == false ? 'Thêm' : 'Back',
+                      'Thêm',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),
                     ),
@@ -148,7 +200,126 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    print('hello');
+                    if (selectedRow.length < 1) {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text('Bạn chưa chọn đối tượng để sửa'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else if (selectedRow.length > 1) {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text('Bạn chỉ được chọn MỘT đối tượng'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else {
+                      _maphieu = selectedRow[0][1].toString();
+                      _mamathang = selectedRow[0][2].toString();
+                      _ngay = selectedRow[0][3].toString();
+                      _soluong = selectedRow[0][4].toString();
+                      _gia = selectedRow[0][5].toString();
+
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              'SỬA PHIẾU NHẬP',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueGrey[800]),
+                            ),
+                            content: phieunhap(),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  final isValid =
+                                      formKey.currentState!.validate();
+                                  if (isValid) {
+                                    supabaseManager.updatePhieuNhapData(
+                                        int.parse(_maphieu),
+                                        int.parse(_mamathang),
+                                        _ngay,
+                                        int.parse(_soluong),
+                                        int.parse(_gia));
+                                    setState(() {
+                                      _maphieu = "";
+                                      _ngay = "";
+                                      _mamathang = "";
+                                      _soluong = "";
+                                      _gia = "";
+                                      selectedData.clear();
+                                      selectedRow.clear();
+                                      Navigator.pop(context);
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                      color: Colors.blueGrey[800],
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _maphieu = "";
+                                      _ngay = "";
+                                      _mamathang = "";
+                                      _soluong = "";
+                                      _gia = "";
+                                      selectedData.clear();
+                                      selectedRow.clear();
+                                      Navigator.pop(context);
+                                    });
+                                  },
+                                  child: Text('Cancel',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold)))
+                            ],
+                          );
+                        },
+                      );
+                    }
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -169,20 +340,13 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
               ],
             ),
           ),
-          Expanded(child: switchpage(index))
+          Expanded(child: ListPhieuNhap())
         ],
       ),
     );
   }
 
-  Widget switchpage(bool index) {
-    if (index == true) {
-      return phieunhap();
-    } else {
-      return ListPhieuNhap();
-    }
-  }
-
+  // Danh sách phiếu nhập
   Widget ListPhieuNhap() {
     return Container(
       margin: EdgeInsets.all(5),
@@ -247,12 +411,12 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['so_tt'] as int,
+          temp['so_tt'],
           temp['id_Phieu'],
-          temp['id_MH'] as int,
-          temp['Ngay_nhap'] as String? ?? '',
-          temp['So_luong'] as int,
-          temp['Gia'] as int
+          temp['id_MH'],
+          temp['Ngay_nhap'],
+          temp['So_luong'],
+          temp['Gia']
         ];
 
         return DataRow(
@@ -263,6 +427,10 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
             isAdding
                 ? selectedData.add(cells[1])
                 : selectedData.remove(cells[1]);
+
+            isAdding
+                ? selectedRow.add(cells)
+                : selectedRow.removeWhere((element) => element[1] == cells[1]);
           }),
         );
       }).toList();
@@ -271,13 +439,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
         return DataCell(Text('$data'));
       }).toList();
 
+  // Phiếu nhập
   Widget phieunhap() {
-    String? maphieu;
-    String? ngay;
-    String? mamathang;
-    String? soluong;
-    String? gia;
-    SupabaseManager supabaseManager = SupabaseManager();
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.all(8),
@@ -286,238 +449,250 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
           borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Container(
         alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "PHIẾU NHẬP KHO",
-              style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey[800]),
-              textAlign: TextAlign.left,
-            ),
-            const SizedBox(
-              height: 7,
-            ),
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 60,
-              width: 600,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  color: Colors.blueGrey),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    width: 200,
-                    child: Text('Mã phiếu',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500)),
-                  ),
-                  Expanded(
-                      child: Container(
-                    padding: EdgeInsets.all(8),
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: TextField(
-                      onChanged: (value) {
-                        maphieu = value;
-                      },
-                      cursorColor: Colors.blueGrey[800],
-                      style: TextStyle(color: Colors.blueGrey[800]),
-                      decoration: InputDecoration(border: InputBorder.none),
-                    ),
-                  )),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 60,
-              width: 600,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  color: Colors.blueGrey),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    width: 200,
-                    child: Text('Ngày nhập kho',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500)),
-                  ),
-                  Expanded(
-                      child: Container(
-                    padding: EdgeInsets.all(8),
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: TextField(
-                      onChanged: (value) {
-                        ngay = value;
-                      },
-                      cursorColor: Colors.blueGrey[800],
-                      style: TextStyle(color: Colors.blueGrey[800]),
-                      decoration: InputDecoration(border: InputBorder.none),
-                    ),
-                  )),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 60,
-              width: 600,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  color: Colors.blueGrey),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    width: 200,
-                    child: Text('Mã mặt hàng',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500)),
-                  ),
-                  Expanded(
-                      child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: TextField(
-                      onChanged: (value) {
-                        mamathang = value;
-                      },
-                      cursorColor: Colors.blueGrey[800],
-                      style: TextStyle(color: Colors.blueGrey[800]),
-                      decoration: InputDecoration(border: InputBorder.none),
-                    ),
-                  )),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 60,
-              width: 600,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  color: Colors.blueGrey),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    width: 200,
-                    child: Text('Số lượng',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500)),
-                  ),
-                  Expanded(
-                      child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: TextField(
-                      onChanged: (value) {
-                        soluong = value;
-                      },
-                      cursorColor: Colors.blueGrey[800],
-                      style: TextStyle(color: Colors.blueGrey[800]),
-                      decoration: InputDecoration(border: InputBorder.none),
-                    ),
-                  )),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 60,
-              width: 600,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  color: Colors.blueGrey),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    width: 200,
-                    child: Text(
-                      'Giá',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Expanded(
-                      child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: TextField(
-                      onChanged: (value) {
-                        gia = value;
-                      },
-                      cursorColor: Colors.blueGrey[800],
-                      style: TextStyle(color: Colors.blueGrey[800]),
-                      decoration: InputDecoration(border: InputBorder.none),
-                    ),
-                  )),
-                ],
-              ),
-            ),
-            Container(
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.all(5),
+                height: 60,
                 width: 600,
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  onPressed: () {
-                    supabaseManager.addDataPhieuNhap(
-                      int.parse(maphieu!),
-                      int.parse(mamathang!),
-                      ngay!,
-                      int.parse(soluong!),
-                      int.parse(gia!),
-                    );
-                    setState(() {
-                      index = !index;
-                    });
-                  },
-                  style:
-                      ElevatedButton.styleFrom(primary: Colors.blueGrey[800]),
-                  child: Text("OK"),
-                ))
-          ],
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    color: Colors.blueGrey),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      width: 200,
+                      child: Text('MÃ PHIẾU',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500)),
+                    ),
+                    Expanded(
+                        child: Container(
+                      padding: EdgeInsets.all(8),
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                      child: TextFormField(
+                        initialValue: _maphieu,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Chưa nhập MÃ PHIẾU";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          _maphieu = value;
+                        },
+                        cursorColor: Colors.blueGrey[800],
+                        style: TextStyle(color: Colors.blueGrey[800]),
+                        decoration: InputDecoration(border: InputBorder.none),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(5),
+                height: 60,
+                width: 600,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    color: Colors.blueGrey),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      width: 200,
+                      child: Text('NGÀY NHẬP KHO',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500)),
+                    ),
+                    Expanded(
+                        child: Container(
+                      padding: EdgeInsets.all(8),
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                      child: TextFormField(
+                        initialValue: _ngay,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Chưa nhập NGÀY NHẬP KHO";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          _ngay = value;
+                        },
+                        cursorColor: Colors.blueGrey[800],
+                        style: TextStyle(color: Colors.blueGrey[800]),
+                        decoration: InputDecoration(border: InputBorder.none),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(5),
+                height: 60,
+                width: 600,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    color: Colors.blueGrey),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      width: 200,
+                      child: Text('MÃ MẶT HÀNG',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500)),
+                    ),
+                    Expanded(
+                        child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Chưa nhập MÃ MẶT HÀNG";
+                          } else {
+                            return null;
+                          }
+                        },
+                        initialValue: _mamathang,
+                        onChanged: (value) {
+                          _mamathang = value;
+                        },
+                        cursorColor: Colors.blueGrey[800],
+                        style: TextStyle(color: Colors.blueGrey[800]),
+                        decoration: InputDecoration(border: InputBorder.none),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(5),
+                height: 60,
+                width: 600,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    color: Colors.blueGrey),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      width: 200,
+                      child: Text('SỐ LƯỢNG',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500)),
+                    ),
+                    Expanded(
+                        child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                      child: TextFormField(
+                        initialValue: _soluong,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Chưa nhập SỐ LƯỢNG";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          _soluong = value;
+                        },
+                        cursorColor: Colors.blueGrey[800],
+                        style: TextStyle(color: Colors.blueGrey[800]),
+                        decoration: InputDecoration(border: InputBorder.none),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(5),
+                height: 60,
+                width: 600,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    color: Colors.blueGrey),
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      width: 200,
+                      child: Text(
+                        'GIÁ',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Expanded(
+                        child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                      child: TextFormField(
+                        initialValue: _gia,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Chưa nhập GIÁ";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          _gia = value;
+                        },
+                        cursorColor: Colors.blueGrey[800],
+                        style: TextStyle(color: Colors.blueGrey[800]),
+                        decoration: InputDecoration(border: InputBorder.none),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
