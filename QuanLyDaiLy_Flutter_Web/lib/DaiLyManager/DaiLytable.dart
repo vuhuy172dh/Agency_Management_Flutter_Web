@@ -12,6 +12,7 @@ class TableDaiLy extends StatefulWidget {
 
 class _TableDaiLyState extends State<TableDaiLy> {
   final formKey = GlobalKey<FormState>();
+  final formKeySearch = GlobalKey<FormState>();
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
@@ -62,21 +63,49 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
                               color: Colors.white70),
-                          child: TextField(
-                            onChanged: (value) {
-                              search = value;
-                            },
-                            autofocus: true,
-                            style: TextStyle(color: Colors.blueGrey[800]),
-                            cursorColor: Colors.blueGrey[800],
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Tìm kiếm',
-                                hintStyle: TextStyle(color: Colors.black54),
-                                suffixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.blueGrey[800],
-                                )),
+                          child: Form(
+                            key: formKeySearch,
+                            child: TextFormField(
+                              validator: (value) {
+                                try {
+                                  int.parse(value!);
+                                } catch (e) {
+                                  return 'Nhập mã không hợp lệ';
+                                }
+                              },
+                              onChanged: (value) {
+                                search = value;
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    selectedData.clear();
+                                  });
+                                }
+                              },
+                              autofocus: true,
+                              style: TextStyle(color: Colors.blueGrey[800]),
+                              cursorColor: Colors.blueGrey[800],
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Tìm kiếm',
+                                  hintStyle: TextStyle(color: Colors.black54),
+                                  suffixIcon: IconButton(
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      Icons.search,
+                                      color: Colors.blueGrey[800],
+                                    ),
+                                    onPressed: () {
+                                      final isValid = formKeySearch
+                                          .currentState!
+                                          .validate();
+                                      if (isValid) {
+                                        setState(() {
+                                          selectedData.add(int.parse(search));
+                                        });
+                                      }
+                                    },
+                                  )),
+                            ),
                           ))
                     ],
                   ),
@@ -145,7 +174,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                         color: Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Text(
-                      'Thêm',
+                      'THÊM',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),
                     ),
@@ -229,12 +258,17 @@ class _TableDaiLyState extends State<TableDaiLy> {
                     width: 75,
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                        color: Colors.blueGrey[800],
+                        color: selectedData.isEmpty
+                            ? Colors.blueGrey[400]
+                            : Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Text(
-                      'Xóa',
+                      'XÓA',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: selectedData.isEmpty
+                              ? Colors.white54
+                              : Colors.white),
                     ),
                   ),
                 ),
@@ -374,12 +408,17 @@ class _TableDaiLyState extends State<TableDaiLy> {
                     width: 75,
                     margin: EdgeInsets.only(right: 20),
                     decoration: BoxDecoration(
-                        color: Colors.blueGrey[800],
+                        color: selectedRow.length != 1
+                            ? Colors.blueGrey[400]
+                            : Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Text(
-                      'Sửa',
+                      'SỬA',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: selectedRow.length != 1
+                              ? Colors.white54
+                              : Colors.white),
                     ),
                   ),
                 )

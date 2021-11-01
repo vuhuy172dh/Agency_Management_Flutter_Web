@@ -107,7 +107,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                         color: Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Text(
-                      'Thêm',
+                      'THÊM',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),
                     ),
@@ -189,12 +189,17 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                     width: 75,
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                        color: Colors.blueGrey[800],
+                        color: selectedData.isEmpty
+                            ? Colors.blueGrey[400]
+                            : Colors.blueGrey[800],
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Text(
-                      'Xóa',
+                      'XÓA',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: selectedData.isEmpty
+                              ? Colors.white54
+                              : Colors.white),
                     ),
                   ),
                 ),
@@ -327,13 +332,18 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                     height: 50,
                     width: 75,
                     decoration: BoxDecoration(
-                      color: Colors.blueGrey[800],
+                      color: selectedRow.length != 1
+                          ? Colors.blueGrey[400]
+                          : Colors.blueGrey[800],
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
                     child: Text(
-                      'Sửa',
+                      'SỬA',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: selectedRow.length != 1
+                              ? Colors.white54
+                              : Colors.white),
                     ),
                   ),
                 )
