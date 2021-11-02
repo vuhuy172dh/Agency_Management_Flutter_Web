@@ -442,7 +442,6 @@ class _TableDaiLyState extends State<TableDaiLy> {
 
   Widget buildDataTable() {
     final columns = [
-      'SỐ THỨ TỰ',
       'MÃ ĐẠI LÝ',
       'TÊN ĐẠI LÝ',
       'SỐ ĐIỆN THOẠI',
@@ -452,7 +451,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readData('DaiLyList'),
+      future: supabaseManager.readData('DAILY'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -492,27 +491,26 @@ class _TableDaiLyState extends State<TableDaiLy> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['so_tt'],
-          temp['id_DaiLy'],
-          temp['name'],
-          temp['Phone'],
-          temp['Location'],
-          temp['Type'],
-          temp['Date'],
+          temp['madaily'],
+          temp['tendaily'],
+          temp['phone'],
+          temp['diachi'],
+          temp['loaidaily'],
+          temp['ngaydangky'],
         ];
 
         return DataRow(
           cells: getCells(cells),
-          selected: selectedData.contains(cells[1]),
+          selected: selectedData.contains(cells[0]),
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[1])
-                : selectedData.remove(cells[1]);
+                ? selectedData.add(cells[0])
+                : selectedData.remove(cells[0]);
 
             isAdding
                 ? selectedRow.add(cells)
-                : selectedRow.removeWhere((element) => element[1] == cells[1]);
+                : selectedRow.removeWhere((element) => element[0] == cells[0]);
           }),
         );
       }).toList();

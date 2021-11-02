@@ -376,7 +376,6 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
 
   Widget buildDataTable() {
     final columns = [
-      'SỐ THỨ TỰ',
       'MÃ PHIẾU XUẤT',
       'NGÀY XUẤT',
       'MÃ ĐẠI LÝ',
@@ -387,7 +386,7 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
 
     SupabaseManager supabaseManager = SupabaseManager();
     return FutureBuilder(
-      future: supabaseManager.readData('Phieu_xuat_kho'),
+      future: supabaseManager.readData('PHIEUXUATKHO'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -427,27 +426,26 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['So_TT'],
-          temp['id_MP'],
-          temp['Ngay_xuat'],
-          temp['id_DL'],
-          temp['id_MH'],
-          temp['So_luong'],
-          temp['Gia']
+          temp['maphieuxuat'],
+          temp['ngayxuatkho'],
+          temp['madaily'],
+          temp['mamathang'],
+          temp['soluong'],
+          temp['gia']
         ];
 
         return DataRow(
           cells: getCells(cells),
-          selected: selectedData.contains(cells[1]),
+          selected: selectedData.contains(cells[0]),
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[1])
-                : selectedData.remove(cells[1]);
+                ? selectedData.add(cells[0])
+                : selectedData.remove(cells[0]);
 
             isAdding
                 ? selectedRow.add(cells)
-                : selectedRow.removeWhere((element) => element[1] == cells[1]);
+                : selectedRow.removeWhere((element) => element[0] == cells[0]);
           }),
         );
       }).toList();

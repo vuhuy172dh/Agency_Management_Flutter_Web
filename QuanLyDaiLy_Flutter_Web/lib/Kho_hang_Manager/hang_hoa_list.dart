@@ -73,8 +73,12 @@ class _HangHoaListState extends State<HangHoaList> {
                                   print(_newName);
                                   print(_newGia);
                                   print(_newDonVi);
-                                  supabaseManager.addDataHH(int.parse(_newMaMH),
-                                      _newName, int.parse(_newGia), _newDonVi);
+                                  supabaseManager.addDataHH(
+                                      int.parse(_newMaMH),
+                                      _newName,
+                                      int.parse(_newGia),
+                                      _newDonVi,
+                                      0);
                                   setState(() {
                                     Navigator.pop(context);
                                   });
@@ -369,15 +373,10 @@ class _HangHoaListState extends State<HangHoaList> {
   }
 
   Widget buildDataTable() {
-    final columns = [
-      'MÃ MẶT HÓA',
-      'TÊN MẶT HÀNG',
-      'ĐƠN VỊ',
-      'GIÁ',
-    ];
+    final columns = ['MÃ MẶT HÓA', 'TÊN MẶT HÀNG', 'ĐƠN VỊ', 'GIÁ', 'SỐ LƯỢNG'];
 
     return FutureBuilder(
-      future: supabaseManager.readData('Hang_hoa'),
+      future: supabaseManager.readData('HANGHOA'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -417,10 +416,11 @@ class _HangHoaListState extends State<HangHoaList> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['ma_MH'],
-          temp['Name_HH'],
-          temp['Don_vi'],
-          temp['Gia']
+          temp['mamathang'],
+          temp['tenmathang'],
+          temp['donvi'],
+          temp['gia'],
+          temp['soluong']
         ];
 
         return DataRow(
