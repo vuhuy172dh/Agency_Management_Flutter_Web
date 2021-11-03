@@ -1,6 +1,7 @@
 import 'package:do_an/DaiLyManager/DaiLytable.dart';
 import 'package:do_an/Kho_hang_Manager/Kho_Hang_SideBar.dart';
 import 'package:do_an/NhanVien/nhan_vien_manager.dart';
+import 'package:do_an/TaiChinh/hoa_don_list.dart';
 import 'package:do_an/header_tabBar.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         TableDaiLy(),
         KhoHangTabView(),
-        Container(),
+        HoaDonList(),
         Container(),
         NhanVienScreen()
       ],

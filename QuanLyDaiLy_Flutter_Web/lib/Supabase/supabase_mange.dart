@@ -64,6 +64,27 @@ class SupabaseManager {
     print(response);
   }
 
+  addDataHoaDon(int maHD, String ngay, int maDL, int sotien) async {
+    var response = await client.from('HOADONTHUTIEN').insert([
+      {'mahoadon': maHD, 'ngaythu': ngay, 'madaily': maDL, 'sotienthu': sotien}
+    ]).execute();
+    print(response);
+  }
+
+  addDataNhanVien(
+      int maNV, String hoten, String gioitinh, int phone, String diachi) async {
+    var response = await client.from('NHANVIEN').insert([
+      {
+        'manhanvien': maNV,
+        'hoten': hoten,
+        'gioitinh': gioitinh,
+        'phone': phone,
+        'diachi': diachi
+      }
+    ]).execute();
+    print(response);
+  }
+
   readData(String dataname) async {
     var response = await client.from(dataname).select().execute();
     print(response.data);
@@ -135,6 +156,30 @@ class SupabaseManager {
     print(response);
   }
 
+  updateHoaDonData(int maHD, String ngay, int maDL, int sotien) async {
+    var response = await client
+        .from('HOADONTHUTIEN')
+        .update({'ngaythu': ngay, 'madaily': maDL, 'sotienthu': sotien})
+        .eq('mahoadon', maHD)
+        .execute();
+    print(response);
+  }
+
+  updateNhanVienData(
+      int maNV, String hoten, String gioitinh, int phone, String diachi) async {
+    var response = await client
+        .from('NHANVIEN')
+        .update({
+          'hoten': hoten,
+          'gioitinh': gioitinh,
+          'phone': phone,
+          'diachi': diachi
+        })
+        .eq('manhanvien', maNV)
+        .execute();
+    print(response);
+  }
+
   deleteDataDaiLy(int id) async {
     var response =
         await client.from('DAILY').delete().eq('madaily', id).execute();
@@ -162,6 +207,21 @@ class SupabaseManager {
         .delete()
         .eq('maphieuxuat', id)
         .execute();
+    print(response);
+  }
+
+  deleteDataHoaDon(int id) async {
+    var response = await client
+        .from('HOADONTHUTIEN')
+        .delete()
+        .eq('mahoadon', id)
+        .execute();
+    print(response);
+  }
+
+  deleteDataNhanVien(int id) async {
+    var response =
+        await client.from('NHANVIEN').delete().eq('manhanvien', id).execute();
     print(response);
   }
 }

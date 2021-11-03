@@ -3,30 +3,26 @@ import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
-class TableDaiLy extends StatefulWidget {
-  const TableDaiLy({Key? key}) : super(key: key);
+class HoaDonList extends StatefulWidget {
+  const HoaDonList({Key? key}) : super(key: key);
 
   @override
-  _TableDaiLyState createState() => _TableDaiLyState();
+  _HoaDonListState createState() => _HoaDonListState();
 }
 
-class _TableDaiLyState extends State<TableDaiLy> {
-  final formKey = GlobalKey<FormState>();
+class _HoaDonListState extends State<HoaDonList> {
   final formKeySearch = GlobalKey<FormState>();
-  final formFieldKey = GlobalKey<FormFieldState>();
+  final formKey = GlobalKey<FormState>();
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
   String search = "";
-  String newMaDL = "";
-  String newName = "";
-  String newPhone = "";
-  String newLoca = "";
-  String newType = "";
-  String newDate = "";
+  String newMaHD = "";
+  String newNgayThu = "";
+  String newMADL = "";
+  String newSoTienThu = "";
 
-  final ValueNotifier<DateTime?> dateSub = ValueNotifier(null);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -47,7 +43,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "DANH SÁCH CÁC ĐẠI LÝ",
+                        "DANH SÁCH CÁC HÓA ĐƠN",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -115,36 +111,33 @@ class _TableDaiLyState extends State<TableDaiLy> {
                   ),
                 ),
                 Expanded(child: Container()),
-                // Tạo nút thêm (thêm đại lý)
+                // Tạo nút thêm (thêm HÓA ĐƠN)
                 GestureDetector(
                   onTap: () {
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
+                          insetPadding: EdgeInsets.symmetric(vertical: 100),
                           title: Text(
-                            'THÊM ĐẠI LÝ',
+                            'THÊM HÓA ĐƠN',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: themdaily(),
+                          content: themhoadon(),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 final isValid =
                                     formKey.currentState!.validate();
-                                final isValid2 =
-                                    formFieldKey.currentState!.validate();
-                                if (isValid && isValid2) {
-                                  supabaseManager.addData(
-                                      int.parse(newMaDL),
-                                      newName,
-                                      int.parse(newPhone),
-                                      newLoca,
-                                      int.parse(newType),
-                                      newDate);
+                                if (isValid) {
+                                  supabaseManager.addDataHoaDon(
+                                      int.parse(newMaHD),
+                                      newNgayThu,
+                                      int.parse(newMADL),
+                                      int.parse(newSoTienThu));
                                   setState(() {
                                     Navigator.pop(context);
                                   });
@@ -159,13 +152,6 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  newMaDL = "";
-                                  newName = "";
-                                  newPhone = "";
-                                  newLoca = "";
-                                  newType = "";
-                                  newDate = "";
-                                  dateSub.value = null;
                                   Navigator.pop(context);
                                 },
                                 child: Text('Cancel',
@@ -233,9 +219,9 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
-                                onPressed: () async {
+                                onPressed: () {
                                   while (selectedData.isNotEmpty) {
-                                    await supabaseManager.deleteDataDaiLy(
+                                    supabaseManager.deleteDataHoaDon(
                                         selectedData.removeLast());
                                   }
                                   setState(() {});
@@ -338,16 +324,15 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             );
                           });
                     } else {
-                      newMaDL = selectedRow[0][0].toString();
-                      newName = selectedRow[0][1].toString();
-                      newPhone = selectedRow[0][2].toString();
-                      newLoca = selectedRow[0][3].toString();
-                      newType = selectedRow[0][4].toString();
-                      newDate = selectedRow[0][5].toString();
+                      newMaHD = selectedRow[0][0].toString();
+                      newNgayThu = selectedRow[0][1].toString();
+                      newMADL = selectedRow[0][2].toString();
+                      newSoTienThu = selectedRow[0][3].toString();
                       showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
+                            insetPadding: EdgeInsets.symmetric(vertical: 100),
                             title: Text(
                               'SỬA ĐẠI LÝ',
                               textAlign: TextAlign.center,
@@ -355,29 +340,24 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: themdaily(check_sua: false),
+                            content: themhoadon(check_sua: false),
                             actions: [
                               TextButton(
                                 onPressed: () {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    supabaseManager.updateDaiLyData(
-                                        int.parse(newMaDL),
-                                        newName,
-                                        int.parse(newPhone),
-                                        newLoca,
-                                        int.parse(newType),
-                                        newDate);
+                                    supabaseManager.updateHoaDonData(
+                                        int.parse(newMaHD),
+                                        newNgayThu,
+                                        int.parse(newMADL),
+                                        int.parse(newSoTienThu));
                                     setState(() {
                                       search = "";
-                                      newMaDL = "";
-                                      newName = "";
-                                      newPhone = "";
-                                      newLoca = "";
-                                      newType = "";
-                                      newDate = "";
-                                      dateSub.value = null;
+                                      newMaHD = "";
+                                      newNgayThu = "";
+                                      newMADL = "";
+                                      newSoTienThu = "";
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -395,13 +375,10 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                   onPressed: () {
                                     setState(() {
                                       search = "";
-                                      newMaDL = "";
-                                      newName = "";
-                                      newPhone = "";
-                                      newLoca = "";
-                                      newType = "";
-                                      newDate = "";
-                                      dateSub.value = null;
+                                      newMaHD = "";
+                                      newNgayThu = "";
+                                      newMADL = "";
+                                      newSoTienThu = "";
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -457,16 +434,14 @@ class _TableDaiLyState extends State<TableDaiLy> {
 
   Widget buildDataTable() {
     final columns = [
+      'MÃ HÓA ĐƠN',
+      'NGÀY THU TIỀN',
       'MÃ ĐẠI LÝ',
-      'TÊN ĐẠI LÝ',
-      'SỐ ĐIỆN THOẠI',
-      'ĐỊA CHỈ',
-      'LOẠI',
-      'NGÀY TIẾP NHẬN',
+      'SỐ TIỀN THU',
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readData('DAILY'),
+      future: supabaseManager.readData('HOADONTHUTIEN'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -506,12 +481,10 @@ class _TableDaiLyState extends State<TableDaiLy> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
+          temp['mahoadon'],
+          temp['ngaythu'],
           temp['madaily'],
-          temp['tendaily'],
-          temp['phone'],
-          temp['diachi'],
-          temp['loaidaily'],
-          temp['ngaydangky'],
+          temp['sotienthu'],
         ];
 
         return DataRow(
@@ -534,8 +507,8 @@ class _TableDaiLyState extends State<TableDaiLy> {
         return DataCell(Text('$data'));
       }).toList();
 
-  //Widget Thêm Đại Lý
-  Widget themdaily({bool check_sua = true}) {
+  // Phiếu thêm hóa đơn
+  Widget themhoadon({bool check_sua = true}) {
     return Container(
       alignment: Alignment.center,
       child: Form(
@@ -543,7 +516,98 @@ class _TableDaiLyState extends State<TableDaiLy> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Tạo hàng để điền thông tin mã đại lý
+            // Tạo hàng để điền thông tin MÃ HÓA ĐƠN
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'MÃ HÓA ĐƠN',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: check_sua
+                              ? Colors.blueGrey
+                              : Colors.blueGrey[300],
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        enabled: check_sua,
+                        initialValue: newMaHD,
+                        style: TextStyle(color: Colors.white),
+                        autofocus: true,
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        onChanged: (value) {
+                          newMaHD = value;
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập MÃ HÓA ĐƠN";
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            // Tạo hàng để điền thông tin NGÀY THU TIỀN
+            Container(
+              margin: EdgeInsets.all(5),
+              height: 80,
+              width: 400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 130,
+                    child: Text(
+                      'NGÀY THU TIỀN',
+                      style: TextStyle(
+                          color: Colors.blueGrey[800],
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.blueGrey,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: TextFormField(
+                        autofocus: check_sua ? false : true,
+                        initialValue: newNgayThu,
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(border: InputBorder.none),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Bạn chưa nhập NGÀY THU TIỀN";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (value) {
+                          newNgayThu = value;
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            // Tạo hàng thêm MÃ ĐẠI LÝ
             Container(
               margin: EdgeInsets.all(5),
               height: 80,
@@ -563,20 +627,13 @@ class _TableDaiLyState extends State<TableDaiLy> {
                     child: Container(
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
-                          color: check_sua
-                              ? Colors.blueGrey
-                              : Colors.blueGrey[300],
+                          color: Colors.blueGrey,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: TextFormField(
-                        enabled: check_sua,
-                        initialValue: newMaDL,
+                        initialValue: newMADL,
                         style: TextStyle(color: Colors.white),
-                        autofocus: true,
                         cursorColor: Colors.white,
                         decoration: InputDecoration(border: InputBorder.none),
-                        onChanged: (value) {
-                          newMaDL = value;
-                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Bạn chưa nhập MÃ ĐẠI LÝ";
@@ -584,13 +641,16 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             return null;
                           }
                         },
+                        onChanged: (value) {
+                          newMADL = value;
+                        },
                       ),
                     ),
                   )
                 ],
               ),
             ),
-            // Tạo hàng để điền thông tin TÊN ĐẠI LÝ
+            // Tạo hàng thêm SỐ TIỀN THU
             Container(
               margin: EdgeInsets.all(5),
               height: 80,
@@ -600,7 +660,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                   Container(
                     width: 130,
                     child: Text(
-                      'TÊN ĐẠI LÝ',
+                      'SỐ TIỀN THU',
                       style: TextStyle(
                           color: Colors.blueGrey[800],
                           fontWeight: FontWeight.bold),
@@ -613,211 +673,21 @@ class _TableDaiLyState extends State<TableDaiLy> {
                           color: Colors.blueGrey,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: TextFormField(
-                        autofocus: check_sua ? false : true,
-                        initialValue: newName,
+                        initialValue: newSoTienThu,
                         style: TextStyle(color: Colors.white),
                         cursorColor: Colors.white,
                         decoration: InputDecoration(border: InputBorder.none),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return "Bạn chưa nhập TÊN ĐẠI LÝ";
+                            return "Bạn chưa nhập SỐ TIỀN THU";
                           } else {
                             return null;
                           }
                         },
                         onChanged: (value) {
-                          newName = value;
+                          newSoTienThu = value;
                         },
                       ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng thêm SỐ ĐIỆN THOẠI
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'SỐ ĐIỆN THOẠI',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newPhone,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập SỐ ĐIỆN THOẠI";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newPhone = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng thêm ĐỊA CHỈ
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'Địa Chỉ',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newLoca,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập ĐỊA CHỈ";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newLoca = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo thàng thêm LOẠI
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'LOẠI',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newType,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập LOẠI ĐẠI LÝ";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newType = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng thêm ngày đăng kí
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'NGÀY ĐĂNG KÍ',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: ValueListenableBuilder<DateTime?>(
-                          valueListenable: dateSub,
-                          builder: (context, dateVal, child) {
-                            return InkWell(
-                                onTap: () async {
-                                  DateTime? date = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2050),
-                                      currentDate: DateTime.now(),
-                                      initialEntryMode:
-                                          DatePickerEntryMode.calendar,
-                                      initialDatePickerMode: DatePickerMode.day,
-                                      builder: (context, child) {
-                                        return Theme(
-                                          data: Theme.of(context).copyWith(
-                                              colorScheme:
-                                                  const ColorScheme.light(
-                                                      primary: Colors.blueGrey,
-                                                      onSurface:
-                                                          Colors.blueGrey)),
-                                          child: child!,
-                                        );
-                                      });
-                                  dateSub.value = date;
-                                  newDate =
-                                      '${date!.month}-${date.day}-${date.year}';
-                                },
-                                child: buildDateTimePicker(dateVal != null
-                                    ? '${dateVal.day}-${dateVal.month}-${dateVal.year}'
-                                    : ''));
-                          }),
                     ),
                   )
                 ],
@@ -826,26 +696,6 @@ class _TableDaiLyState extends State<TableDaiLy> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget buildDateTimePicker(String data) {
-    return TextFormField(
-      key: formFieldKey,
-      validator: (value) {
-        if (data.isEmpty) {
-          return "Chưa chọn NGÀY ĐĂNG KÝ";
-        } else {
-          return null;
-        }
-      },
-      enabled: false,
-      decoration: InputDecoration(
-          errorStyle: TextStyle(color: Colors.red),
-          border: InputBorder.none,
-          hintText: data.isEmpty ? newDate : data,
-          hintStyle: TextStyle(color: Colors.white),
-          suffix: Icon(Icons.calendar_today, color: Colors.white)),
     );
   }
 }
