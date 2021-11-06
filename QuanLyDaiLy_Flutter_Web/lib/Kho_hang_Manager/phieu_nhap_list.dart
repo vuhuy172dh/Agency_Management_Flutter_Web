@@ -1,3 +1,4 @@
+import 'package:do_an/Kho_hang_Manager/chi_tiet_phieu_nhap.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,109 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                   ),
                 ),
                 Expanded(child: Container()),
+                GestureDetector(
+                  onTap: () async {
+                    selectedRow.clear();
+                    if (selectedData.length < 1) {
+                      await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text('Bạn chưa chọn đối tượng để sửa'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else if (selectedData.length > 1) {
+                      await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text('Bạn chỉ được chọn MỘT đối tượng'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else {
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('CHI TIẾT PHIẾU'),
+                            content: ChiTietPhieuNhap(
+                              maphieunhap: selectedData.removeLast(),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  setState(() {});
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                      color: Colors.blueGrey[800],
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    height: 50,
+                    // width,
+                    margin: EdgeInsets.only(left: 20),
+                    decoration: BoxDecoration(
+                        color: selectedData.length == 1
+                            ? Colors.blueGrey[800]
+                            : Colors.blueGrey[400],
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Text(
+                      'XEM CHI TIẾT',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: selectedData.length == 1
+                              ? Colors.white
+                              : Colors.white54),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
                 GestureDetector(
                   onTap: () {
                     showDialog(
@@ -370,17 +474,10 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
   }
 
   Widget buildDataTable() {
-    final columns = [
-      'MÃ PHIÊU NHẬP',
-      'MÃ MẶT HÀNG',
-      'NGÀY NHẬP',
-      'SỐ LƯỢNG',
-      'GIÁ',
-    ];
-    SupabaseManager supabaseManager = SupabaseManager();
+    final columns = ['MÃ PHIÊU NHẬP', 'THÀNH TIỀN', 'NGÀY NHẬP'];
 
     return FutureBuilder(
-      future: supabaseManager.readData('PHIEUNHAPKHO'),
+      future: supabaseManager.readData('PHIEUNHAPHANG'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -421,10 +518,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
         final temp = (user as Map<String, dynamic>);
         final cells = [
           temp['maphieunhap'],
-          temp['mamathang'],
-          temp['ngaynhap'],
-          temp['soluong'],
-          temp['gia']
+          temp['thanhtien'],
+          temp['ngaynhap']
         ];
 
         return DataRow(

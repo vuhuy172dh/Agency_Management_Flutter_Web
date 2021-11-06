@@ -1,8 +1,8 @@
 import 'package:supabase/supabase.dart';
 
-const supabaseUrl = 'https://xubqmgnmblkwhceypmta.supabase.co';
+const supabaseUrl = 'https://tkabbsxsoektqmhvlrln.supabase.co';
 const supabaseKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNDQ3OTcxNSwiZXhwIjoxOTUwMDU1NzE1fQ.55Ebrhr2xUdIfiD-UADMe80j8gQdlIyJNgZclBdLzE0';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNjA0MTUyNCwiZXhwIjoxOTUxNjE3NTI0fQ.I0vC0LT6CHleFUjuNJTzBht11jH-W_lAvXhphj4vp4g';
 
 class SupabaseManager {
   final client = SupabaseClient(supabaseUrl, supabaseKey);
@@ -89,6 +89,19 @@ class SupabaseManager {
     var response = await client.from(dataname).select().execute();
     print(response.data);
     print(response);
+    return response;
+  }
+
+  readDataChiTietPhieuNhap(int _maphieunhap) async {
+    var response = await client.rpc('chitietphieunhaphang_table',
+        params: {'_maphieunhap': _maphieunhap}).execute();
+    print(response.data);
+    return response;
+  }
+
+  readDataPhieuNhap() async {
+    var response = await client.from('PHIEUNHAPHANG').select().execute();
+    print(response.data);
     return response;
   }
 

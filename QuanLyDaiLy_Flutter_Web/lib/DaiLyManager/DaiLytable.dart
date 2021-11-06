@@ -132,23 +132,23 @@ class _TableDaiLyState extends State<TableDaiLy> {
                           content: themdaily(),
                           actions: [
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 final isValid2 =
                                     formFieldKey.currentState!.validate();
                                 if (isValid && isValid2) {
-                                  supabaseManager.addData(
+                                  await supabaseManager.addData(
                                       int.parse(newMaDL),
                                       newName,
                                       int.parse(newPhone),
                                       newLoca,
                                       int.parse(newType),
                                       newDate);
-                                  setState(() {
-                                    Navigator.pop(context);
-                                  });
                                 }
+                                setState(() {
+                                  Navigator.pop(context);
+                                });
                               },
                               child: Text(
                                 'Submit',
@@ -459,10 +459,12 @@ class _TableDaiLyState extends State<TableDaiLy> {
     final columns = [
       'MÃ ĐẠI LÝ',
       'TÊN ĐẠI LÝ',
+      'LOẠI ĐẠI LÝ',
       'SỐ ĐIỆN THOẠI',
-      'ĐỊA CHỈ',
-      'LOẠI',
+      'EMAIL',
+      'QUẬN',
       'NGÀY TIẾP NHẬN',
+      'TIỀN NỢ'
     ];
 
     return FutureBuilder(
@@ -508,10 +510,12 @@ class _TableDaiLyState extends State<TableDaiLy> {
         final cells = [
           temp['madaily'],
           temp['tendaily'],
-          temp['phone'],
-          temp['diachi'],
           temp['loaidaily'],
-          temp['ngaydangky'],
+          temp['sodienthoai'],
+          temp['email'],
+          temp['quan'],
+          temp['ngaytiepnhan'],
+          temp['tienno']
         ];
 
         return DataRow(

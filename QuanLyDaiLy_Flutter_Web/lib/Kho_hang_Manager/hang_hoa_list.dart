@@ -373,10 +373,19 @@ class _HangHoaListState extends State<HangHoaList> {
   }
 
   Widget buildDataTable() {
-    final columns = ['MÃ MẶT HÓA', 'TÊN MẶT HÀNG', 'ĐƠN VỊ', 'GIÁ', 'SỐ LƯỢNG'];
+    final columns = [
+      'MÃ MẶT HÀNG',
+      'TÊN MẶT HÀNG',
+      'ĐƠN VỊ',
+      'GIÁ NHẬP',
+      'GIÁ XUẤT',
+      'SỐ LƯỢNG',
+      'NGÀY SẢN XUẤT',
+      'HẠN SỬ DỤNG'
+    ];
 
     return FutureBuilder(
-      future: supabaseManager.readData('HANGHOA'),
+      future: supabaseManager.readData('MATHANG'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -419,8 +428,11 @@ class _HangHoaListState extends State<HangHoaList> {
           temp['mamathang'],
           temp['tenmathang'],
           temp['donvi'],
-          temp['gia'],
-          temp['soluong']
+          temp['gianhap'],
+          temp['giaxuat'],
+          temp['soluong'],
+          temp['ngaysanxuat'],
+          temp['hansudung']
         ];
 
         return DataRow(
