@@ -1,4 +1,5 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/TaiChinh/them_hoa_don.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
@@ -18,10 +19,11 @@ class _HoaDonListState extends State<HoaDonList> {
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
   String search = "";
-  String newMaHD = "";
-  String newNgayThu = "";
-  String newMADL = "";
-  String newSoTienThu = "";
+  TextEditingController newMaHoaDon = TextEditingController();
+  TextEditingController newMaDL = TextEditingController();
+  TextEditingController newNgayThu = TextEditingController();
+  TextEditingController newSoTienThu = TextEditingController();
+  final ValueNotifier<DateTime?> _ngaythuSub = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -126,19 +128,47 @@ class _HoaDonListState extends State<HoaDonList> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: themhoadon(),
+                          content: ThemHoaDon(
+                            formKey: formKey,
+                            isCheck: false,
+                            newMaPhieu: newMaHoaDon,
+                            newMaDL: newMaDL,
+                            newSoTienThu: newSoTienThu,
+                            newNgayThu: newNgayThu,
+                            ngaythuSub: _ngaythuSub,
+                          ),
                           actions: [
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
-                                  supabaseManager.addDataHoaDon(
-                                      int.parse(newMaHD),
-                                      newNgayThu,
-                                      int.parse(newMADL),
-                                      int.parse(newSoTienThu));
+                                  var addData =
+                                      await supabaseManager.addDataHoaDon(
+                                          int.parse(newMaHoaDon.text),
+                                          newNgayThu.text,
+                                          int.parse(newMaDL.text),
+                                          int.parse(newSoTienThu.text));
+                                  if (addData != null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                      addData,
+                                      style: TextStyle(color: Colors.red),
+                                    )));
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                      'Thêm Thành Công',
+                                    )));
+                                  }
                                   setState(() {
+                                    newMaDL.clear();
+                                    newMaHoaDon.clear();
+                                    newNgayThu.clear();
+                                    newSoTienThu.clear();
+                                    _ngaythuSub.value = null;
                                     Navigator.pop(context);
                                   });
                                 }
@@ -152,6 +182,11 @@ class _HoaDonListState extends State<HoaDonList> {
                             ),
                             TextButton(
                                 onPressed: () {
+                                  newMaDL.clear();
+                                  newMaHoaDon.clear();
+                                  newNgayThu.clear();
+                                  newSoTienThu.clear();
+                                  _ngaythuSub.value = null;
                                   Navigator.pop(context);
                                 },
                                 child: Text('Cancel',
@@ -219,11 +254,23 @@ class _HoaDonListState extends State<HoaDonList> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   while (selectedData.isNotEmpty) {
-                                    supabaseManager.deleteDataHoaDon(
-                                        selectedData.removeLast());
+                                    var delData =
+                                        await supabaseManager.deleteDataHoaDon(
+                                            selectedData.removeLast());
+                                    if (delData != null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        delData,
+                                        style: TextStyle(color: Colors.red),
+                                      )));
+                                      break;
+                                    }
                                   }
+                                  selectedData.clear();
+                                  selectedRow.clear();
                                   setState(() {});
                                   Navigator.pop(context);
                                 },
@@ -324,10 +371,10 @@ class _HoaDonListState extends State<HoaDonList> {
                             );
                           });
                     } else {
-                      newMaHD = selectedRow[0][0].toString();
-                      newNgayThu = selectedRow[0][1].toString();
-                      newMADL = selectedRow[0][2].toString();
-                      newSoTienThu = selectedRow[0][3].toString();
+                      newMaHoaDon.text = selectedRow[0][0].toString();
+                      newMaDL.text = selectedRow[0][1].toString();
+                      newNgayThu.text = selectedRow[0][7].toString();
+                      newSoTienThu.text = selectedRow[0][6].toString();
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -340,24 +387,47 @@ class _HoaDonListState extends State<HoaDonList> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: themhoadon(check_sua: false),
+                            content: ThemHoaDon(
+                              formKey: formKey,
+                              isCheck: true,
+                              newMaPhieu: newMaHoaDon,
+                              newMaDL: newMaDL,
+                              newSoTienThu: newSoTienThu,
+                              newNgayThu: newNgayThu,
+                              ngaythuSub: _ngaythuSub,
+                            ),
                             actions: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    supabaseManager.updateHoaDonData(
-                                        int.parse(newMaHD),
-                                        newNgayThu,
-                                        int.parse(newMADL),
-                                        int.parse(newSoTienThu));
+                                    var updateData =
+                                        await supabaseManager.updateHoaDonData(
+                                            int.parse(newMaHoaDon.text),
+                                            newNgayThu.text,
+                                            int.parse(newMaDL.text),
+                                            int.parse(newSoTienThu.text));
+                                    if (updateData != null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        updateData,
+                                        style: TextStyle(color: Colors.red),
+                                      )));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        'Sửa thành công',
+                                      )));
+                                    }
                                     setState(() {
-                                      search = "";
-                                      newMaHD = "";
-                                      newNgayThu = "";
-                                      newMADL = "";
-                                      newSoTienThu = "";
+                                      newMaDL.clear();
+                                      newMaHoaDon.clear();
+                                      newNgayThu.clear();
+                                      newSoTienThu.clear();
+                                      _ngaythuSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -374,11 +444,11 @@ class _HoaDonListState extends State<HoaDonList> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      search = "";
-                                      newMaHD = "";
-                                      newNgayThu = "";
-                                      newMADL = "";
-                                      newSoTienThu = "";
+                                      newMaDL.clear();
+                                      newMaHoaDon.clear();
+                                      newNgayThu.clear();
+                                      newSoTienThu.clear();
+                                      _ngaythuSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -434,14 +504,18 @@ class _HoaDonListState extends State<HoaDonList> {
 
   Widget buildDataTable() {
     final columns = [
-      'MÃ HÓA ĐƠN',
-      'NGÀY THU TIỀN',
+      'MÃ PHIẾU THU TIỀN',
       'MÃ ĐẠI LÝ',
+      'TÊN ĐẠI LÝ',
+      'QUẬN',
+      'SỐ ĐIỆN THOẠI',
+      'EMAIL',
       'SỐ TIỀN THU',
+      'NGÀY THU'
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readData('HOADONTHUTIEN'),
+      future: supabaseManager.readDataChiTietPhieuThu(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -481,10 +555,14 @@ class _HoaDonListState extends State<HoaDonList> {
   List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
         final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['mahoadon'],
-          temp['ngaythu'],
-          temp['madaily'],
-          temp['sotienthu'],
+          temp['_maphieuthu'],
+          temp['_madaily'],
+          temp['_tendaily'],
+          temp['_quan'],
+          temp['_sodienthoai'],
+          temp['_email'],
+          temp['_sotienthu'],
+          temp['_ngaythu']
         ];
 
         return DataRow(
@@ -506,196 +584,4 @@ class _HoaDonListState extends State<HoaDonList> {
   List<DataCell> getCells(List<dynamic> cells) => cells.map((data) {
         return DataCell(Text('$data'));
       }).toList();
-
-  // Phiếu thêm hóa đơn
-  Widget themhoadon({bool check_sua = true}) {
-    return Container(
-      alignment: Alignment.center,
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Tạo hàng để điền thông tin MÃ HÓA ĐƠN
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'MÃ HÓA ĐƠN',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: check_sua
-                              ? Colors.blueGrey
-                              : Colors.blueGrey[300],
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        enabled: check_sua,
-                        initialValue: newMaHD,
-                        style: TextStyle(color: Colors.white),
-                        autofocus: true,
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        onChanged: (value) {
-                          newMaHD = value;
-                        },
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập MÃ HÓA ĐƠN";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng để điền thông tin NGÀY THU TIỀN
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'NGÀY THU TIỀN',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        autofocus: check_sua ? false : true,
-                        initialValue: newNgayThu,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập NGÀY THU TIỀN";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newNgayThu = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng thêm MÃ ĐẠI LÝ
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'MÃ ĐẠI LÝ',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newMADL,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập MÃ ĐẠI LÝ";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newMADL = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng thêm SỐ TIỀN THU
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'SỐ TIỀN THU',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newSoTienThu,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập SỐ TIỀN THU";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newSoTienThu = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

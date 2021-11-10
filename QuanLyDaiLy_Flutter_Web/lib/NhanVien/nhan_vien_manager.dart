@@ -440,8 +440,9 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
       'MÃ NHÂN VIÊN',
       'HỌ VÀ TÊN',
       'GIỚI TÍNH',
+      'CHỨC VỤ',
       'SỐ ĐIỆN THOẠI',
-      'ĐỊA CHỈ',
+      'EMAIL',
     ];
 
     return FutureBuilder(
@@ -488,8 +489,9 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
           temp['manhanvien'],
           temp['hoten'],
           temp['gioitinh'],
-          temp['phone'],
-          temp['diachi'],
+          temp['chucvu'],
+          temp['sodienthoai'],
+          temp['emal'],
         ];
 
         return DataRow(

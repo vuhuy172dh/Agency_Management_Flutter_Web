@@ -3,6 +3,7 @@ import 'package:do_an/Kho_hang_Manager/phieu_nhap_list.dart';
 import 'package:do_an/Kho_hang_Manager/phieu_xuat_list.dart';
 import 'package:do_an/Kho_hang_Manager/sap_het_hang.dart';
 import 'package:do_an/Kho_hang_Manager/ton_kho_list.dart';
+import 'package:do_an/Widget/navigate_bar.dart';
 import 'package:flutter/material.dart';
 
 class KhoHangTabView extends StatefulWidget {
@@ -12,18 +13,13 @@ class KhoHangTabView extends StatefulWidget {
   _KhoHangTabViewState createState() => _KhoHangTabViewState();
 }
 
-List<bool> selected_1 = [true, false, false, false, false];
-// List<bool> selected_2 = [false, false];
+List<bool> selected_1 = [true, false, false];
 int index = 0;
 
 Widget SwitchPage(int index) {
   if (index == 0) {
     return HangHoaList();
   } else if (index == 1) {
-    return TonKhoList();
-  } else if (index == 2) {
-    return SapHetHang();
-  } else if (index == 3) {
     return PhieuNhapList();
   } else {
     return PhieuXuatList();
@@ -34,8 +30,6 @@ class _KhoHangTabViewState extends State<KhoHangTabView> {
   TextEditingController? _Search;
   List<String> HangHoa = [
     'Tất cả mặt hàng',
-    'Tồn kho',
-    'Sắp hết hàng',
   ];
 
   List<String> Phieu = ['Phiếu nhập kho', 'Phiếu xuất kho'];
@@ -47,7 +41,7 @@ class _KhoHangTabViewState extends State<KhoHangTabView> {
   }
 
   void select_1(int n) {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 3; i++) {
       if (i == n) {
         selected_1[i] = true;
       } else {
@@ -159,11 +153,11 @@ class _KhoHangTabViewState extends State<KhoHangTabView> {
                         title: e,
                         onTap: () {
                           setState(() {
-                            index = Phieu.indexOf(e) + 3;
-                            select_1(Phieu.indexOf(e) + 3);
+                            index = Phieu.indexOf(e) + 1;
+                            select_1(Phieu.indexOf(e) + 1);
                           });
                         },
-                        selected: selected_1[Phieu.indexOf(e) + 3]);
+                        selected: selected_1[Phieu.indexOf(e) + 1]);
                   }).toList(),
                 ),
               ],
@@ -171,99 +165,6 @@ class _KhoHangTabViewState extends State<KhoHangTabView> {
           ),
           Expanded(child: SwitchPage(index))
         ],
-      ),
-    );
-  }
-}
-
-class NavBarItem extends StatefulWidget {
-  final String title;
-  final Function onTap;
-  final bool selected;
-  NavBarItem({
-    required this.title,
-    required this.onTap,
-    required this.selected,
-  });
-  @override
-  _NavBarItemState createState() => _NavBarItemState();
-}
-
-class _NavBarItemState extends State<NavBarItem> with TickerProviderStateMixin {
-  late AnimationController _controller2;
-  late Animation<Color?> _color;
-
-  bool hovered = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller2 = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 275),
-    );
-
-    _color =
-        ColorTween(end: Colors.red, begin: Colors.white).animate(_controller2);
-
-    // _controller1.addListener(() {
-    //   setState(() {});
-    // });
-    _controller2.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void didUpdateWidget(NavBarItem oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!widget.selected) {
-      Future.delayed(Duration(milliseconds: 10), () {});
-      _controller2.reverse();
-    } else {
-      _controller2.forward();
-      Future.delayed(Duration(milliseconds: 10), () {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        widget.onTap();
-      },
-      child: MouseRegion(
-        onEnter: (value) {
-          setState(() {
-            hovered = true;
-          });
-        },
-        onExit: (value) {
-          setState(() {
-            hovered = false;
-          });
-        },
-        child: Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.only(left: 35),
-          width: 202,
-          color:
-              hovered && !widget.selected ? Colors.white12 : Colors.transparent,
-          child: Stack(
-            children: [
-              Container(
-                height: 60,
-                width: 167,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.title,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(color: _color.value, fontSize: 18.0),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

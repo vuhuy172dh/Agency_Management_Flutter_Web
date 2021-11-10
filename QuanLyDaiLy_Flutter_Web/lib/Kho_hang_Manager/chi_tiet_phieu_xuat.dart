@@ -1,25 +1,25 @@
-import 'package:do_an/Kho_hang_Manager/themMH_into_ChiTietPhieuNhap.dart';
+import 'package:do_an/Kho_hang_Manager/themMH_into_CTPX.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
-class ChiTietPhieuNhap extends StatefulWidget {
-  final maphieunhap;
-  const ChiTietPhieuNhap({Key? key, required this.maphieunhap})
+class ChiTietPhieuXuat extends StatefulWidget {
+  final int maphieuxuat;
+  const ChiTietPhieuXuat({Key? key, required this.maphieuxuat})
       : super(key: key);
 
   @override
-  _ChiTietPhieuNhapState createState() => _ChiTietPhieuNhapState();
+  _ChiTietPhieuXuatState createState() => _ChiTietPhieuXuatState();
 }
 
-class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
+class _ChiTietPhieuXuatState extends State<ChiTietPhieuXuat> {
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
+  TextEditingController _newMaMH = TextEditingController();
+  TextEditingController _newSoluong = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  final TextEditingController maMH = TextEditingController();
-  final TextEditingController soluong = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,14 +46,14 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
-                          'MÃ PHIẾU NHẬP',
+                          'MÃ PHIẾU XUẤT',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                       Expanded(
                         child: Container(
                           child: Text(
-                            widget.maphieunhap.toString(),
+                            widget.maphieuxuat.toString(),
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -71,16 +71,16 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                         return AlertDialog(
                           insetPadding: EdgeInsets.symmetric(vertical: 190),
                           title: Text(
-                            'THÊM MẶT HÀNG',
+                            'THÊM MẶT HÀNG XUẤT',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: ThemMHCTPN(
+                          content: ThemMHCTPX(
                             formKey: formKey,
-                            maMH: maMH,
-                            soluong: soluong,
+                            maMH: _newMaMH,
+                            soluong: _newSoluong,
                           ),
                           actions: [
                             TextButton(
@@ -88,12 +88,12 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                                 var isValid = formKey.currentState!.validate();
                                 if (isValid) {
                                   var addData =
-                                      await supabaseManager.addDataCTPN(
-                                          widget.maphieunhap,
-                                          int.parse(maMH.text),
-                                          int.parse(soluong.text));
-                                  maMH.clear();
-                                  soluong.clear();
+                                      await supabaseManager.addDataCTPX(
+                                          widget.maphieuxuat,
+                                          int.parse(_newMaMH.text),
+                                          int.parse(_newSoluong.text));
+                                  _newMaMH.clear();
+                                  _newSoluong.clear();
                                   setState(() {
                                     Navigator.pop(context);
                                   });
@@ -122,6 +122,8 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                             ),
                             TextButton(
                                 onPressed: () {
+                                  _newMaMH.clear();
+                                  _newSoluong.clear();
                                   Navigator.pop(context);
                                 },
                                 child: Text('Cancel',
@@ -186,7 +188,7 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                               TextButton(
                                 onPressed: () async {
                                   while (selectedData.isNotEmpty) {
-                                    await supabaseManager.deleteDataCTPN(
+                                    await supabaseManager.deleteDataCTPX(
                                         selectedData.removeLast());
                                   }
                                   setState(() {
@@ -242,22 +244,22 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
             Container(
                 height: 500,
                 child: ScrollableWidget(
-                    child: buildDataTableChitietPhieu(widget.maphieunhap))),
+                    child: buildDataTableChitietPhieu(widget.maphieuxuat))),
           ],
         ));
   }
 
-  Widget buildDataTableChitietPhieu(int _maphieunhap) {
+  Widget buildDataTableChitietPhieu(int _maphieuxuat) {
     final columns = [
       'MÃ MẶT HÀNG',
       'TÊN MẶT HÀNG',
       'ĐƠN VỊ',
       'SỐ LƯỢNG',
-      'GIÁ NHẬP'
+      'GIÁ XUẤT'
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readDataChiTietPhieuNhap(_maphieunhap),
+      future: supabaseManager.readDataChiTietPhieuXuat(_maphieuxuat),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -302,9 +304,10 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
           temp['_mamathang'],
           temp['_tenmathang'],
           temp['_donvi'],
-          temp['_soluongnhap'],
-          temp['_gianhap']
+          temp['_soluongxuat'],
+          temp['_giaxuat']
         ];
+
         final cell_temp = [temp['_stt']];
 
         return DataRow(

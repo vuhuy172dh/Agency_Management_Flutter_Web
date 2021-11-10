@@ -1,3 +1,4 @@
+import 'package:do_an/Kho_hang_Manager/them_mat_hang.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,16 @@ class _HangHoaListState extends State<HangHoaList> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
-  String _newMaMH = '';
-  String _newName = '';
-  String _newDonVi = '';
-  String _newGia = '';
+  TextEditingController _newMaMH = TextEditingController();
+  TextEditingController _newName = TextEditingController();
+  TextEditingController _newDonVi = TextEditingController();
+  TextEditingController _newGiaNhap = TextEditingController();
+  TextEditingController _newGiaXuat = TextEditingController();
+  TextEditingController _newSoLuong = TextEditingController();
+  TextEditingController _newNgaySX = TextEditingController();
+  TextEditingController _newHanSD = TextEditingController();
+  final ValueNotifier<DateTime?> nsxSub = ValueNotifier(null);
+  final ValueNotifier<DateTime?> hsdSub = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +61,7 @@ class _HangHoaListState extends State<HangHoaList> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          insetPadding: EdgeInsets.symmetric(vertical: 150),
+                          scrollable: true,
                           title: Text(
                             'THÊM MẶT HÀNG',
                             textAlign: TextAlign.center,
@@ -62,27 +69,62 @@ class _HangHoaListState extends State<HangHoaList> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: ThemMHPage(),
+                          content: ThemMatHang(
+                            isCheck: false,
+                            formKey: formKey,
+                            newMaMH: _newMaMH,
+                            newTenMH: _newName,
+                            newDonVi: _newDonVi,
+                            newGiaNhap: _newGiaNhap,
+                            newGiaXuat: _newGiaXuat,
+                            newNgaySanXuat: _newNgaySX,
+                            newHanSuDung: _newHanSD,
+                            newSoluong: _newSoLuong,
+                            nsxSub: nsxSub,
+                            hsdSub: hsdSub,
+                          ),
                           actions: [
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
-                                  print(_newMaMH);
-                                  print(_newName);
-                                  print(_newGia);
-                                  print(_newDonVi);
-                                  supabaseManager.addDataHH(
-                                      int.parse(_newMaMH),
-                                      _newName,
-                                      int.parse(_newGia),
-                                      _newDonVi,
-                                      0);
-                                  setState(() {
-                                    Navigator.pop(context);
-                                  });
+                                  var addData = await supabaseManager.addDataMH(
+                                      int.parse(_newMaMH.text),
+                                      _newName.text,
+                                      _newDonVi.text,
+                                      int.parse(_newGiaNhap.text),
+                                      int.parse(_newGiaXuat.text),
+                                      _newNgaySX.text,
+                                      _newHanSD.text);
+                                  if (addData != null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                      addData,
+                                      style: TextStyle(color: Colors.red),
+                                    )));
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                      'Bạn Nhập Thành Công Mặt Hàng Mới',
+                                    )));
+                                  }
                                 }
+                                _newName.clear();
+                                _newMaMH.clear();
+                                _newDonVi.clear();
+                                _newGiaNhap.clear();
+                                _newGiaXuat.clear();
+                                _newNgaySX.clear();
+                                _newHanSD.clear();
+                                _newSoLuong.clear();
+                                nsxSub.value = null;
+                                hsdSub.value = null;
+                                setState(() {
+                                  Navigator.pop(context);
+                                });
                               },
                               child: Text(
                                 'Submit',
@@ -93,7 +135,19 @@ class _HangHoaListState extends State<HangHoaList> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  _newName.clear();
+                                  _newMaMH.clear();
+                                  _newDonVi.clear();
+                                  _newGiaNhap.clear();
+                                  _newGiaXuat.clear();
+                                  _newNgaySX.clear();
+                                  _newHanSD.clear();
+                                  _newSoLuong.clear();
+                                  nsxSub.value = null;
+                                  hsdSub.value = null;
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text('Cancel',
                                     style: TextStyle(
@@ -158,11 +212,22 @@ class _HangHoaListState extends State<HangHoaList> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   while (selectedData.isNotEmpty) {
-                                    supabaseManager.deleteDataHangHoa(
-                                        selectedData.removeLast());
+                                    var deletedata =
+                                        await supabaseManager.deleteDataHangHoa(
+                                            selectedData.removeLast());
+                                    if (deletedata != null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        deletedata,
+                                        style: TextStyle(color: Colors.red),
+                                      )));
+                                    }
+                                    break;
                                   }
+                                  selectedRow.clear();
                                   setState(() {});
                                   Navigator.pop(context);
                                 },
@@ -262,16 +327,20 @@ class _HangHoaListState extends State<HangHoaList> {
                             );
                           });
                     } else {
-                      _newMaMH = selectedRow[0][0].toString();
-                      _newName = selectedRow[0][1].toString();
-                      _newDonVi = selectedRow[0][2].toString();
-                      _newGia = selectedRow[0][3].toString();
+                      _newMaMH.text = selectedRow[0][0].toString();
+                      _newName.text = selectedRow[0][1].toString();
+                      _newDonVi.text = selectedRow[0][2].toString();
+                      _newGiaNhap.text = selectedRow[0][3].toString();
+                      _newGiaXuat.text = selectedRow[0][4].toString();
+                      _newSoLuong.text = selectedRow[0][5].toString();
+                      _newNgaySX.text = selectedRow[0][6].toString();
+                      _newHanSD.text = selectedRow[0][7].toString();
 
                       showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            insetPadding: EdgeInsets.symmetric(vertical: 150),
+                            scrollable: true,
                             title: Text(
                               'SỬA MẶT HÀNG',
                               textAlign: TextAlign.center,
@@ -279,28 +348,65 @@ class _HangHoaListState extends State<HangHoaList> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: ThemMHPage(),
+                            content: ThemMatHang(
+                              isCheck: true,
+                              formKey: formKey,
+                              newMaMH: _newMaMH,
+                              newTenMH: _newName,
+                              newDonVi: _newDonVi,
+                              newGiaNhap: _newGiaNhap,
+                              newGiaXuat: _newGiaXuat,
+                              newNgaySanXuat: _newNgaySX,
+                              newHanSuDung: _newHanSD,
+                              newSoluong: _newSoLuong,
+                              nsxSub: nsxSub,
+                              hsdSub: hsdSub,
+                            ),
                             actions: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    supabaseManager.updateHHData(
-                                        int.parse(_newMaMH),
-                                        _newName,
-                                        int.parse(_newGia),
-                                        _newDonVi);
-                                    setState(() {
-                                      _newMaMH = '';
-                                      _newName = '';
-                                      _newDonVi = '';
-                                      _newGia = '';
-                                      selectedRow.clear();
-                                      selectedData.clear();
-                                      Navigator.pop(context);
-                                    });
+                                    var updateData =
+                                        await supabaseManager.updateMHData(
+                                            int.parse(_newMaMH.text),
+                                            _newName.text,
+                                            _newDonVi.text,
+                                            int.parse(_newGiaNhap.text),
+                                            int.parse(_newGiaXuat.text),
+                                            _newNgaySX.text,
+                                            _newHanSD.text);
+                                    if (updateData != null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        updateData,
+                                        style: TextStyle(color: Colors.red),
+                                      )));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        'Bạn Sửa Mặt Hàng Thành Công',
+                                      )));
+                                    }
                                   }
+                                  setState(() {
+                                    _newName.clear();
+                                    _newMaMH.clear();
+                                    _newDonVi.clear();
+                                    _newGiaNhap.clear();
+                                    _newGiaXuat.clear();
+                                    _newNgaySX.clear();
+                                    _newHanSD.clear();
+                                    _newSoLuong.clear();
+                                    nsxSub.value = null;
+                                    hsdSub.value = null;
+                                    selectedRow.clear();
+                                    selectedData.clear();
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text(
                                   'Submit',
@@ -312,10 +418,14 @@ class _HangHoaListState extends State<HangHoaList> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      _newMaMH = '';
-                                      _newName = '';
-                                      _newDonVi = '';
-                                      _newGia = '';
+                                      _newMaMH.text = '';
+                                      _newName.text = '';
+                                      _newDonVi.text = '';
+                                      _newGiaNhap.text = '';
+                                      _newGiaXuat.text = '';
+                                      _newSoLuong.text = '';
+                                      _newNgaySX.text = '';
+                                      _newHanSD.text = '';
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -454,218 +564,4 @@ class _HangHoaListState extends State<HangHoaList> {
   List<DataCell> getCells(List<dynamic> cells) => cells.map((data) {
         return DataCell(Text('$data'));
       }).toList();
-
-  // trang thêm mặt hàng
-  Widget ThemMHPage() {
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: Container(
-        alignment: Alignment.center,
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // tạo hàng thêm MÃ MẶT HÀNG
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('MÃ MẶT HÀNG',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập MÃ MẶT HÀNG";
-                          } else {
-                            return null;
-                          }
-                        },
-                        initialValue: _newMaMH,
-                        onChanged: (value) {
-                          _newMaMH = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              // Tạo hàng thêm TÊN MẶT HÀNG
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('TÊN MẶT HÀNG',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập TÊN MẶT HÀNG";
-                          } else {
-                            return null;
-                          }
-                        },
-                        initialValue: _newName,
-                        onChanged: (value) {
-                          _newName = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              // Tạo hàng nhập ĐƠN VỊ
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('ĐƠN VỊ',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        initialValue: _newDonVi,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập ĐƠN VỊ";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          _newDonVi = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              // Tạo hàng nhập GIÁ
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('GIÁ',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        initialValue: _newGia,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập Giá";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          _newGia = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

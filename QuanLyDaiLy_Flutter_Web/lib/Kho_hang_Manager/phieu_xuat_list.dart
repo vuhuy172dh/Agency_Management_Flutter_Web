@@ -1,3 +1,5 @@
+import 'package:do_an/Kho_hang_Manager/chi_tiet_phieu_xuat.dart';
+import 'package:do_an/Kho_hang_Manager/them_phieu_xuat.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +18,12 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
   List<dynamic> selectedRow = [];
   SupabaseManager supabaseManager = SupabaseManager();
   final formKey = GlobalKey<FormState>();
-  String _maphieu = "";
-  String _ngay = "";
-  String _madaily = "";
-  String _mamathang = "";
-  String _soluong = "";
-  String _gia = "";
+  TextEditingController _newMaPhieuXuat = TextEditingController();
+  TextEditingController _newNgayXuat = TextEditingController();
+  TextEditingController _newMaDaiLy = TextEditingController();
+  TextEditingController _newThanhTien = TextEditingController();
+  TextEditingController _newSoTienNo = TextEditingController();
+  final ValueNotifier<DateTime?> _ngayxuatSub = ValueNotifier(null);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,12 +50,122 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                 ),
                 Expanded(child: Container()),
                 GestureDetector(
+                  onTap: () async {
+                    selectedRow.clear();
+                    if (selectedData.length < 1) {
+                      await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text(
+                                  'Bạn chưa chọn đối tượng để xem chi tiết'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else if (selectedData.length > 1) {
+                      await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'ERROR',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Text('Bạn chỉ được chọn MỘT đối tượng'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'OK',
+                                      style: TextStyle(
+                                          color: Colors.blueGrey[800],
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else {
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              'CHI TIẾT PHIẾU',
+                              style: TextStyle(
+                                  color: Colors.blueGrey,
+                                  fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            content: ChiTietPhieuXuat(
+                              maphieuxuat: selectedData.removeLast(),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  setState(() {});
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                      color: Colors.blueGrey[800],
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    height: 50,
+                    // width,
+                    margin: EdgeInsets.only(left: 20),
+                    decoration: BoxDecoration(
+                        color: selectedData.length == 1
+                            ? Colors.blueGrey[800]
+                            : Colors.blueGrey[400],
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Text(
+                      'XEM CHI TIẾT',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: selectedData.length == 1
+                              ? Colors.white
+                              : Colors.white54),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                GestureDetector(
                   onTap: () {
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          insetPadding: EdgeInsets.symmetric(vertical: 50),
+                          insetPadding: EdgeInsets.symmetric(vertical: 100),
                           title: Text(
                             'PHIẾU XUẤT KHO',
                             textAlign: TextAlign.center,
@@ -61,23 +173,49 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: phieuxuat(),
+                          content: ThemPhieuXuatKho(
+                            formkey: formKey,
+                            isCheck: false,
+                            newMaDaiLy: _newMaDaiLy,
+                            newMaPhieuXuat: _newMaPhieuXuat,
+                            newNgayXuat: _newNgayXuat,
+                            newSoTienNo: _newSoTienNo,
+                            newThanhTien: _newThanhTien,
+                            ngayxuatSub: _ngayxuatSub,
+                          ),
                           actions: [
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
-                                  supabaseManager.addDataPhieuXuat(
-                                      int.parse(_maphieu),
-                                      int.parse(_madaily),
-                                      int.parse(_mamathang),
-                                      _ngay,
-                                      int.parse(_soluong),
-                                      int.parse(_gia));
+                                  var addData =
+                                      await supabaseManager.addDataPhieuXuat(
+                                          int.parse(_newMaPhieuXuat.text),
+                                          int.parse(_newMaDaiLy.text),
+                                          int.parse(_newSoTienNo.text),
+                                          _newNgayXuat.text);
+                                  _newMaDaiLy.clear();
+                                  _newMaPhieuXuat.clear();
+                                  _newSoTienNo.clear();
+                                  _newThanhTien.clear();
+                                  _newNgayXuat.clear();
+                                  _ngayxuatSub.value = null;
                                   setState(() {
                                     Navigator.pop(context);
                                   });
+                                  if (addData != null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                      addData,
+                                      style: TextStyle(color: Colors.red),
+                                    )));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text('NHẬP THÀNH CÔNG')));
+                                  }
                                 }
                               },
                               child: Text(
@@ -89,6 +227,12 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                             ),
                             TextButton(
                                 onPressed: () {
+                                  _newMaDaiLy.clear();
+                                  _newMaPhieuXuat.clear();
+                                  _newSoTienNo.clear();
+                                  _newThanhTien.clear();
+                                  _newNgayXuat.clear();
+                                  _ngayxuatSub.value = null;
                                   Navigator.pop(context);
                                 },
                                 child: Text('Cancel',
@@ -153,14 +297,27 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
-                                onPressed: () {
-                                  print(selectedData);
+                                onPressed: () async {
                                   while (selectedData.isNotEmpty) {
-                                    supabaseManager.deleteDataPhieuXuat(
-                                        selectedData.removeLast());
+                                    var delData = await supabaseManager
+                                        .deleteDataPhieuXuat(
+                                            selectedData.removeLast());
+                                    if (delData != null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        delData,
+                                        style: TextStyle(color: Colors.red),
+                                      )));
+                                    }
+                                    break;
                                   }
-                                  setState(() {});
-                                  Navigator.pop(context);
+
+                                  setState(() {
+                                    selectedData.clear();
+                                    selectedRow.clear();
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text(
                                   'YES',
@@ -257,16 +414,16 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                             );
                           });
                     } else {
-                      _maphieu = selectedRow[0][1].toString();
-                      _ngay = selectedRow[0][2].toString();
-                      _madaily = selectedRow[0][3].toString();
-                      _mamathang = selectedRow[0][4].toString();
-                      _soluong = selectedRow[0][5].toString();
-                      _gia = selectedRow[0][6].toString();
+                      _newMaPhieuXuat.text = selectedRow[0][0].toString();
+                      _newNgayXuat.text = selectedRow[0][1].toString();
+                      _newMaDaiLy.text = selectedRow[0][2].toString();
+                      _newThanhTien.text = selectedRow[0][3].toString();
+                      _newSoTienNo.text = selectedRow[0][4].toString();
                       showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
+                            insetPadding: EdgeInsets.symmetric(vertical: 100),
                             title: Text(
                               'SỬA PHIẾU XUẤT',
                               textAlign: TextAlign.center,
@@ -274,27 +431,49 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: phieuxuat(),
+                            content: ThemPhieuXuatKho(
+                              formkey: formKey,
+                              isCheck: true,
+                              newMaDaiLy: _newMaDaiLy,
+                              newMaPhieuXuat: _newMaPhieuXuat,
+                              newNgayXuat: _newNgayXuat,
+                              newSoTienNo: _newSoTienNo,
+                              newThanhTien: _newThanhTien,
+                              ngayxuatSub: _ngayxuatSub,
+                            ),
                             actions: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    supabaseManager.updatePhieuXuatData(
-                                        int.parse(_maphieu),
-                                        int.parse(_madaily),
-                                        int.parse(_mamathang),
-                                        _ngay,
-                                        int.parse(_soluong),
-                                        int.parse(_gia));
+                                    var updateData = await supabaseManager
+                                        .updatePhieuXuatData(
+                                            int.parse(_newMaPhieuXuat.text),
+                                            int.parse(_newMaDaiLy.text),
+                                            _newNgayXuat.text,
+                                            int.parse(_newSoTienNo.text));
+                                    if (updateData != null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        updateData,
+                                        style: TextStyle(color: Colors.red),
+                                      )));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                        'Sửa Thành Công',
+                                      )));
+                                    }
                                     setState(() {
-                                      _maphieu = "";
-                                      _ngay = "";
-                                      _madaily = "";
-                                      _mamathang = "";
-                                      _soluong = "";
-                                      _gia = "";
+                                      _newMaDaiLy.clear();
+                                      _newMaPhieuXuat.clear();
+                                      _newNgayXuat.clear();
+                                      _newSoTienNo.clear();
+                                      _newThanhTien.clear();
+                                      _ngayxuatSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -311,12 +490,12 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      _maphieu = "";
-                                      _ngay = "";
-                                      _madaily = "";
-                                      _mamathang = "";
-                                      _soluong = "";
-                                      _gia = "";
+                                      _newMaDaiLy.clear();
+                                      _newMaPhieuXuat.clear();
+                                      _newNgayXuat.clear();
+                                      _newSoTienNo.clear();
+                                      _newThanhTien.clear();
+                                      _ngayxuatSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -379,14 +558,13 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
       'MÃ PHIẾU XUẤT',
       'NGÀY XUẤT',
       'MÃ ĐẠI LÝ',
-      'MÃ MẶT HÀNG',
-      'SỐ LƯỢNG',
-      'GIÁ',
+      'THÀNH TIỀN',
+      'SỐ TIỀN NỢ',
     ];
 
     SupabaseManager supabaseManager = SupabaseManager();
     return FutureBuilder(
-      future: supabaseManager.readData('PHIEUXUATKHO'),
+      future: supabaseManager.readData('PHIEUXUATHANG'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -427,11 +605,10 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
         final temp = (user as Map<String, dynamic>);
         final cells = [
           temp['maphieuxuat'],
-          temp['ngayxuatkho'],
+          temp['ngayxuat'],
           temp['madaily'],
-          temp['mamathang'],
-          temp['soluong'],
-          temp['gia']
+          temp['thanhtien'],
+          temp['sotienno'],
         ];
 
         return DataRow(
@@ -453,309 +630,4 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
   List<DataCell> getCells(List<dynamic> cells) => cells.map((data) {
         return DataCell(Text('$data'));
       }).toList();
-
-  Widget phieuxuat() {
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: Container(
-        alignment: Alignment.center,
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('MÃ PHIẾU XUẤT',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        initialValue: _maphieu,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập MÃ PHIẾU";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          _maphieu = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('NGÀY XUẤT KHO',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        initialValue: _ngay,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập NGÀY XUẤT";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          _ngay = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('MÃ ĐẠI LÝ',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập MÃ ĐẠI LÝ";
-                          } else {
-                            return null;
-                          }
-                        },
-                        initialValue: _madaily,
-                        onChanged: (value) {
-                          _madaily = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('MÃ MẶT HÀNG',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        initialValue: _mamathang,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập MÃ MẶT HÀNG";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          _mamathang = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text('SỐ LƯỢNG',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        initialValue: _soluong,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập SỐ LƯỢNG";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          _soluong = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 60,
-                width: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      width: 200,
-                      child: Text(
-                        'GIÁ',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextFormField(
-                        initialValue: _gia,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Chưa nhập Giá";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          _gia = value;
-                        },
-                        cursorColor: Colors.blueGrey[800],
-                        style: TextStyle(color: Colors.blueGrey[800]),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

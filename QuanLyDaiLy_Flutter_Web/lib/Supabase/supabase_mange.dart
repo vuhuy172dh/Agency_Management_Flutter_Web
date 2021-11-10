@@ -7,68 +7,106 @@ const supabaseKey =
 class SupabaseManager {
   final client = SupabaseClient(supabaseUrl, supabaseKey);
 
-  addData(int iddaiLy, String name, int phone, String loca, int type,
-      String date) async {
+  //
+  addData(int madl, String tendl, int loaidl, int sodt, String ngaytiepnhan,
+      String email, String quan) async {
     var response = await client.from('DAILY').insert([
       {
-        'madaily': iddaiLy,
-        'tendaily': name,
-        'phone': phone,
-        'diachi': loca,
-        'loaidaily': type,
-        'ngaydangky': date
+        'madaily': madl,
+        'tendaily': tendl,
+        'loaidaily': loaidl,
+        'sodienthoai': sodt,
+        'ngaytiepnhan': ngaytiepnhan,
+        'email': email,
+        'quan': quan
       }
     ]).execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
-  addDataHH(int id, String name, int gia, String dv, int sluong) async {
-    var response = await client.from('HANGHOA').insert([
+  //
+  addDataMH(int maMH, String tenMH, String dv, int gianhap, int giaxuat,
+      String nsx, String hsd) async {
+    var response = await client.from('MATHANG').insert([
       {
-        'mamathang': id,
-        'tenmathang': name,
+        'mamathang': maMH,
+        'tenmathang': tenMH,
         'donvi': dv,
-        'gia': gia,
-        'soluong': sluong
+        'gianhap': gianhap,
+        'giaxuat': giaxuat,
+        'hansudung': hsd,
+        'ngaysanxuat': nsx,
       }
     ]).execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
-  addDataPhieuNhap(
-      int idphieu, int idMH, String ngay, int numb, int price) async {
-    var response = await client.from('PHIEUNHAPKHO').insert([
+  // thêm data vô chi tiết phiếu nhập
+  addDataCTPN(int maphieunhap, int maMH, int soluong) async {
+    var response = await client.from('CHITIETPHIEUNHAP').insert([
+      {'mamathang': maMH, 'soluong': soluong, 'maphieunhap': maphieunhap}
+    ]).execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  addDataPhieuNhap(int idphieu, String ngay) async {
+    var response = await client.from('PHIEUNHAPHANG').insert([
       {
         'maphieunhap': idphieu,
-        'mamathang': idMH,
         'ngaynhap': ngay,
-        'soluong': numb,
-        'gia': price,
       }
     ]).execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
     print(response);
   }
 
-  addDataPhieuXuat(
-      int idphieu, int idDL, int idMH, String ngay, int numb, int price) async {
-    var response = await client.from('PHIEUXUATKHO').insert([
+  //
+  addDataCTPX(int maphieuxuat, int maMH, int soluong) async {
+    var response = await client.from('CHITIETPHIEUXUATHANG').insert([
+      {'maphieuxuat': maphieuxuat, 'mamathang': maMH, 'soluong': soluong}
+    ]).execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  addDataPhieuXuat(int maphieuxuat, int maDL, int sotienno, String ngay) async {
+    var response = await client.from('PHIEUXUATHANG').insert([
       {
-        'maphieuxuat': idphieu,
-        'ngayxuatkho': ngay,
-        'madaily': idDL,
-        'mamathang': idMH,
-        'soluong': numb,
-        'gia': price,
+        'maphieuxuat': maphieuxuat,
+        'ngayxuat': ngay,
+        'madaily': maDL,
+        'sotienno': sotienno
       }
     ]).execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
+  //
   addDataHoaDon(int maHD, String ngay, int maDL, int sotien) async {
-    var response = await client.from('HOADONTHUTIEN').insert([
-      {'mahoadon': maHD, 'ngaythu': ngay, 'madaily': maDL, 'sotienthu': sotien}
+    var response = await client.from('PHIEUTHUTIEN').insert([
+      {
+        'maphieuthu': maHD,
+        'ngaythutien': ngay,
+        'madaily': maDL,
+        'sotienthu': sotien
+      }
     ]).execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
   addDataNhanVien(
@@ -85,6 +123,7 @@ class SupabaseManager {
     print(response);
   }
 
+  //
   readData(String dataname) async {
     var response = await client.from(dataname).select().execute();
     print(response.data);
@@ -92,6 +131,36 @@ class SupabaseManager {
     return response;
   }
 
+  //
+  readDataLoaiDL() async {
+    var response =
+        await client.from('QUYDINHTIENNO').select('loaiDL').execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataMaDL() async {
+    var response = await client.from('DAILY').select('madaily').execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataMaMH() async {
+    var response = await client.from('MATHANG').select('mamathang').execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataQuan() async {
+    var response = await client.from('QUYCHETOCHUC').select('quan').execute();
+    print(response.data);
+    return response;
+  }
+
+  //
   readDataChiTietPhieuNhap(int _maphieunhap) async {
     var response = await client.rpc('chitietphieunhaphang_table',
         params: {'_maphieunhap': _maphieunhap}).execute();
@@ -99,83 +168,126 @@ class SupabaseManager {
     return response;
   }
 
-  readDataPhieuNhap() async {
-    var response = await client.from('PHIEUNHAPHANG').select().execute();
+  //
+  readDataChiTietPhieuXuat(int _maphieuxuat) async {
+    var response = await client.rpc('chitietphieuxuathang_table',
+        params: {'_maphieuxuat': _maphieuxuat}).execute();
     print(response.data);
     return response;
   }
 
-  updateDaiLyData(int iddaiLy, String name, int phone, String loca, int type,
-      String date) async {
+  //
+  readDataChiTietPhieuThu() async {
+    var response = await client.rpc('chitietphieuthutien_table').execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataBaoCaoThang(int thang, int nam) async {
+    var response = await client.rpc('baocaothang_table',
+        params: {'thang': thang, 'nam': nam}).execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataBaoCaoCongNo(int thang, int nam) async {
+    var response = await client.rpc('baocaocongno_table',
+        params: {'thang': thang, 'nam': nam}).execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataQuyCheToChuc() async {
+    var response = await client.from('QUYCHETOCHUC').select().execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataQuyDinhTienNo() async {
+    var response = await client.from('QUYDINHTIENNO').select().execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  updateDaiLyData(int madl, String tendl, int loaidl, int sodt,
+      String ngaytiepnhan, String email, String quan) async {
     var response = await client
         .from('DAILY')
         .update({
-          'madaily': iddaiLy,
-          'tendaily': name,
-          'phone': phone,
-          'diachi': loca,
-          'loaidaily': type,
-          'ngaydangky': date
+          'tendaily': tendl,
+          'sodienthoai': sodt,
+          'quan': quan,
+          'loaidaily': loaidl,
+          'ngaytiepnhan': ngaytiepnhan
         })
-        .eq('madaily', iddaiLy)
+        .eq('madaily', madl)
         .execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
     print(response);
   }
 
-  updateHHData(int id, String name, int gia, String dv) async {
+  //
+  updateMHData(int maMH, String tenMH, String dv, int gianhap, int giaxuat,
+      String nsx, String hsd) async {
     var response = await client
-        .from('HANGHOA')
+        .from('MATHANG')
         .update({
-          'mamathang': id,
-          'tenmathang': name,
+          'tenmathang': tenMH,
           'donvi': dv,
-          'gia': gia,
+          'gianhap': gianhap,
+          'giaxuat': giaxuat,
+          'ngaysanxuat': nsx,
+          'hansudung': hsd
         })
-        .eq('mamathang', id)
+        .eq('mamathang', maMH)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
-  updatePhieuNhapData(
-      int idphieu, int idMH, String ngay, int numb, int price) async {
+  //
+  updatePhieuNhapData(int idphieu, String ngay) async {
     var response = await client
-        .from('PHIEUNHAPKHO')
+        .from('PHIEUNHAPHANG')
         .update({
-          'maphieunhap': idphieu,
-          'mamathang': idMH,
           'ngaynhap': ngay,
-          'soluong': numb,
-          'gia': price,
         })
         .eq('maphieunhap', idphieu)
         .execute();
     print(response);
   }
 
+  //
   updatePhieuXuatData(
-      int idphieu, int idDL, int idMH, String ngay, int numb, int price) async {
+      int maphieuxuat, int madaily, String ngay, int tienno) async {
     var response = await client
-        .from('PHIEUXUATKHO')
-        .update({
-          'maphieuxuat': idphieu,
-          'ngayxuatkho': ngay,
-          'madaily': idDL,
-          'mamathang': idMH,
-          'soluong': numb,
-          'gia': price,
-        })
-        .eq('maphieuxuat', idphieu)
+        .from('PHIEUXUATHANG')
+        .update({'ngayxuat': ngay, 'madaily': madaily, 'sotienno': tienno})
+        .eq('maphieuxuat', maphieuxuat)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
+  //
   updateHoaDonData(int maHD, String ngay, int maDL, int sotien) async {
     var response = await client
-        .from('HOADONTHUTIEN')
-        .update({'ngaythu': ngay, 'madaily': maDL, 'sotienthu': sotien})
-        .eq('mahoadon', maHD)
+        .from('PHIEUTHUTIEN')
+        .update({'ngaythutien': ngay, 'madaily': maDL, 'sotienthu': sotien})
+        .eq('maphieuthu', maHD)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
   updateNhanVienData(
@@ -193,43 +305,71 @@ class SupabaseManager {
     print(response);
   }
 
+  //
   deleteDataDaiLy(int id) async {
     var response =
         await client.from('DAILY').delete().eq('madaily', id).execute();
     print(response);
   }
 
+  //
   deleteDataHangHoa(int id) async {
     var response =
-        await client.from('HANGHOA').delete().eq('mamathang', id).execute();
-    print(response);
+        await client.from('MATHANG').delete().eq('mamathang', id).execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
+  //
+  deleteDataCTPN(int id) async {
+    var response =
+        await client.from('CHITIETPHIEUNHAP').delete().eq('stt', id).execute();
+  }
+
+  //
   deleteDataPhieuNhap(int id) async {
     var response = await client
-        .from('PHIEUNHAPKHO')
+        .from('PHIEUNHAPHANG')
         .delete()
         .eq('maphieunhap', id)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
+  //
+  deleteDataCTPX(int id) async {
+    var response = await client
+        .from('CHITIETPHIEUXUATHANG')
+        .delete()
+        .eq('stt', id)
+        .execute();
+  }
+
+  //
   deleteDataPhieuXuat(int id) async {
     var response = await client
-        .from('PHIEUXUATKHO')
+        .from('PHIEUXUATHANG')
         .delete()
         .eq('maphieuxuat', id)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
+  //
   deleteDataHoaDon(int id) async {
     var response = await client
-        .from('HOADONTHUTIEN')
+        .from('PHIEUTHUTIEN')
         .delete()
-        .eq('mahoadon', id)
+        .eq('maphieuthu', id)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
   deleteDataNhanVien(int id) async {
