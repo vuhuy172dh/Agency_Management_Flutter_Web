@@ -541,7 +541,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readData('DAILY'),
+      future: SupabaseManager().readData('DAILY'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

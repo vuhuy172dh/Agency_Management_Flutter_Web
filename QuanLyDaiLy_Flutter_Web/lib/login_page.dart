@@ -3,6 +3,8 @@ import 'package:do_an/home_page.dart';
 import 'package:do_an/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:injector/injector.dart';
+import 'package:supabase/supabase.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -134,8 +136,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future _login() async {
-    final signInResult = await SupabaseManager()
-        .client
+    final signInResult = await Injector.appInstance
+        .get<SupabaseClient>()
         .auth
         .signIn(email: _email!.text, password: _password!.text);
     if (signInResult != null && signInResult.user != null) {

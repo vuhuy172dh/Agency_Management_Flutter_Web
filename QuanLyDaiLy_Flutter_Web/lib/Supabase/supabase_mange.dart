@@ -1,16 +1,12 @@
+import 'package:injector/injector.dart';
 import 'package:supabase/supabase.dart';
 
-const supabaseUrl = 'https://tkabbsxsoektqmhvlrln.supabase.co';
-const supabaseKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNjA0MTUyNCwiZXhwIjoxOTUxNjE3NTI0fQ.I0vC0LT6CHleFUjuNJTzBht11jH-W_lAvXhphj4vp4g';
-
 class SupabaseManager {
-  final client = SupabaseClient(supabaseUrl, supabaseKey);
-
   //
   addData(int madl, String tendl, int loaidl, int sodt, String ngaytiepnhan,
       String email, String quan) async {
-    var response = await client.from('DAILY').insert([
+    var response =
+        await Injector.appInstance.get<SupabaseClient>().from('DAILY').insert([
       {
         'madaily': madl,
         'tendaily': tendl,
@@ -29,7 +25,10 @@ class SupabaseManager {
   //
   addDataMH(int maMH, String tenMH, String dv, int gianhap, int giaxuat,
       String nsx, String hsd) async {
-    var response = await client.from('MATHANG').insert([
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('MATHANG')
+        .insert([
       {
         'mamathang': maMH,
         'tenmathang': tenMH,
@@ -47,7 +46,10 @@ class SupabaseManager {
 
   // thêm data vô chi tiết phiếu nhập
   addDataCTPN(int maphieunhap, int maMH, int soluong) async {
-    var response = await client.from('CHITIETPHIEUNHAP').insert([
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('CHITIETPHIEUNHAP')
+        .insert([
       {'mamathang': maMH, 'soluong': soluong, 'maphieunhap': maphieunhap}
     ]).execute();
     if (response.error != null) {
@@ -57,7 +59,10 @@ class SupabaseManager {
 
   //
   addDataPhieuNhap(int idphieu, String ngay) async {
-    var response = await client.from('PHIEUNHAPHANG').insert([
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('PHIEUNHAPHANG')
+        .insert([
       {
         'maphieunhap': idphieu,
         'ngaynhap': ngay,
@@ -71,7 +76,10 @@ class SupabaseManager {
 
   //
   addDataCTPX(int maphieuxuat, int maMH, int soluong) async {
-    var response = await client.from('CHITIETPHIEUXUATHANG').insert([
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('CHITIETPHIEUXUATHANG')
+        .insert([
       {'maphieuxuat': maphieuxuat, 'mamathang': maMH, 'soluong': soluong}
     ]).execute();
     if (response.error != null) {
@@ -81,7 +89,10 @@ class SupabaseManager {
 
   //
   addDataPhieuXuat(int maphieuxuat, int maDL, int sotienno, String ngay) async {
-    var response = await client.from('PHIEUXUATHANG').insert([
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('PHIEUXUATHANG')
+        .insert([
       {
         'maphieuxuat': maphieuxuat,
         'ngayxuat': ngay,
@@ -96,7 +107,10 @@ class SupabaseManager {
 
   //
   addDataHoaDon(int maHD, String ngay, int maDL, int sotien) async {
-    var response = await client.from('PHIEUTHUTIEN').insert([
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('PHIEUTHUTIEN')
+        .insert([
       {
         'maphieuthu': maHD,
         'ngaythutien': ngay,
@@ -111,7 +125,10 @@ class SupabaseManager {
 
   addDataNhanVien(
       int maNV, String hoten, String gioitinh, int phone, String diachi) async {
-    var response = await client.from('NHANVIEN').insert([
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('NHANVIEN')
+        .insert([
       {
         'manhanvien': maNV,
         'hoten': hoten,
@@ -125,7 +142,12 @@ class SupabaseManager {
 
   //
   readData(String dataname) async {
-    var response = await client.from(dataname).select().execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from(dataname)
+        .select()
+        .execute();
+    print(Injector.appInstance.get<SupabaseClient>().auth.currentUser!.id);
     print(response.data);
     print(response);
     return response;
@@ -133,36 +155,52 @@ class SupabaseManager {
 
   //
   readDataLoaiDL() async {
-    var response =
-        await client.from('QUYDINHTIENNO').select('loaiDL').execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYDINHTIENNO')
+        .select('loaiDL')
+        .execute();
     print(response.data);
     return response;
   }
 
   //
   readDataMaDL() async {
-    var response = await client.from('DAILY').select('madaily').execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('DAILY')
+        .select('madaily')
+        .execute();
     print(response.data);
     return response;
   }
 
   //
   readDataMaMH() async {
-    var response = await client.from('MATHANG').select('mamathang').execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('MATHANG')
+        .select('mamathang')
+        .execute();
     print(response.data);
     return response;
   }
 
   //
   readDataQuan() async {
-    var response = await client.from('QUYCHETOCHUC').select('quan').execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYCHETOCHUC')
+        .select('quan')
+        .execute();
     print(response.data);
     return response;
   }
 
   //
   readDataChiTietPhieuNhap(int _maphieunhap) async {
-    var response = await client.rpc('chitietphieunhaphang_table',
+    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
+        'chitietphieunhaphang_table',
         params: {'_maphieunhap': _maphieunhap}).execute();
     print(response.data);
     return response;
@@ -170,7 +208,8 @@ class SupabaseManager {
 
   //
   readDataChiTietPhieuXuat(int _maphieuxuat) async {
-    var response = await client.rpc('chitietphieuxuathang_table',
+    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
+        'chitietphieuxuathang_table',
         params: {'_maphieuxuat': _maphieuxuat}).execute();
     print(response.data);
     return response;
@@ -178,14 +217,18 @@ class SupabaseManager {
 
   //
   readDataChiTietPhieuThu() async {
-    var response = await client.rpc('chitietphieuthutien_table').execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('chitietphieuthutien_table')
+        .execute();
     print(response.data);
     return response;
   }
 
   //
   readDataBaoCaoThang(int thang, int nam) async {
-    var response = await client.rpc('baocaothang_table',
+    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
+        'baocaothang_table',
         params: {'thang': thang, 'nam': nam}).execute();
     print(response.data);
     return response;
@@ -193,7 +236,8 @@ class SupabaseManager {
 
   //
   readDataBaoCaoCongNo(int thang, int nam) async {
-    var response = await client.rpc('baocaocongno_table',
+    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
+        'baocaocongno_table',
         params: {'thang': thang, 'nam': nam}).execute();
     print(response.data);
     return response;
@@ -201,14 +245,22 @@ class SupabaseManager {
 
   //
   readDataQuyCheToChuc() async {
-    var response = await client.from('QUYCHETOCHUC').select().execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYCHETOCHUC')
+        .select()
+        .execute();
     print(response.data);
     return response;
   }
 
   //
   readDataQuyDinhTienNo() async {
-    var response = await client.from('QUYDINHTIENNO').select().execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYDINHTIENNO')
+        .select()
+        .execute();
     print(response.data);
     return response;
   }
@@ -216,7 +268,8 @@ class SupabaseManager {
   //
   updateDaiLyData(int madl, String tendl, int loaidl, int sodt,
       String ngaytiepnhan, String email, String quan) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('DAILY')
         .update({
           'tendaily': tendl,
@@ -236,7 +289,8 @@ class SupabaseManager {
   //
   updateMHData(int maMH, String tenMH, String dv, int gianhap, int giaxuat,
       String nsx, String hsd) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('MATHANG')
         .update({
           'tenmathang': tenMH,
@@ -255,7 +309,8 @@ class SupabaseManager {
 
   //
   updatePhieuNhapData(int idphieu, String ngay) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('PHIEUNHAPHANG')
         .update({
           'ngaynhap': ngay,
@@ -268,7 +323,8 @@ class SupabaseManager {
   //
   updatePhieuXuatData(
       int maphieuxuat, int madaily, String ngay, int tienno) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('PHIEUXUATHANG')
         .update({'ngayxuat': ngay, 'madaily': madaily, 'sotienno': tienno})
         .eq('maphieuxuat', maphieuxuat)
@@ -280,7 +336,8 @@ class SupabaseManager {
 
   //
   updateHoaDonData(int maHD, String ngay, int maDL, int sotien) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('PHIEUTHUTIEN')
         .update({'ngaythutien': ngay, 'madaily': maDL, 'sotienthu': sotien})
         .eq('maphieuthu', maHD)
@@ -292,7 +349,8 @@ class SupabaseManager {
 
   updateNhanVienData(
       int maNV, String hoten, String gioitinh, int phone, String diachi) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('NHANVIEN')
         .update({
           'hoten': hoten,
@@ -307,15 +365,23 @@ class SupabaseManager {
 
   //
   deleteDataDaiLy(int id) async {
-    var response =
-        await client.from('DAILY').delete().eq('madaily', id).execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('DAILY')
+        .delete()
+        .eq('madaily', id)
+        .execute();
     print(response);
   }
 
   //
   deleteDataHangHoa(int id) async {
-    var response =
-        await client.from('MATHANG').delete().eq('mamathang', id).execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('MATHANG')
+        .delete()
+        .eq('mamathang', id)
+        .execute();
     if (response.error != null) {
       return response.error!.message;
     }
@@ -323,13 +389,18 @@ class SupabaseManager {
 
   //
   deleteDataCTPN(int id) async {
-    var response =
-        await client.from('CHITIETPHIEUNHAP').delete().eq('stt', id).execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('CHITIETPHIEUNHAP')
+        .delete()
+        .eq('stt', id)
+        .execute();
   }
 
   //
   deleteDataPhieuNhap(int id) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('PHIEUNHAPHANG')
         .delete()
         .eq('maphieunhap', id)
@@ -341,7 +412,8 @@ class SupabaseManager {
 
   //
   deleteDataCTPX(int id) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('CHITIETPHIEUXUATHANG')
         .delete()
         .eq('stt', id)
@@ -350,7 +422,8 @@ class SupabaseManager {
 
   //
   deleteDataPhieuXuat(int id) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('PHIEUXUATHANG')
         .delete()
         .eq('maphieuxuat', id)
@@ -362,7 +435,8 @@ class SupabaseManager {
 
   //
   deleteDataHoaDon(int id) async {
-    var response = await client
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
         .from('PHIEUTHUTIEN')
         .delete()
         .eq('maphieuthu', id)
@@ -373,8 +447,12 @@ class SupabaseManager {
   }
 
   deleteDataNhanVien(int id) async {
-    var response =
-        await client.from('NHANVIEN').delete().eq('manhanvien', id).execute();
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('NHANVIEN')
+        .delete()
+        .eq('manhanvien', id)
+        .execute();
     print(response);
   }
 }

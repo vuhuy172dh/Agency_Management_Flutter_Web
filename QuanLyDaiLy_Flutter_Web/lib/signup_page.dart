@@ -1,6 +1,8 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:injector/injector.dart';
+import 'package:supabase/supabase.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -131,7 +133,10 @@ class _SignupPageState extends State<SignupPage> {
 
   Future _signup() async {
     if (_formKey.currentState!.validate()) {
-      await SupabaseManager().client.auth.signUp(_email!.text, _password!.text);
+      await Injector.appInstance
+          .get<SupabaseClient>()
+          .auth
+          .signUp(_email!.text, _password!.text);
     }
   }
 }
