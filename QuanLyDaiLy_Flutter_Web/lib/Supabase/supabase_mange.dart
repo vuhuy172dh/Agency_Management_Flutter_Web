@@ -123,8 +123,9 @@ class SupabaseManager {
     }
   }
 
-  addDataNhanVien(
-      int maNV, String hoten, String gioitinh, int phone, String diachi) async {
+  //
+  addDataNhanVien(int maNV, String hoten, String gioitinh, int phone,
+      String email, String chucvu) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
         .from('NHANVIEN')
@@ -133,11 +134,14 @@ class SupabaseManager {
         'manhanvien': maNV,
         'hoten': hoten,
         'gioitinh': gioitinh,
-        'phone': phone,
-        'diachi': diachi
+        'sodienthoai': phone,
+        'chucvu': chucvu,
+        'email': email
       }
     ]).execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
   //
@@ -347,16 +351,18 @@ class SupabaseManager {
     }
   }
 
-  updateNhanVienData(
-      int maNV, String hoten, String gioitinh, int phone, String diachi) async {
+  //
+  updateNhanVienData(int maNV, String hoten, String gioitinh, int phone,
+      String email, String chucvu) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
         .from('NHANVIEN')
         .update({
           'hoten': hoten,
           'gioitinh': gioitinh,
-          'phone': phone,
-          'diachi': diachi
+          'sodienthoai': phone,
+          'chucvu': chucvu,
+          'email': email
         })
         .eq('manhanvien', maNV)
         .execute();
@@ -446,6 +452,7 @@ class SupabaseManager {
     }
   }
 
+  //
   deleteDataNhanVien(int id) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()

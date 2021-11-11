@@ -1,3 +1,4 @@
+import 'package:do_an/NhanVien/them_nhan_vien.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,13 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
   String search = "";
-  String newMaNV = "";
-  String newHoten = "";
-  String newGioiTinh = "";
-  String newPhone = "";
-  String newDiaChi = "";
+  TextEditingController _manhanvien = TextEditingController();
+  TextEditingController _tennhanvien = TextEditingController();
+  TextEditingController _gioitinh = TextEditingController();
+  TextEditingController _chucvu = TextEditingController();
+  TextEditingController _sodienthoai = TextEditingController();
+  TextEditingController _email = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -125,19 +128,51 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: themnhanvien(),
+                          content: ThemNhanVien(
+                              formKey: formKey,
+                              isCheck: false,
+                              newmaNV: _manhanvien,
+                              newtenNB: _tennhanvien,
+                              newGioiTinh: _gioitinh,
+                              newChucVu: _chucvu,
+                              newSodienthoai: _sodienthoai,
+                              newEmail: _email),
                           actions: [
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
-                                  supabaseManager.addDataNhanVien(
-                                      int.parse(newMaNV),
-                                      newHoten,
-                                      newGioiTinh,
-                                      int.parse(newPhone),
-                                      newDiaChi);
+                                  var addData =
+                                      await supabaseManager.addDataNhanVien(
+                                          int.parse(_manhanvien.text),
+                                          _tennhanvien.text,
+                                          _gioitinh.text,
+                                          int.parse(_sodienthoai.text),
+                                          _email.text,
+                                          _chucvu.text);
+                                  if (addData != null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                      addData,
+                                      style: TextStyle(color: Colors.red),
+                                    )));
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                      'Thêm Thành Công',
+                                    )));
+                                  }
+                                  _manhanvien.clear();
+                                  _tennhanvien.clear();
+                                  _gioitinh.clear();
+                                  _chucvu.clear();
+                                  _sodienthoai.clear();
+                                  _email.clear();
+                                  selectedData.clear();
+                                  selectedRow.clear();
                                   setState(() {
                                     Navigator.pop(context);
                                   });
@@ -152,6 +187,14 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                             ),
                             TextButton(
                                 onPressed: () {
+                                  _manhanvien.clear();
+                                  _tennhanvien.clear();
+                                  _gioitinh.clear();
+                                  _chucvu.clear();
+                                  _sodienthoai.clear();
+                                  _email.clear();
+                                  selectedData.clear();
+                                  selectedRow.clear();
                                   Navigator.pop(context);
                                 },
                                 child: Text('Cancel',
@@ -162,7 +205,6 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                         );
                       },
                     );
-                    setState(() {});
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -219,13 +261,14 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   while (selectedData.isNotEmpty) {
-                                    supabaseManager.deleteDataDaiLy(
+                                    await supabaseManager.deleteDataNhanVien(
                                         selectedData.removeLast());
                                   }
-                                  setState(() {});
-                                  Navigator.pop(context);
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text(
                                   'YES',
@@ -324,11 +367,13 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                             );
                           });
                     } else {
-                      newMaNV = selectedRow[0][0].toString();
-                      newHoten = selectedRow[0][1].toString();
-                      newGioiTinh = selectedRow[0][2].toString();
-                      newPhone = selectedRow[0][3].toString();
-                      newDiaChi = selectedRow[0][4].toString();
+                      _manhanvien.text = selectedRow[0][0].toString();
+                      _tennhanvien.text = selectedRow[0][1].toString();
+                      _gioitinh.text = selectedRow[0][2].toString();
+                      _chucvu.text = selectedRow[0][3].toString();
+                      _sodienthoai.text = selectedRow[0][4].toString();
+                      _email.text = selectedRow[0][5].toString();
+
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -340,26 +385,35 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: themnhanvien(check_sua: false),
+                            content: ThemNhanVien(
+                                formKey: formKey,
+                                isCheck: true,
+                                newmaNV: _manhanvien,
+                                newtenNB: _tennhanvien,
+                                newGioiTinh: _gioitinh,
+                                newChucVu: _chucvu,
+                                newSodienthoai: _sodienthoai,
+                                newEmail: _email),
                             actions: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    supabaseManager.updateNhanVienData(
-                                        int.parse(newMaNV),
-                                        newHoten,
-                                        newGioiTinh,
-                                        int.parse(newPhone),
-                                        newDiaChi);
+                                    await supabaseManager.updateNhanVienData(
+                                        int.parse(_manhanvien.text),
+                                        _tennhanvien.text,
+                                        _gioitinh.text,
+                                        int.parse(_sodienthoai.text),
+                                        _email.text,
+                                        _chucvu.text);
                                     setState(() {
-                                      search = "";
-                                      newMaNV = "";
-                                      newHoten = "";
-                                      newGioiTinh = "";
-                                      newPhone = "";
-                                      newDiaChi = "";
+                                      _manhanvien.clear();
+                                      _tennhanvien.clear();
+                                      _gioitinh.clear();
+                                      _chucvu.clear();
+                                      _sodienthoai.clear();
+                                      _email.clear();
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -376,12 +430,12 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      search = "";
-                                      newMaNV = "";
-                                      newHoten = "";
-                                      newGioiTinh = "";
-                                      newPhone = "";
-                                      newDiaChi = "";
+                                      _manhanvien.clear();
+                                      _tennhanvien.clear();
+                                      _gioitinh.clear();
+                                      _chucvu.clear();
+                                      _sodienthoai.clear();
+                                      _email.clear();
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -491,7 +545,7 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
           temp['gioitinh'],
           temp['chucvu'],
           temp['sodienthoai'],
-          temp['emal'],
+          temp['email'],
         ];
 
         return DataRow(
@@ -513,239 +567,4 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
   List<DataCell> getCells(List<dynamic> cells) => cells.map((data) {
         return DataCell(Text('$data'));
       }).toList();
-
-  // tạo THÊM NHÂN VIÊN
-  Widget themnhanvien({bool check_sua = true}) {
-    return Container(
-      alignment: Alignment.center,
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Tạo hàng để điền thông tin MÃ NHÂN VIÊN
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'MÃ NHÂN VIÊN',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: check_sua
-                              ? Colors.blueGrey
-                              : Colors.blueGrey[300],
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        enabled: check_sua,
-                        initialValue: newMaNV,
-                        style: TextStyle(color: Colors.white),
-                        autofocus: true,
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        onChanged: (value) {
-                          newMaNV = value;
-                        },
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập MÃ NHÂN VIÊN";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng để điền thông tin HỌ VÀ TÊN
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'HỌ VÀ TÊN',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        autofocus: check_sua ? false : true,
-                        initialValue: newHoten,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập HỌ VÀ TÊN";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newHoten = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng thêm GIỚI TÍNH
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'GIỚI TÍNH',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newGioiTinh,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập GIỚI TÍNH";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newGioiTinh = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo hàng thêm SỐ ĐIỆN THOẠI
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'SỐ ĐIỆN THOẠI',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newPhone,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập SỐ ĐIỆN THOẠI";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newPhone = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            // Tạo thàng thêm ĐỊA CHỈ
-            Container(
-              margin: EdgeInsets.all(5),
-              height: 80,
-              width: 400,
-              child: Row(
-                children: [
-                  Container(
-                    width: 130,
-                    child: Text(
-                      'ĐỊA CHỈ',
-                      style: TextStyle(
-                          color: Colors.blueGrey[800],
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        initialValue: newDiaChi,
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Bạn chưa nhập ĐỊA CHỈ";
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (value) {
-                          newDiaChi = value;
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
