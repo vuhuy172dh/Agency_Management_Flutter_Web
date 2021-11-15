@@ -1,5 +1,6 @@
 import 'package:do_an/NhanVien/them_nhan_vien.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
@@ -18,13 +19,15 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
-  String search = "";
   TextEditingController _manhanvien = TextEditingController();
   TextEditingController _tennhanvien = TextEditingController();
   TextEditingController _gioitinh = TextEditingController();
   TextEditingController _chucvu = TextEditingController();
   TextEditingController _sodienthoai = TextEditingController();
   TextEditingController _email = TextEditingController();
+  TextEditingController _searchMa = TextEditingController();
+  TextEditingController _searchTen = TextEditingController();
+  TextEditingController _searchChucvu = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,75 +44,41 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
             child: Row(
               children: [
                 Container(
-                  width: 400,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "DANH SÁCH CÁC NHÂN VIÊN",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          "DANH SÁCH CÁC NHÂN VIÊN",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                       const SizedBox(
                         height: 5,
                       ),
-
-                      // khung tìm kiếm theo mã đại lý
-                      Container(
-                          width: 250,
-                          height: 30,
-                          padding: EdgeInsets.only(
-                              left: 20, right: 10, bottom: 5, top: 5),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white70),
-                          child: Form(
-                            key: formKeySearch,
-                            child: TextFormField(
-                              validator: (value) {
-                                try {
-                                  int.parse(value!);
-                                } catch (e) {
-                                  return 'Nhập mã không hợp lệ';
-                                }
-                              },
-                              onChanged: (value) {
-                                search = value;
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    selectedData.clear();
-                                  });
-                                }
-                              },
-                              autofocus: true,
-                              style: TextStyle(color: Colors.blueGrey[800]),
-                              cursorColor: Colors.blueGrey[800],
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Tìm kiếm',
-                                  hintStyle: TextStyle(color: Colors.black54),
-                                  suffixIcon: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(
-                                      Icons.search,
-                                      color: Colors.blueGrey[800],
-                                    ),
-                                    onPressed: () {
-                                      final isValid = formKeySearch
-                                          .currentState!
-                                          .validate();
-                                      if (isValid) {
-                                        setState(() {
-                                          selectedData.add(int.parse(search));
-                                        });
-                                      }
-                                    },
-                                  )),
-                            ),
-                          ))
+                      Row(
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: TimKiem(
+                                  formKey: formKeySearch,
+                                  searchMa: _searchMa,
+                                  searchTen: _searchTen,
+                                  searchLoai: _searchChucvu,
+                                  hindText1: 'Nhập mã nhân viên',
+                                  hindText2: 'Nhập tên nhân viên',
+                                  hindText3: "Nhập chức vụ")),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey[800]),
+                              onPressed: () {},
+                              child: Text('Search'))
+                        ],
+                      ),
                     ],
                   ),
                 ),

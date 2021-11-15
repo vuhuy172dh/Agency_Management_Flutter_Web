@@ -1,5 +1,6 @@
 import 'package:do_an/Kho_hang_Manager/them_mat_hang.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
@@ -13,6 +14,7 @@ class HangHoaList extends StatefulWidget {
 
 class _HangHoaListState extends State<HangHoaList> {
   final formKey = GlobalKey<FormState>();
+  final formSearchKey = GlobalKey<FormState>();
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
@@ -27,6 +29,9 @@ class _HangHoaListState extends State<HangHoaList> {
   TextEditingController _newHanSD = TextEditingController();
   final ValueNotifier<DateTime?> nsxSub = ValueNotifier(null);
   final ValueNotifier<DateTime?> hsdSub = ValueNotifier(null);
+  TextEditingController _searchMa = TextEditingController();
+  TextEditingController _searchTen = TextEditingController();
+  TextEditingController _searchSoluong = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +47,42 @@ class _HangHoaListState extends State<HangHoaList> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Row(
               children: [
-                Container(
-                  padding: EdgeInsets.all(10),
-                  width: 300,
-                  child: Text(
-                    'DANH SÁCH MẶT HÀNG',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      width: 300,
+                      child: Text(
+                        'DANH SÁCH MẶT HÀNG',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(children: [
+                        TimKiem(
+                            formKey: formSearchKey,
+                            searchMa: _searchMa,
+                            searchTen: _searchTen,
+                            searchLoai: _searchSoluong,
+                            hindText1: 'Nhập mã mặt hàng',
+                            hindText2: 'Nhập tên mặt hàng',
+                            hindText3: 'Nhập số lượng'),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {
+                            setState(() {});
+                          },
+                          child: Text('Search'),
+                        ),
+                      ]),
+                    )
+                  ],
                 ),
                 Expanded(child: Container()),
                 // tạo nút THÊM
@@ -111,25 +142,27 @@ class _HangHoaListState extends State<HangHoaList> {
                                       'Bạn Nhập Thành Công Mặt Hàng Mới',
                                     )));
                                   }
+                                  _newName.clear();
+                                  _newMaMH.clear();
+                                  _newDonVi.clear();
+                                  _newGiaNhap.clear();
+                                  _newGiaXuat.clear();
+                                  _newNgaySX.clear();
+                                  _newHanSD.clear();
+                                  _newSoLuong.clear();
+                                  nsxSub.value = null;
+                                  hsdSub.value = null;
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
                                 }
-                                _newName.clear();
-                                _newMaMH.clear();
-                                _newDonVi.clear();
-                                _newGiaNhap.clear();
-                                _newGiaXuat.clear();
-                                _newNgaySX.clear();
-                                _newHanSD.clear();
-                                _newSoLuong.clear();
-                                nsxSub.value = null;
-                                hsdSub.value = null;
-                                setState(() {
-                                  Navigator.pop(context);
-                                });
                               },
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey[800]),
                               child: Text(
                                 'Submit',
                                 style: TextStyle(
-                                    color: Colors.blueGrey[800],
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -149,9 +182,11 @@ class _HangHoaListState extends State<HangHoaList> {
                                     Navigator.pop(context);
                                   });
                                 },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey[800]),
                                 child: Text('Cancel',
                                     style: TextStyle(
-                                        color: Colors.blueGrey[800],
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold)))
                           ],
                         );
@@ -465,20 +500,17 @@ class _HangHoaListState extends State<HangHoaList> {
               ],
             ),
           ),
-          Expanded(child: ListHangHoa())
+          Expanded(
+              child: Container(
+            margin: EdgeInsets.all(5),
+            alignment: Alignment.topCenter,
+            decoration: BoxDecoration(
+                color: Colors.blueGrey[200],
+                borderRadius: BorderRadius.all(Radius.circular(5))),
+            child: ScrollableWidget(child: buildDataTable()),
+          ))
         ],
       ),
-    );
-  }
-
-  Widget ListHangHoa() {
-    return Container(
-      margin: EdgeInsets.all(5),
-      alignment: Alignment.topCenter,
-      decoration: BoxDecoration(
-          color: Colors.blueGrey[200],
-          borderRadius: BorderRadius.all(Radius.circular(5))),
-      child: ScrollableWidget(child: buildDataTable()),
     );
   }
 
@@ -495,7 +527,8 @@ class _HangHoaListState extends State<HangHoaList> {
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readData('MATHANG'),
+      future: supabaseManager.readDataMatHang(
+          _searchMa.text, _searchTen.text, _searchSoluong.text),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

@@ -145,13 +145,35 @@ class SupabaseManager {
   }
 
   //
+  addDataAccount(String tendangnhap, String name, String chucvu) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('acount_user')
+        .insert([
+      {'tendangnhap': tendangnhap, 'chusohuu': name, 'status': chucvu}
+    ]).execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  readDataAcount() async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('acount_user')
+        .select()
+        .execute();
+    return response;
+  }
+
+  //
   readData(String dataname) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
         .from(dataname)
         .select()
         .execute();
-    print(Injector.appInstance.get<SupabaseClient>().auth.currentUser!.id);
     print(response.data);
     print(response);
     return response;
@@ -230,6 +252,24 @@ class SupabaseManager {
   }
 
   //
+  readDataDaiLy(String ma, String ten, String loai) async {
+    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
+        'timkiemdaily',
+        params: {'ma': ma, 'ten': ten, 'loai': loai}).execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataMatHang(String ma, String ten, String sl) async {
+    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
+        'timkiemhang',
+        params: {'mamh': ma, 'tenmh': ten, 'sl': sl}).execute();
+    print(response.data);
+    return response;
+  }
+
+  //
   readDataBaoCaoThang(int thang, int nam) async {
     var response = await Injector.appInstance.get<SupabaseClient>().rpc(
         'baocaothang_table',
@@ -264,6 +304,54 @@ class SupabaseManager {
         .get<SupabaseClient>()
         .from('QUYDINHTIENNO')
         .select()
+        .execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataThongKeTien(int nam) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('tienxuattheothang', params: {'nam': nam}).execute();
+    return response;
+  }
+
+  //
+  createPolicyDaiLy(String tentaikhoan) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('policyfordaily', params: {'tendn': tentaikhoan}).execute();
+    if (response.error != null) {
+      print(response.error!.message);
+    }
+  }
+
+  //
+  readDataSoluongDL() async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('soluongdaily')
+        .execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataSoluongLoaiDL() async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('getloaidaily')
+        .execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataSoluongQuan() async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('getsoluongquan')
         .execute();
     print(response.data);
     return response;

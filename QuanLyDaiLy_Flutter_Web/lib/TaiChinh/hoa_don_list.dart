@@ -1,5 +1,6 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/TaiChinh/them_hoa_don.dart';
+import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
@@ -18,12 +19,14 @@ class _HoaDonListState extends State<HoaDonList> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
-  String search = "";
   TextEditingController newMaHoaDon = TextEditingController();
   TextEditingController newMaDL = TextEditingController();
   TextEditingController newNgayThu = TextEditingController();
   TextEditingController newSoTienThu = TextEditingController();
   final ValueNotifier<DateTime?> _ngaythuSub = ValueNotifier(null);
+  TextEditingController _searchMa = TextEditingController();
+  TextEditingController _searchMaDl = TextEditingController();
+  TextEditingController _searchTenDL = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -40,75 +43,38 @@ class _HoaDonListState extends State<HoaDonList> {
             child: Row(
               children: [
                 Container(
-                  width: 400,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "DANH SÁCH CÁC HÓA ĐƠN",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          "DANH SÁCH CÁC HÓA ĐƠN",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-
-                      // khung tìm kiếm theo mã đại lý
-                      Container(
-                          width: 250,
-                          height: 30,
-                          padding: EdgeInsets.only(
-                              left: 20, right: 10, bottom: 5, top: 5),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white70),
-                          child: Form(
-                            key: formKeySearch,
-                            child: TextFormField(
-                              validator: (value) {
-                                try {
-                                  int.parse(value!);
-                                } catch (e) {
-                                  return 'Nhập mã không hợp lệ';
-                                }
-                              },
-                              onChanged: (value) {
-                                search = value;
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    selectedData.clear();
-                                  });
-                                }
-                              },
-                              autofocus: true,
-                              style: TextStyle(color: Colors.blueGrey[800]),
-                              cursorColor: Colors.blueGrey[800],
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Tìm kiếm',
-                                  hintStyle: TextStyle(color: Colors.black54),
-                                  suffixIcon: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(
-                                      Icons.search,
-                                      color: Colors.blueGrey[800],
-                                    ),
-                                    onPressed: () {
-                                      final isValid = formKeySearch
-                                          .currentState!
-                                          .validate();
-                                      if (isValid) {
-                                        setState(() {
-                                          selectedData.add(int.parse(search));
-                                        });
-                                      }
-                                    },
-                                  )),
-                            ),
-                          ))
+                      Row(
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: TimKiem(
+                                  formKey: formKeySearch,
+                                  searchMa: _searchMa,
+                                  searchTen: _searchMaDl,
+                                  searchLoai: _searchTenDL,
+                                  hindText1: "Nhập mã phiếu",
+                                  hindText2: "Nhập mã đại lý",
+                                  hindText3: "Nhập tên đại lý")),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey[800]),
+                              onPressed: () {},
+                              child: Text('Search'))
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -173,10 +139,12 @@ class _HoaDonListState extends State<HoaDonList> {
                                   });
                                 }
                               },
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey[800]),
                               child: Text(
                                 'Submit',
                                 style: TextStyle(
-                                    color: Colors.blueGrey[800],
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -189,9 +157,11 @@ class _HoaDonListState extends State<HoaDonList> {
                                   _ngaythuSub.value = null;
                                   Navigator.pop(context);
                                 },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey[800]),
                                 child: Text('Cancel',
                                     style: TextStyle(
-                                        color: Colors.blueGrey[800],
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold)))
                           ],
                         );

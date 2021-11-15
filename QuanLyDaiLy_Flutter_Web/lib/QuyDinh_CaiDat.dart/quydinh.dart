@@ -1,4 +1,5 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/Widget/card_information.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
@@ -29,54 +30,127 @@ class _QuyDinhState extends State<QuyDinh> {
             width: MediaQuery.of(context).size.width / 2 - 7.5,
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
-                color: Colors.blueGrey[300],
+                color: Colors.blueGrey[100],
                 borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: Column(
+            child: Row(
               children: [
-                // Tiêu để QUY CHẾ TỔ CHỨC
+                // Phần hiện danh sách
                 Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Colors.blueGrey[400]),
-                  child: Text(
-                    'QUY CHẾ TỔ CHỨC',
-                    style: TextStyle(
-                        color: Colors.blueGrey[800],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height / 2,
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.blueGrey[400],
+                      color: Colors.blueGrey[200],
                       borderRadius: BorderRadius.all(Radius.circular(5)),
-                      border: Border.all(
-                          color: Colors.blueGrey.withOpacity(0.8), width: 2.5)),
-                  child: ScrollableWidget(child: buildDataTable()),
-                ),
-                const SizedBox(
-                  height: 5,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.blueGrey.shade400,
+                            spreadRadius: 2,
+                            blurRadius: 2)
+                      ]),
+                  child: Column(
+                    children: [
+                      // Tiêu để QUY CHẾ TỔ CHỨC
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'QUY CHẾ TỔ CHỨC',
+                              style: TextStyle(
+                                  color: Colors.blueGrey[800],
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ),
+                            const SizedBox(
+                              width: 30,
+                            ),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
+                                onPressed: () {},
+                                child: Text('thêm')),
+                            const SizedBox(
+                              width: 3,
+                            ),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
+                                onPressed: () {},
+                                child: Text('sửa')),
+                            const SizedBox(
+                              width: 3,
+                            ),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
+                                onPressed: () {},
+                                child: Text('xóa')),
+                          ],
+                        ),
+                      ),
+                      // danh sách
+                      Container(
+                        height: MediaQuery.of(context).size.height - 170,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        padding: EdgeInsets.all(5),
+                        child: ScrollableWidget(child: buildDataTable()),
+                      ),
+                    ],
+                  ),
                 ),
                 // Thông tin
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        child: Text(
-                            'QUY ĐỊNH SỐ LƯỢNG ĐẠI LÝ TỐI ĐA CHO MỖI QUẬN TRONG KHU VỰC THÀNH PHỐ HỒ CHÍ MINH'),
+                      Padding(
+                          padding: EdgeInsets.only(right: 10, left: 5),
+                          child: soluongquan()),
+                      const SizedBox(
+                        height: 20,
                       ),
                       Container(
-                        child: Text(
-                            'DANH SÁCH Ở TRÊN HIỆN THI SỐ LƯỢNG QUẬN CÓ ĐẠI LÝ CỦA CÔNG TY VÀ SỐ LƯỢNG ĐẠI LÝ TỐI ĐA CHO MỖI QUẬN'),
+                        padding: EdgeInsets.only(left: 5),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 10),
+                              child: Text(
+                                'QUY CHẾ TỔ CHỨC',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 25),
+                              ),
+                            ),
+                            RichText(
+                                text: TextSpan(
+                                    style: TextStyle(fontSize: 15),
+                                    children: [
+                                  TextSpan(
+                                      text: 'Quy chế tổ chức',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic)),
+                                  TextSpan(text: ' quy định số lượng '),
+                                  TextSpan(
+                                      text: 'quận',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic)),
+                                  TextSpan(text: ' và số lượng '),
+                                  TextSpan(
+                                      text: 'đại lý tối đa',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic)),
+                                  TextSpan(text: ' của từng quận cụ thể.')
+                                ]))
+                          ],
+                        ),
                       )
                     ],
                   ),
@@ -90,56 +164,132 @@ class _QuyDinhState extends State<QuyDinh> {
             width: MediaQuery.of(context).size.width / 2 - 7.5,
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
-                color: Colors.blueGrey[300],
+                color: Colors.blueGrey[100],
                 borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: Column(
+            child: Row(
               children: [
-                // Tiêu để QUY CHẾ TỔ CHỨC
+                // Phần hiện danh sách
                 Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Colors.blueGrey[400]),
-                  child: Text(
-                    'QUY ĐỊNH TIỀN NỢ',
-                    style: TextStyle(
-                        color: Colors.blueGrey[800],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30),
-                    textAlign: TextAlign.center,
+                      color: Colors.blueGrey[200],
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.blueGrey.shade400,
+                            spreadRadius: 2,
+                            blurRadius: 1)
+                      ]),
+                  child: Column(
+                    children: [
+                      // Tiêu để QUY Định tiền nợ
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'QUY ĐỊNH TIỀN NỢ',
+                              style: TextStyle(
+                                  color: Colors.blueGrey[800],
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ),
+                            const SizedBox(
+                              width: 30,
+                            ),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
+                                onPressed: () {},
+                                child: Text('thêm')),
+                            const SizedBox(
+                              width: 3,
+                            ),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
+                                onPressed: () {},
+                                child: Text('sửa')),
+                            const SizedBox(
+                              width: 3,
+                            ),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
+                                onPressed: () {},
+                                child: Text('xóa')),
+                          ],
+                        ),
+                      ),
+                      // danh sách
+                      Container(
+                        height: MediaQuery.of(context).size.height - 170,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                        padding: EdgeInsets.all(5),
+                        child: ScrollableWidget(child: buildDataLoaiTable()),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height / 2,
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.blueGrey[400],
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      border: Border.all(
-                          color: Colors.blueGrey.withOpacity(0.8), width: 2.5)),
-                  child: ScrollableWidget(child: buildDataLoaiTable()),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
+                // Thông tin
                 Expanded(
-                    child: Column(
-                  children: [
-                    Container(
-                      child:
-                          Text('QUY ĐỊNH TIỀN NỢ TỐI ĐA CHO CÁC LOẠI ĐẠI LÝ'),
-                    ),
-                    Container(
-                      child: Text(
-                          'DANH SÁCH Ở TRÊN HIỆN THỊ CHO CÁC LOẠI ĐẠI LÝ HIỆN CÓ CỦA CÔNG TY VÀ TIỀN NỢ TỐI ĐA TƯƠNG ỨNG VỚI LOẠI ĐẠI LÝ'),
-                    )
-                  ],
-                )),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                          padding: EdgeInsets.only(right: 10, left: 5),
+                          child: soluongloaidl()),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 5),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 10),
+                              child: Text(
+                                'QUY ĐỊNH TIỀN NỢ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 25),
+                              ),
+                            ),
+                            RichText(
+                                text: TextSpan(
+                                    style: TextStyle(fontSize: 15),
+                                    children: [
+                                  TextSpan(
+                                      text: 'Quy định tiền nợ',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic)),
+                                  TextSpan(text: ' quy định số lượng '),
+                                  TextSpan(
+                                      text: 'loại đại lý',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic)),
+                                  TextSpan(text: ' và số '),
+                                  TextSpan(
+                                      text: 'nợ tối đa',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic)),
+                                  TextSpan(
+                                      text: ' của từng loại đại lý cụ thể.')
+                                ]))
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -262,4 +412,64 @@ class _QuyDinhState extends State<QuyDinh> {
   List<DataCell> getCells(List<dynamic> cells) => cells.map((data) {
         return DataCell(Text('$data'));
       }).toList();
+
+  Widget soluongquan() {
+    int slquan;
+    return FutureBuilder(
+      future: supabaseManager.readDataSoluongQuan(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator();
+        }
+        final doc = snapshot.data as PostgrestResponse?;
+        if (doc == null) {
+          return const SizedBox();
+        }
+
+        final datasets = <String, dynamic>{};
+        datasets['Supabase Query'] = doc.data as int;
+        slquan = datasets['Supabase Query'];
+        return Builder(
+          builder: (context) {
+            return cardInfor(
+                'Tổng số quận có đại lý',
+                slquan,
+                Colors.red.withOpacity(0.8),
+                Colors.white,
+                Icons.location_city_outlined);
+          },
+        );
+      },
+    );
+  }
+
+  Widget soluongloaidl() {
+    int slloaidl;
+    return FutureBuilder(
+      future: supabaseManager.readDataSoluongLoaiDL(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator();
+        }
+        final doc = snapshot.data as PostgrestResponse?;
+        if (doc == null) {
+          return const SizedBox();
+        }
+
+        final datasets = <String, dynamic>{};
+        datasets['Supabase Query'] = doc.data as int;
+        slloaidl = datasets['Supabase Query'];
+        return Builder(
+          builder: (context) {
+            return cardInfor(
+                'Tổng số loại đại lý',
+                slloaidl,
+                Colors.brown.withOpacity(0.8),
+                Colors.white,
+                Icons.account_tree_outlined);
+          },
+        );
+      },
+    );
+  }
 }

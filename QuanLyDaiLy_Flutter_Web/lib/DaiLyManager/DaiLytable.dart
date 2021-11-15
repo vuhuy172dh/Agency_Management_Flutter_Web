@@ -1,5 +1,7 @@
 import 'package:do_an/DaiLyManager/them_dai_ly.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/Widget/card_information.dart';
+import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
@@ -18,7 +20,10 @@ class _TableDaiLyState extends State<TableDaiLy> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
-  TextEditingController search = TextEditingController();
+  bool sort = false;
+  TextEditingController searchMa = TextEditingController();
+  TextEditingController searchTen = TextEditingController();
+  TextEditingController searchLoai = TextEditingController();
   TextEditingController newMaDL = TextEditingController();
   TextEditingController newName = TextEditingController();
   TextEditingController newPhone = TextEditingController();
@@ -28,6 +33,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
   TextEditingController newEmail = TextEditingController();
   TextEditingController newTienno = TextEditingController();
   final ValueNotifier<DateTime?> dateSub = ValueNotifier(null);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,9 +49,9 @@ class _TableDaiLyState extends State<TableDaiLy> {
             child: Row(
               children: [
                 Container(
-                  width: 400,
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "DANH SÁCH CÁC ĐẠI LÝ",
@@ -57,62 +63,28 @@ class _TableDaiLyState extends State<TableDaiLy> {
                       const SizedBox(
                         height: 5,
                       ),
-
                       // khung tìm kiếm theo mã đại lý
-                      Container(
-                          width: 250,
-                          height: 30,
-                          padding: EdgeInsets.only(
-                              left: 20, right: 10, bottom: 5, top: 5),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white70),
-                          child: Form(
-                            key: formKeySearch,
-                            child: TextFormField(
-                              validator: (value) {
-                                try {
-                                  int.parse(value!);
-                                } catch (e) {
-                                  return 'Nhập mã không hợp lệ';
-                                }
+                      Row(
+                        children: [
+                          TimKiem(
+                            formKey: formKeySearch,
+                            searchMa: searchMa,
+                            searchTen: searchTen,
+                            searchLoai: searchLoai,
+                            hindText1: 'Nhập mã đại lý',
+                            hindText2: 'Nhập tên đại lý',
+                            hindText3: 'Nhập loại đại lý',
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey[800]),
+                              onPressed: () {
+                                sort = !sort;
+                                setState(() {});
                               },
-                              onChanged: (value) {
-                                search.text = value;
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    selectedData.clear();
-                                  });
-                                }
-                              },
-                              autofocus: true,
-                              style: TextStyle(color: Colors.blueGrey[800]),
-                              cursorColor: Colors.blueGrey[800],
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Tìm kiếm',
-                                  hintStyle: TextStyle(color: Colors.black54),
-                                  suffixIcon: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(
-                                      Icons.search,
-                                      color: Colors.blueGrey[800],
-                                    ),
-                                    onPressed: () {
-                                      final isValid = formKeySearch
-                                          .currentState!
-                                          .validate();
-                                      if (isValid) {
-                                        setState(() {
-                                          selectedData
-                                              .add(int.parse(search.text));
-                                        });
-                                      }
-                                    },
-                                  )),
-                            ),
-                          ))
+                              child: Text('Search'))
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -187,10 +159,12 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                   });
                                 }
                               },
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey[800]),
                               child: Text(
                                 'Submit',
                                 style: TextStyle(
-                                    color: Colors.blueGrey[800],
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -208,9 +182,11 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                     Navigator.pop(context);
                                   });
                                 },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey[800]),
                                 child: Text('Cancel',
                                     style: TextStyle(
-                                        color: Colors.blueGrey[800],
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold)))
                           ],
                         );
@@ -514,15 +490,53 @@ class _TableDaiLyState extends State<TableDaiLy> {
             ),
           ),
           Expanded(
-            child: Container(
-              alignment: Alignment.topCenter,
-              margin: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                  color: Colors.blueGrey[300],
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              child: ScrollableWidget(child: buildDataTable()),
-            ),
-          )
+              child: Container(
+                  alignment: Alignment.topCenter,
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: Colors.blueGrey[100],
+                      borderRadius: BorderRadius.all(Radius.circular(5))),
+                  child: Row(
+                    children: [
+                      Container(
+                          width: MediaQuery.of(context).size.width * 3 / 4,
+                          margin: EdgeInsets.only(left: 2, top: 2, bottom: 2),
+                          padding: EdgeInsets.all(10),
+                          height: double.maxFinite,
+                          decoration: BoxDecoration(
+                              color: Colors.blueGrey[200],
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              boxShadow: [
+                                BoxShadow(
+                                    spreadRadius: 2,
+                                    blurRadius: 2,
+                                    color: Colors.blueGrey.shade400)
+                              ]),
+                          child: ScrollableWidget(child: buildDataTable())),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Expanded(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          soluongdaily(),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          soluongloaidl(),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          soluongquan(),
+                        ],
+                      )),
+                      const SizedBox(
+                        width: 5,
+                      )
+                    ],
+                  )))
         ],
       ),
     );
@@ -539,9 +553,10 @@ class _TableDaiLyState extends State<TableDaiLy> {
       'NGÀY TIẾP NHẬN',
       'TIỀN NỢ'
     ];
-
     return FutureBuilder(
-      future: SupabaseManager().readData('DAILY'),
+      // future: supabaseManager.readDataDaiLy(
+      //     searchMa.text, searchTen.text, searchLoai.text),
+      future: supabaseManager.readData('DAILY'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -557,6 +572,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
         return Builder(
           builder: (context) {
             return DataTable(
+              dividerThickness: 2,
               columns: getColumns(columns),
               rows: getRows((datasets['Supabase Query'] as List<dynamic>)),
             );
@@ -590,7 +606,6 @@ class _TableDaiLyState extends State<TableDaiLy> {
           temp['ngaytiepnhan'],
           temp['tienno']
         ];
-
         return DataRow(
           cells: getCells(cells),
           selected: selectedData.contains(cells[0]),
@@ -610,4 +625,94 @@ class _TableDaiLyState extends State<TableDaiLy> {
   List<DataCell> getCells(List<dynamic> cells) => cells.map((data) {
         return DataCell(Text('$data'));
       }).toList();
+
+  Widget soluongdaily() {
+    int sldl;
+    return FutureBuilder(
+      future: supabaseManager.readDataSoluongDL(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator();
+        }
+        final doc = snapshot.data as PostgrestResponse?;
+        if (doc == null) {
+          return const SizedBox();
+        }
+
+        final datasets = <String, dynamic>{};
+        datasets['Supabase Query'] = doc.data as int;
+        sldl = datasets['Supabase Query'];
+        return Builder(
+          builder: (context) {
+            return cardInfor(
+                'Tổng số đại lý',
+                sldl,
+                Colors.lightGreen.withOpacity(0.8),
+                Colors.white,
+                Icons.location_on_outlined);
+          },
+        );
+      },
+    );
+  }
+
+  Widget soluongloaidl() {
+    int slloaidl;
+    return FutureBuilder(
+      future: supabaseManager.readDataSoluongLoaiDL(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator();
+        }
+        final doc = snapshot.data as PostgrestResponse?;
+        if (doc == null) {
+          return const SizedBox();
+        }
+
+        final datasets = <String, dynamic>{};
+        datasets['Supabase Query'] = doc.data as int;
+        slloaidl = datasets['Supabase Query'];
+        return Builder(
+          builder: (context) {
+            return cardInfor(
+                'Tổng số loại đại lý',
+                slloaidl,
+                Colors.brown.withOpacity(0.8),
+                Colors.white,
+                Icons.account_tree_outlined);
+          },
+        );
+      },
+    );
+  }
+
+  Widget soluongquan() {
+    int slquan;
+    return FutureBuilder(
+      future: supabaseManager.readDataSoluongQuan(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator();
+        }
+        final doc = snapshot.data as PostgrestResponse?;
+        if (doc == null) {
+          return const SizedBox();
+        }
+
+        final datasets = <String, dynamic>{};
+        datasets['Supabase Query'] = doc.data as int;
+        slquan = datasets['Supabase Query'];
+        return Builder(
+          builder: (context) {
+            return cardInfor(
+                'Tổng số quận có đại lý',
+                slquan,
+                Colors.red.withOpacity(0.8),
+                Colors.white,
+                Icons.location_city_outlined);
+          },
+        );
+      },
+    );
+  }
 }

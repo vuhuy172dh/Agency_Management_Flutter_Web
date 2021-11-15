@@ -68,7 +68,9 @@ class _ThemHoaDonState extends State<ThemHoaDon> {
                         style: TextStyle(color: Colors.white),
                         autofocus: true,
                         cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
+                        decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none),
                         onChanged: (value) {
                           widget.newMaPhieu.text = value;
                         },
@@ -137,11 +139,11 @@ class _ThemHoaDonState extends State<ThemHoaDon> {
                                     '${date!.month}-${date.day}-${date.year}';
                               },
                               child: buildDateTimePicker(
-                                widget.newNgayThu.text,
-                                widget.newNgayThu,
-                                'Bạn chưa nhập Ngày Thu Tiền',
-                                Colors.white,
-                              ));
+                                  widget.newNgayThu.text,
+                                  widget.newNgayThu,
+                                  'Bạn chưa nhập NGÀY THU TIỀN',
+                                  Colors.white,
+                                  error_color: Colors.white));
                         }),
                   ))
                 ],
@@ -201,7 +203,9 @@ class _ThemHoaDonState extends State<ThemHoaDon> {
                         initialValue: widget.newSoTienThu.text,
                         style: TextStyle(color: Colors.white),
                         cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
+                        decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Bạn chưa nhập SỐ TIỀN THU";
@@ -258,6 +262,7 @@ class _ThemHoaDonState extends State<ThemHoaDon> {
               }
             },
             decoration: InputDecoration(
+              errorStyle: TextStyle(color: Colors.white),
               hintText: widget.newMaDL.text,
               border: InputBorder.none,
               suffixIcon: PopupMenuButton<String>(

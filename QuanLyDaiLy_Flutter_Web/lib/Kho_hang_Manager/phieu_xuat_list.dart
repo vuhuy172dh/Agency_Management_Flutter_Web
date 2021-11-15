@@ -24,6 +24,8 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
   TextEditingController _newThanhTien = TextEditingController();
   TextEditingController _newSoTienNo = TextEditingController();
   final ValueNotifier<DateTime?> _ngayxuatSub = ValueNotifier(null);
+  TextEditingController _searchMa = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,15 +40,49 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Row(
               children: [
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    'DANH SÁCH PHIẾU XUẤT',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        'DANH SÁCH PHIẾU XUẤT',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Container(
+                              width: 200,
+                              height: 30,
+                              padding: EdgeInsets.only(
+                                  left: 20, right: 10, bottom: 5, top: 5),
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  color: Colors.white70),
+                              child: TextFormField(
+                                cursorColor: Colors.blueGrey[800],
+                                controller: _searchMa,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Nhập mã phiếu"),
+                              )),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {},
+                          child: Text('Search'),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
                 Expanded(child: Container()),
                 GestureDetector(
@@ -122,10 +158,12 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                   Navigator.pop(context);
                                   setState(() {});
                                 },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey[800]),
                                 child: Text(
                                   'Cancel',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
+                                      color: Colors.white,
                                       fontWeight: FontWeight.bold),
                                 ),
                               )
@@ -218,10 +256,12 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                   }
                                 }
                               },
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey[800]),
                               child: Text(
                                 'Submit',
                                 style: TextStyle(
-                                    color: Colors.blueGrey[800],
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -235,9 +275,11 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                   _ngayxuatSub.value = null;
                                   Navigator.pop(context);
                                 },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey[800]),
                                 child: Text('Cancel',
                                     style: TextStyle(
-                                        color: Colors.blueGrey[800],
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold)))
                           ],
                         );

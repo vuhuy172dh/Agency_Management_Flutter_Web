@@ -1,4 +1,5 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/TaiChinh/bar_chart_component.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
@@ -190,7 +191,7 @@ class _BaoCaoThangState extends State<BaoCaoThang> {
           ),
           Expanded(
             child: _monthController.text == null || yearValue == null
-                ? Container()
+                ? BarChartComponent()
                 : Container(
                     alignment: Alignment.topCenter,
                     margin: EdgeInsets.all(5),

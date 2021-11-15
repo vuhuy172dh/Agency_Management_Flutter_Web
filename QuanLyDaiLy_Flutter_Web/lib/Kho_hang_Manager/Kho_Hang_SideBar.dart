@@ -71,30 +71,12 @@ class _KhoHangTabViewState extends State<KhoHangTabView> {
                 Container(
                     padding: EdgeInsets.only(left: 6),
                     margin: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [BoxShadow(color: Colors.black)],
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: TextField(
-                      autofocus: true,
-                      cursorColor: Colors.blueGrey,
-                      controller: _Search,
-                      autocorrect: true,
-                      style: TextStyle(color: Colors.blueGrey[800]),
-                      decoration: InputDecoration(
-                          hintText: 'Search',
-                          hintStyle: TextStyle(color: Colors.blueGrey[500]),
-                          border: InputBorder.none,
-                          suffix: IconButton(
-                            icon: Icon(
-                              Icons.search,
-                              color: Colors.blueGrey[800],
-                              size: 18,
-                            ),
-                            onPressed: () {
-                              print('search');
-                            },
-                          )),
+                    child: Text(
+                      'MENU',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30),
                     )),
                 const Divider(
                   thickness: 2,

@@ -22,6 +22,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
   TextEditingController _newThanhTien = TextEditingController();
   TextEditingController _newNgayNhap = TextEditingController();
   final ValueNotifier<DateTime?> _ngaynhapSub = ValueNotifier(null);
+  TextEditingController _searchMa = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,15 +38,49 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Row(
               children: [
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    'DANH SÁCH PHIẾU NHẬP',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        'DANH SÁCH PHIẾU NHẬP',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Container(
+                              width: 200,
+                              height: 30,
+                              padding: EdgeInsets.only(
+                                  left: 20, right: 10, bottom: 5, top: 5),
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  color: Colors.white70),
+                              child: TextFormField(
+                                cursorColor: Colors.blueGrey[800],
+                                controller: _searchMa,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Nhập mã phiếu"),
+                              )),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {},
+                          child: Text('Search'),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
                 Expanded(child: Container()),
                 GestureDetector(
@@ -212,10 +248,12 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                   });
                                 }
                               },
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey[800]),
                               child: Text(
                                 'Submit',
                                 style: TextStyle(
-                                    color: Colors.blueGrey[800],
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -227,6 +265,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                   _ngaynhapSub.value = null;
                                   Navigator.pop(context);
                                 },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey[800]),
                                 child: Text('Cancel',
                                     style: TextStyle(
                                         color: Colors.blueGrey[800],

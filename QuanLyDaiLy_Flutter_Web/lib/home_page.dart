@@ -1,6 +1,7 @@
 import 'package:do_an/DaiLyManager/DaiLytable.dart';
 import 'package:do_an/Kho_hang_Manager/Kho_Hang_SideBar.dart';
 import 'package:do_an/NhanVien/nhan_vien_manager.dart';
+import 'package:do_an/NhanVien/tao_tai_khoan.dart';
 import 'package:do_an/QuyDinh_CaiDat.dart/quydinh.dart';
 import 'package:do_an/TaiChinh/hoa_don_list.dart';
 import 'package:do_an/TaiChinh/tai_chinh_sidebar.dart';
@@ -49,13 +50,20 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
           ),
         ),
+        Tab(
+          child: Text(
+            'TẠO TÀI KHOẢN',
+            style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+          ),
+        )
       ],
       children: [
         TableDaiLy(),
         KhoHangTabView(),
         TaiChinhSideBar(),
         QuyDinh(),
-        NhanVienScreen()
+        NhanVienScreen(),
+        TaoTaiKhoan()
       ],
     );
   }
