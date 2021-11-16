@@ -2,6 +2,7 @@ import 'package:do_an/NhanVien/them_nhan_vien.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
@@ -28,6 +29,38 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
   TextEditingController _searchMa = TextEditingController();
   TextEditingController _searchTen = TextEditingController();
   TextEditingController _searchChucvu = TextEditingController();
+
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +140,7 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                               newSodienthoai: _sodienthoai,
                               newEmail: _email),
                           actions: [
-                            TextButton(
+                            ElevatedButton(
                               onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
@@ -121,18 +154,19 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                           _email.text,
                                           _chucvu.text);
                                   if (addData != null) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      addData,
-                                      style: TextStyle(color: Colors.red),
-                                    )));
+                                    _showTopFlash(
+                                        Colors.white,
+                                        TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm nhân viên không thành công');
                                   } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      'Thêm Thành Công',
-                                    )));
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm nhân viên thành công');
                                   }
                                   _manhanvien.clear();
                                   _tennhanvien.clear();
@@ -147,14 +181,16 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                   });
                                 }
                               },
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey),
                               child: Text(
                                 'Submit',
                                 style: TextStyle(
-                                    color: Colors.blueGrey[800],
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                            TextButton(
+                            ElevatedButton(
                                 onPressed: () {
                                   _manhanvien.clear();
                                   _tennhanvien.clear();
@@ -166,10 +202,12 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                   selectedRow.clear();
                                   Navigator.pop(context);
                                 },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text('Cancel',
                                     style: TextStyle(
-                                        color: Colors.blueGrey[800],
-                                        fontWeight: FontWeight.bold)))
+                                      color: Colors.white,
+                                    )))
                           ],
                         );
                       },
@@ -209,15 +247,17 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                               content:
                                   Text('Bạn vẫn chưa chọn đối tượng để xóa'),
                               actions: [
-                                TextButton(
+                                ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey),
                                     child: Text(
                                       'OK',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold),
+                                        color: Colors.white,
+                                      ),
                                     ))
                               ],
                             );
@@ -229,32 +269,57 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                           return AlertDialog(
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
-                              TextButton(
+                              ElevatedButton(
                                 onPressed: () async {
+                                  var data;
                                   while (selectedData.isNotEmpty) {
-                                    await supabaseManager.deleteDataNhanVien(
-                                        selectedData.removeLast());
+                                    data = await supabaseManager
+                                        .deleteDataNhanVien(
+                                            selectedData.removeLast());
+                                    if (data != null) {
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Xóa nhân viên không thành công');
+                                      break;
+                                    }
+                                  }
+                                  if (data == null) {
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Xóa nhân viên thành công');
                                   }
                                   setState(() {
+                                    selectedData.clear();
+                                    selectedRow.clear();
                                     Navigator.pop(context);
                                   });
                                 },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text(
                                   'YES',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              TextButton(
+                              ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text(
                                   'NO',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               )
                             ],
@@ -298,15 +363,17 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                               ),
                               content: Text('Bạn chưa chọn đối tượng để sửa'),
                               actions: [
-                                TextButton(
+                                ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey),
                                     child: Text(
                                       'OK',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold),
+                                        color: Colors.white,
+                                      ),
                                     ))
                               ],
                             );
@@ -322,15 +389,17 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                               ),
                               content: Text('Bạn chỉ được chọn MỘT đối tượng'),
                               actions: [
-                                TextButton(
+                                ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey),
                                     child: Text(
                                       'OK',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold),
+                                        color: Colors.white,
+                                      ),
                                     ))
                               ],
                             );
@@ -364,18 +433,35 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                 newSodienthoai: _sodienthoai,
                                 newEmail: _email),
                             actions: [
-                              TextButton(
+                              ElevatedButton(
                                 onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    await supabaseManager.updateNhanVienData(
-                                        int.parse(_manhanvien.text),
-                                        _tennhanvien.text,
-                                        _gioitinh.text,
-                                        int.parse(_sodienthoai.text),
-                                        _email.text,
-                                        _chucvu.text);
+                                    var data = await supabaseManager
+                                        .updateNhanVienData(
+                                            int.parse(_manhanvien.text),
+                                            _tennhanvien.text,
+                                            _gioitinh.text,
+                                            int.parse(_sodienthoai.text),
+                                            _email.text,
+                                            _chucvu.text);
+
+                                    if (data != null) {
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa không thành công');
+                                    } else {
+                                      _showTopFlash(
+                                          Colors.green,
+                                          TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa thành công');
+                                    }
                                     setState(() {
                                       _manhanvien.clear();
                                       _tennhanvien.clear();
@@ -389,14 +475,16 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                     });
                                   }
                                 },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text(
                                   'Submit',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              TextButton(
+                              ElevatedButton(
                                   onPressed: () {
                                     setState(() {
                                       _manhanvien.clear();
@@ -410,10 +498,12 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                                       Navigator.pop(context);
                                     });
                                   },
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.blueGrey),
                                   child: Text('Cancel',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold)))
+                                        color: Colors.white,
+                                      )))
                             ],
                           );
                         },

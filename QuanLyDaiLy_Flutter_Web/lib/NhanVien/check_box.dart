@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PhanQuyen extends StatefulWidget {
-  const PhanQuyen({Key? key}) : super(key: key);
+  final TextEditingController cv;
+  const PhanQuyen({Key? key, required this.cv}) : super(key: key);
 
   @override
   _PhanQuyenState createState() => _PhanQuyenState();
@@ -36,9 +37,9 @@ class _PhanQuyenState extends State<PhanQuyen> {
   }
 
   onItemClicked(CheckBoxModal ckbItem) {
-    final newValue = !ckbItem.value;
     setState(() {
-      ckbItem.value = newValue;
+      ckbItem.value = !ckbItem.value;
+      widget.cv.text = ckbItem.title;
     });
   }
 }

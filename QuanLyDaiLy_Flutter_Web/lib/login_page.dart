@@ -1,6 +1,7 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/home_page.dart';
 import 'package:do_an/signup_page.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:injector/injector.dart';
@@ -140,16 +141,16 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 3,
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SignupPage()));
-                  },
-                  child: Text(
-                    'Don\'t have an account? Signup!',
-                    style: TextStyle(color: Colors.blueGrey[800]),
-                  ),
-                )
+                // TextButton(
+                //   onPressed: () {
+                //     Navigator.push(context,
+                //         MaterialPageRoute(builder: (context) => SignupPage()));
+                //   },
+                //   child: Text(
+                //     'Don\'t have an account? Signup!',
+                //     style: TextStyle(color: Colors.blueGrey[800]),
+                //   ),
+                // )
               ],
             ),
           ),
@@ -167,35 +168,42 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomePage()));
     } else if (signInResult.error!.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          signInResult.error!.message,
-          style: TextStyle(color: Colors.red),
-        ),
-      ));
-      // _showTopFlash(signInResult.error!.message);
+      _showTopFlash(
+          Colors.white,
+          TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          'Thông tin đăng nhập không hợp lệ');
     }
   }
 
-  // void _showTopFlash(String mess) {
-  //   showFlash(
-  //     context: context,
-  //     duration: const Duration(seconds: 3),
-  //     // persistent: false,
-  //     builder: (_, controller) {
-  //       return Flash(
-  //         backgroundColor: Colors.white,
-  //         borderRadius: BorderRadius.all(Radius.circular(8)),
-  //         margin: EdgeInsets.all(10),
-  //         position: FlashPosition.top,
-  //         behavior: FlashBehavior.fixed,
-  //         controller: controller,
-  //         child: FlashBar(
-  //           content: Text(mess),
-  //           showProgressIndicator: true,
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
 }

@@ -168,6 +168,32 @@ class SupabaseManager {
   }
 
   //
+  addDataQCTC(String quan, int sl) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYCHETOCHUC')
+        .insert([
+      {'quan': quan, 'soluongDL': sl}
+    ]).execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  addDataQDTN(int loai, int tien) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYDINHTIENNO')
+        .insert([
+      {'loaiDL': loai, 'maxtienno': tien}
+    ]).execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
   readData(String dataname) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
@@ -348,6 +374,17 @@ class SupabaseManager {
   }
 
   //
+  readDataProfile() async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('profiles')
+        .select('name')
+        .execute();
+    print(response.data);
+    return response;
+  }
+
+  //
   readDataSoluongQuan() async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
@@ -409,7 +446,9 @@ class SupabaseManager {
         })
         .eq('maphieunhap', idphieu)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
   //
@@ -454,7 +493,85 @@ class SupabaseManager {
         })
         .eq('manhanvien', maNV)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  updateAcountData(int id, String chucvu) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('acount_user')
+        .update({'status': chucvu})
+        .eq('id', id)
+        .execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  updatePassword(String newpass) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .auth
+        .update(UserAttributes(password: newpass));
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  updateQCTC(String quan, int soluong) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYCHETOCHUC')
+        .update({'soluongDL': soluong})
+        .eq('quan', quan)
+        .execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  updateQDTN(int loai, int tienno) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYDINHTIENNO')
+        .update({'maxtienno': tienno})
+        .eq('loaiDL', loai)
+        .execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  deleteQCTC(String quan) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYCHETOCHUC')
+        .delete()
+        .eq('quan', quan)
+        .execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
+  }
+
+  //
+  deleteQDTN(int loai) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('QUYDINHTIENNO')
+        .delete()
+        .eq('loaiDL', loai)
+        .execute();
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
   //
@@ -465,7 +582,9 @@ class SupabaseManager {
         .delete()
         .eq('madaily', id)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 
   //
@@ -548,6 +667,8 @@ class SupabaseManager {
         .delete()
         .eq('manhanvien', id)
         .execute();
-    print(response);
+    if (response.error != null) {
+      return response.error!.message;
+    }
   }
 }

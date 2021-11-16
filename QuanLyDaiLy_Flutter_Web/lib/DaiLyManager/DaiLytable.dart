@@ -3,6 +3,7 @@ import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/card_information.dart';
 import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
@@ -33,6 +34,38 @@ class _TableDaiLyState extends State<TableDaiLy> {
   TextEditingController newEmail = TextEditingController();
   TextEditingController newTienno = TextEditingController();
   final ValueNotifier<DateTime?> dateSub = ValueNotifier(null);
+
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,18 +165,19 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                       newEmail.text,
                                       newLoca.text);
                                   if (addData != null) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      addData,
-                                      style: TextStyle(color: Colors.red),
-                                    )));
+                                    _showTopFlash(
+                                        Colors.white,
+                                        TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                        'Không thể thêm đại lý');
                                   } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      'THÊM ĐẠI LÝ THÀNH CÔNG!!!',
-                                    )));
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm đại lý thành công!!!');
                                   }
                                   setState(() {
                                     newMaDL.clear();
@@ -251,8 +285,26 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               TextButton(
                                 onPressed: () async {
                                   while (selectedData.isNotEmpty) {
-                                    await supabaseManager.deleteDataDaiLy(
-                                        selectedData.removeLast());
+                                    var data =
+                                        await supabaseManager.deleteDataDaiLy(
+                                            selectedData.removeLast());
+                                    if (data != null) {
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Xóa đại lý không thành công');
+                                      break;
+                                    }
+                                  }
+                                  if (selectedData.isEmpty) {
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Xóa đại lý thành công!!!');
                                   }
                                   setState(() {
                                     selectedRow.clear();
@@ -405,18 +457,19 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                             newEmail.text,
                                             newLoca.text);
                                     if (updateData != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        updateData,
-                                        style: TextStyle(color: Colors.red),
-                                      )));
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa đại lý không thành công');
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        "Bạn Sửa Thành Công",
-                                      )));
+                                      _showTopFlash(
+                                          Colors.green,
+                                          TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa đại lý thành công!!!');
                                     }
                                     setState(() {
                                       newMaDL.clear();

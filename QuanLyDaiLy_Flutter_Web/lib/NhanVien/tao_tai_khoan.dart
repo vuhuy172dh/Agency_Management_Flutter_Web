@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:do_an/NhanVien/check_box.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
@@ -23,6 +25,7 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
   TextEditingController _manhanvien = TextEditingController();
   TextEditingController _tennhanvien = TextEditingController();
   TextEditingController _chucvu = TextEditingController();
+  TextEditingController _cv = TextEditingController();
   SupabaseManager supabaseManager = SupabaseManager();
   final client = SupabaseClient(supabaseUrl, supabaseKey);
   final datasets = <String, dynamic>{};
@@ -75,7 +78,96 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.blueGrey),
-                              onPressed: () {},
+                              onPressed: () async {
+                                if (selectedData.isEmpty) {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text('Thông Báo'),
+                                          content:
+                                              Text('Bạn chưa chọn đối tượng'),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ))
+                                          ],
+                                        );
+                                      });
+                                } else if (selectedData.length > 1) {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text('Thông Báo'),
+                                          content: Text(
+                                              'Bạn chỉ được chọn một đối tượng'),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ))
+                                          ],
+                                        );
+                                      });
+                                } else {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          insetPadding: EdgeInsets.symmetric(
+                                              vertical: 200),
+                                          title: Text(
+                                            'CHỌN CHỨC VỤ',
+                                            style: TextStyle(
+                                                color: Colors.blueGrey,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          content: PhanQuyen(
+                                            cv: _cv,
+                                          ),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () {},
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Submit',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )),
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  _cv.clear();
+                                                  Navigator.pop(context);
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ))
+                                          ],
+                                        );
+                                      });
+                                }
+                              },
                               child: Text('sửa')),
                           const SizedBox(
                             width: 5,
@@ -483,6 +575,13 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
             .showSnackBar(SnackBar(content: Text('Tạo thành công')));
       }
     }
-    setState(() {});
+    setState(() {
+      _tennhanvien.clear();
+      _chucvu.clear();
+      _manhanvien.clear();
+      _email.clear();
+      _password.clear();
+      _confirmPassword.clear();
+    });
   }
 }

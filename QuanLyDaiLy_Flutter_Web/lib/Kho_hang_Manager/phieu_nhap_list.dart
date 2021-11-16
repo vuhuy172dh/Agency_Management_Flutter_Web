@@ -2,6 +2,7 @@ import 'package:do_an/Kho_hang_Manager/chi_tiet_phieu_nhap.dart';
 import 'package:do_an/Kho_hang_Manager/them_phieu_nhap.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
@@ -23,6 +24,38 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
   TextEditingController _newNgayNhap = TextEditingController();
   final ValueNotifier<DateTime?> _ngaynhapSub = ValueNotifier(null);
   TextEditingController _searchMa = TextEditingController();
+
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,18 +259,19 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                     _newNgayNhap.text,
                                   );
                                   if (addData != null) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      addData,
-                                      style: TextStyle(color: Colors.red),
-                                    )));
+                                    _showTopFlash(
+                                        Colors.white,
+                                        TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm phiếu nhập không thành công');
                                   } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      "Nhập Thành Công",
-                                    )));
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm phiếu nhập thành công!!!');
                                   }
                                   setState(() {
                                     _newMaPhieu.clear();
@@ -335,19 +369,28 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                         .deleteDataPhieuNhap(
                                             selectedData.removeLast());
                                     if (delData != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        delData,
-                                        style: TextStyle(color: Colors.red),
-                                      )));
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Xóa phiếu nhập không thành công');
                                       break;
                                     }
                                   }
-                                  setState(() {});
-                                  selectedData.clear();
-                                  selectedRow.clear();
-                                  Navigator.pop(context);
+                                  if (selectedData.isEmpty) {
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Xóa phiếu nhập thành công!!!');
+                                  }
+                                  setState(() {
+                                    selectedData.clear();
+                                    selectedRow.clear();
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text(
                                   'YES',
@@ -474,10 +517,27 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    await supabaseManager.updatePhieuNhapData(
+                                    var data = await supabaseManager
+                                        .updatePhieuNhapData(
                                       int.parse(_newMaPhieu.text),
                                       _newNgayNhap.text,
                                     );
+                                    if (data != null) {
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa phiếu nhập không thành công');
+                                    } else {
+                                      _showTopFlash(
+                                          Colors.green,
+                                          TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa phiếu nhập thành công!!!');
+                                    }
+
                                     setState(() {
                                       _newMaPhieu.clear();
                                       _newThanhTien.clear();

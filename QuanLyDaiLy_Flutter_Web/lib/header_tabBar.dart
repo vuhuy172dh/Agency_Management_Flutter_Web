@@ -1,4 +1,5 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/pop_menu.dart';
 import 'package:do_an/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
@@ -40,16 +41,7 @@ class TabBarWidget extends StatelessWidget {
             const SizedBox(
               width: 5,
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await Injector.appInstance.get<SupabaseClient>().auth.signOut();
-
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => SplashScreen()));
-              },
-              child: Text('Sign Out'),
-              style: ElevatedButton.styleFrom(primary: Colors.blueGrey[800]),
-            )
+            PopupOptionMenu()
           ],
           bottom: TabBar(
             isScrollable: true,

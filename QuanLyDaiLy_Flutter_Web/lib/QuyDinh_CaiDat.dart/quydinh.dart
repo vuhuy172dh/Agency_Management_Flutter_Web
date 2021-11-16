@@ -1,6 +1,8 @@
+import 'package:do_an/QuyDinh_CaiDat.dart/them_quy_dinh.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/card_information.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
@@ -18,6 +20,45 @@ class _QuyDinhState extends State<QuyDinh> {
   List<dynamic> selectedRow = [];
   List<int> selectedLoaiData = [];
   List<dynamic> selectedLoaiRow = [];
+  final formKeyToChuc = GlobalKey<FormState>();
+  final formKeyTienNo = GlobalKey<FormState>();
+  TextEditingController quan = TextEditingController();
+  TextEditingController soluong = TextEditingController();
+  TextEditingController loai = TextEditingController();
+  TextEditingController tienno = TextEditingController();
+
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +107,93 @@ class _QuyDinhState extends State<QuyDinh> {
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.blueGrey),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                            'THÊM QUY ĐỊNH',
+                                            style: TextStyle(
+                                                color: Colors.blueGrey[600],
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          content: ThemQuyDinh(
+                                              isChecked: false,
+                                              formKey: formKeyToChuc,
+                                              ten: quan,
+                                              noidung: soluong,
+                                              tieude1: 'QUẬN',
+                                              tieude2: 'SỐ LƯỢNG ĐẠI LÝ'),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  var isValid = formKeyToChuc
+                                                      .currentState!
+                                                      .validate();
+                                                  if (isValid) {
+                                                    var data =
+                                                        await supabaseManager
+                                                            .addDataQCTC(
+                                                                quan.text,
+                                                                int.parse(
+                                                                    soluong
+                                                                        .text));
+                                                    if (data != null) {
+                                                      _showTopFlash(
+                                                          Colors.white,
+                                                          TextStyle(
+                                                              color: Colors.red,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Thêm quy định không thành công');
+                                                    } else {
+                                                      _showTopFlash(
+                                                          Colors.green,
+                                                          TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Thêm quy định thành công');
+                                                    }
+
+                                                    setState(() {
+                                                      quan.clear();
+                                                      soluong.clear();
+                                                      Navigator.pop(context);
+                                                    });
+                                                  }
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Submit',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )),
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    quan.clear();
+                                                    soluong.clear();
+                                                    Navigator.pop(context);
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )),
+                                          ],
+                                        );
+                                      });
+                                },
                                 child: Text('thêm')),
                             const SizedBox(
                               width: 3,
@@ -74,7 +201,132 @@ class _QuyDinhState extends State<QuyDinh> {
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.blueGrey),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  if (selectedRow.length == 1) {
+                                    quan.text = selectedRow[0][0];
+                                    soluong.text = selectedRow[0][1].toString();
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                              'SỬA QUY ĐỊNH',
+                                              style: TextStyle(
+                                                  color: Colors.blueGrey[600],
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            content: ThemQuyDinh(
+                                              isChecked: true,
+                                              formKey: formKeyToChuc,
+                                              noidung: soluong,
+                                              ten: quan,
+                                              tieude1: 'QUẬN',
+                                              tieude2: 'SỐ LƯỢNG ĐẠI LÝ',
+                                            ),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () async {
+                                                    var isValid = formKeyToChuc
+                                                        .currentState!
+                                                        .validate();
+                                                    if (isValid) {
+                                                      var Updatedata =
+                                                          await supabaseManager
+                                                              .updateQCTC(
+                                                                  quan.text,
+                                                                  int.parse(
+                                                                      soluong
+                                                                          .text));
+
+                                                      if (Updatedata != null) {
+                                                        _showTopFlash(
+                                                            Colors.white,
+                                                            TextStyle(
+                                                                color:
+                                                                    Colors.red,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            'Sửa quy định không thành công');
+                                                      } else {
+                                                        _showTopFlash(
+                                                            Colors.green,
+                                                            TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            'Sửa quy định thành công');
+                                                      }
+                                                      setState(() {
+                                                        selectedData.clear();
+                                                        selectedRow.clear();
+                                                        quan.clear();
+                                                        soluong.clear();
+                                                        Navigator.pop(context);
+                                                      });
+                                                    }
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'Submit',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    quan.clear();
+                                                    soluong.clear();
+                                                    selectedData.clear();
+                                                    selectedRow.clear();
+                                                    setState(() {
+                                                      Navigator.pop(context);
+                                                    });
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Thông báo'),
+                                            content: Text(
+                                                'Đối tượng để sửa không rõ ràng'),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  }
+                                },
                                 child: Text('sửa')),
                             const SizedBox(
                               width: 3,
@@ -82,7 +334,107 @@ class _QuyDinhState extends State<QuyDinh> {
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.blueGrey),
-                                onPressed: () {},
+                                onPressed: () {
+                                  if (selectedData.isEmpty) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Thông báo'),
+                                            content: Text(
+                                                'Bạn chưa chọn đối tượng để xóa'),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Thông báo'),
+                                            content:
+                                                Text('Bạn chắc chắn muốn xóa'),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () async {
+                                                    var data;
+                                                    while (selectedData
+                                                        .isNotEmpty) {
+                                                      data = await supabaseManager
+                                                          .deleteQCTC(
+                                                              selectedData
+                                                                  .removeLast());
+                                                      if (data != null) {
+                                                        _showTopFlash(
+                                                            Colors.white,
+                                                            TextStyle(
+                                                                color:
+                                                                    Colors.red,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            'Xóa không thành công');
+                                                        break;
+                                                      }
+                                                    }
+                                                    if (data == null) {
+                                                      _showTopFlash(
+                                                          Colors.green,
+                                                          TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Xóa thành công');
+                                                    }
+                                                    selectedData.clear();
+                                                    selectedLoaiRow.clear();
+                                                    setState(() {
+                                                      Navigator.pop(context);
+                                                    });
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  }
+                                },
                                 child: Text('xóa')),
                           ],
                         ),
@@ -200,7 +552,86 @@ class _QuyDinhState extends State<QuyDinh> {
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.blueGrey),
-                                onPressed: () {},
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                            'THÊM QUY ĐỊNH',
+                                            style: TextStyle(
+                                                color: Colors.blueGrey[600],
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          content: ThemQuyDinh(
+                                              isChecked: false,
+                                              formKey: formKeyTienNo,
+                                              ten: loai,
+                                              noidung: tienno,
+                                              tieude1: 'LOẠI ĐẠI LÝ',
+                                              tieude2: 'TIỀN NỢ TỐI ĐA'),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  var isValid = formKeyTienNo
+                                                      .currentState!
+                                                      .validate();
+                                                  if (isValid) {
+                                                    var data =
+                                                        await supabaseManager
+                                                            .addDataQDTN(
+                                                                int.parse(
+                                                                    loai.text),
+                                                                int.parse(tienno
+                                                                    .text));
+                                                    if (data != null) {
+                                                      _showTopFlash(
+                                                          Colors.white,
+                                                          TextStyle(
+                                                              color: Colors.red,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Thêm quy định không thành công');
+                                                    } else {
+                                                      _showTopFlash(
+                                                          Colors.green,
+                                                          TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Thêm quy định thành công');
+                                                    }
+                                                    setState(() {
+                                                      loai.clear();
+                                                      tienno.clear();
+                                                      Navigator.pop(context);
+                                                    });
+                                                  }
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Submit',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )),
+                                            ElevatedButton(
+                                                onPressed: () {},
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blueGrey),
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )),
+                                          ],
+                                        );
+                                      });
+                                },
                                 child: Text('thêm')),
                             const SizedBox(
                               width: 3,
@@ -208,7 +639,135 @@ class _QuyDinhState extends State<QuyDinh> {
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.blueGrey),
-                                onPressed: () {},
+                                onPressed: () {
+                                  if (selectedLoaiRow.length == 1) {
+                                    loai.text =
+                                        selectedLoaiRow[0][0].toString();
+                                    tienno.text =
+                                        selectedLoaiRow[0][1].toString();
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                              'SỬA QUY ĐỊNH',
+                                              style: TextStyle(
+                                                  color: Colors.blueGrey[600],
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            content: ThemQuyDinh(
+                                              isChecked: true,
+                                              formKey: formKeyTienNo,
+                                              noidung: tienno,
+                                              ten: loai,
+                                              tieude1: 'LOẠI ĐẠI LÝ',
+                                              tieude2: 'TIỀN NỢ TỐI ĐA',
+                                            ),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () async {
+                                                    var isValid = formKeyTienNo
+                                                        .currentState!
+                                                        .validate();
+                                                    if (isValid) {
+                                                      var Updatedata =
+                                                          await supabaseManager
+                                                              .updateQDTN(
+                                                                  int.parse(loai
+                                                                      .text),
+                                                                  int.parse(tienno
+                                                                      .text));
+
+                                                      if (Updatedata != null) {
+                                                        _showTopFlash(
+                                                            Colors.white,
+                                                            TextStyle(
+                                                                color:
+                                                                    Colors.red,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            'Sửa quy định không thành công');
+                                                      } else {
+                                                        _showTopFlash(
+                                                            Colors.green,
+                                                            TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            'Sửa quy định thành công');
+                                                      }
+                                                      setState(() {
+                                                        selectedLoaiData
+                                                            .clear();
+                                                        selectedLoaiRow.clear();
+                                                        loai.clear();
+                                                        tienno.clear();
+                                                        Navigator.pop(context);
+                                                      });
+                                                    }
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'Submit',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    loai.clear();
+                                                    tienno.clear();
+                                                    selectedLoaiData.clear();
+                                                    selectedLoaiRow.clear();
+                                                    setState(() {
+                                                      Navigator.pop(context);
+                                                    });
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Thông báo'),
+                                            content: Text(
+                                                'Đối tượng để sửa không rõ ràng'),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  }
+                                },
                                 child: Text('sửa')),
                             const SizedBox(
                               width: 3,
@@ -216,7 +775,108 @@ class _QuyDinhState extends State<QuyDinh> {
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.blueGrey),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  if (selectedLoaiData.isEmpty) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Thông báo'),
+                                            content: Text(
+                                                'Bạn chưa chọn đối tượng để xóa'),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Thông báo'),
+                                            content:
+                                                Text('Bạn chắc chắn muốn xóa'),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () async {
+                                                    var dataLoai;
+
+                                                    while (selectedLoaiData
+                                                        .isNotEmpty) {
+                                                      dataLoai = await supabaseManager
+                                                          .deleteQDTN(
+                                                              selectedLoaiData
+                                                                  .removeLast());
+                                                      if (dataLoai != null) {
+                                                        _showTopFlash(
+                                                            Colors.white,
+                                                            TextStyle(
+                                                                color:
+                                                                    Colors.red,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            'Xóa không thành công');
+                                                        break;
+                                                      }
+                                                    }
+                                                    if (dataLoai == null) {
+                                                      _showTopFlash(
+                                                          Colors.green,
+                                                          TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Xóa thành công');
+                                                    }
+                                                    selectedLoaiData.clear();
+                                                    selectedLoaiRow.clear();
+                                                    setState(() {
+                                                      Navigator.pop(context);
+                                                    });
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary:
+                                                              Colors.blueGrey),
+                                                  child: Text(
+                                                    'CANCEL',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                            ],
+                                          );
+                                        });
+                                  }
+                                },
                                 child: Text('xóa')),
                           ],
                         ),

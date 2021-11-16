@@ -2,6 +2,7 @@ import 'package:do_an/Kho_hang_Manager/them_mat_hang.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
@@ -32,6 +33,38 @@ class _HangHoaListState extends State<HangHoaList> {
   TextEditingController _searchMa = TextEditingController();
   TextEditingController _searchTen = TextEditingController();
   TextEditingController _searchSoluong = TextEditingController();
+
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,18 +162,19 @@ class _HangHoaListState extends State<HangHoaList> {
                                       _newNgaySX.text,
                                       _newHanSD.text);
                                   if (addData != null) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      addData,
-                                      style: TextStyle(color: Colors.red),
-                                    )));
+                                    _showTopFlash(
+                                        Colors.white,
+                                        TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                        'Không thể thêm mặt hàng');
                                   } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      'Bạn Nhập Thành Công Mặt Hàng Mới',
-                                    )));
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm mặt hàng thành công!!!');
                                   }
                                   _newName.clear();
                                   _newMaMH.clear();
@@ -253,18 +287,27 @@ class _HangHoaListState extends State<HangHoaList> {
                                         await supabaseManager.deleteDataHangHoa(
                                             selectedData.removeLast());
                                     if (deletedata != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        deletedata,
-                                        style: TextStyle(color: Colors.red),
-                                      )));
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Xóa mặt hàng không thành công');
                                     }
                                     break;
                                   }
-                                  selectedRow.clear();
-                                  setState(() {});
-                                  Navigator.pop(context);
+                                  if (selectedData.isEmpty) {
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Xóa mặt hàng thành công!!!');
+                                  }
+                                  setState(() {
+                                    selectedRow.clear();
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text(
                                   'YES',
@@ -413,18 +456,19 @@ class _HangHoaListState extends State<HangHoaList> {
                                             _newNgaySX.text,
                                             _newHanSD.text);
                                     if (updateData != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        updateData,
-                                        style: TextStyle(color: Colors.red),
-                                      )));
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa mặt hàng không thành công');
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        'Bạn Sửa Mặt Hàng Thành Công',
-                                      )));
+                                      _showTopFlash(
+                                          Colors.green,
+                                          TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa mặt hàng thành công!!!');
                                     }
                                   }
                                   setState(() {

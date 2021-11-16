@@ -2,6 +2,7 @@ import 'package:do_an/Kho_hang_Manager/chi_tiet_phieu_xuat.dart';
 import 'package:do_an/Kho_hang_Manager/them_phieu_xuat.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
@@ -25,6 +26,38 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
   TextEditingController _newSoTienNo = TextEditingController();
   final ValueNotifier<DateTime?> _ngayxuatSub = ValueNotifier(null);
   TextEditingController _searchMa = TextEditingController();
+
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,16 +276,19 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                     Navigator.pop(context);
                                   });
                                   if (addData != null) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                      addData,
-                                      style: TextStyle(color: Colors.red),
-                                    )));
+                                    _showTopFlash(
+                                        Colors.white,
+                                        TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm phiếu nhập không thành công');
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text('NHẬP THÀNH CÔNG')));
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Thêm phiếu nhập thành công!!!');
                                   }
                                 }
                               },
@@ -345,14 +381,22 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                         .deleteDataPhieuXuat(
                                             selectedData.removeLast());
                                     if (delData != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        delData,
-                                        style: TextStyle(color: Colors.red),
-                                      )));
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Xóa phiếu nhập không thành công');
                                     }
                                     break;
+                                  }
+                                  if (selectedData.isEmpty) {
+                                    _showTopFlash(
+                                        Colors.green,
+                                        TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                        'Xóa phiếu nhập thành công!!!');
                                   }
 
                                   setState(() {
@@ -496,18 +540,19 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                             _newNgayXuat.text,
                                             int.parse(_newSoTienNo.text));
                                     if (updateData != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        updateData,
-                                        style: TextStyle(color: Colors.red),
-                                      )));
+                                      _showTopFlash(
+                                          Colors.white,
+                                          TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa không thành công');
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                        'Sửa Thành Công',
-                                      )));
+                                      _showTopFlash(
+                                          Colors.green,
+                                          TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                          'Sửa thành công!!!');
                                     }
                                     setState(() {
                                       _newMaDaiLy.clear();

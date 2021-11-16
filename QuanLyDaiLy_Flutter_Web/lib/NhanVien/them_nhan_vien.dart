@@ -28,7 +28,12 @@ class ThemNhanVien extends StatefulWidget {
 
 class _ThemNhanVienState extends State<ThemNhanVien> {
   final gioitinh = ['Nam', 'Nữ'];
-  final chucvu = ['Tổng quản lý', 'tài chính', 'quản lý kho', 'thư ký'];
+  final chucvu = [
+    'QUẢN LÝ ĐẠI LÝ',
+    'QUẢN LÝ TÀI CHÍNH',
+    'QUẢN LÝ KHO',
+    'QUẢN LÝ NHÂN VIÊN'
+  ];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -68,7 +73,9 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
                         style: TextStyle(color: Colors.white),
                         autofocus: true,
                         cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
+                        decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none),
                         onChanged: (value) {
                           widget.newmaNV.text = value;
                         },
@@ -112,7 +119,9 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
                         initialValue: widget.newtenNB.text,
                         style: TextStyle(color: Colors.white),
                         cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
+                        decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Bạn chưa nhập HỌ VÀ TÊN";
@@ -211,7 +220,9 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
                         initialValue: widget.newSodienthoai.text,
                         style: TextStyle(color: Colors.white),
                         cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
+                        decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Bạn chưa nhập SỐ ĐIỆN THOẠI";
@@ -254,7 +265,9 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
                         initialValue: widget.newEmail.text,
                         style: TextStyle(color: Colors.white),
                         cursorColor: Colors.white,
-                        decoration: InputDecoration(border: InputBorder.none),
+                        decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Bạn chưa nhập EMAIL";
@@ -279,7 +292,8 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
 
   Widget BuildGioiTinhFormField() {
     return TextFormField(
-      style: TextStyle(color: Colors.blueGrey[800]),
+      readOnly: true,
+      style: TextStyle(color: Colors.white),
       cursorColor: Colors.blueGrey[800],
       controller: widget.newGioiTinh,
       validator: (value) {
@@ -290,13 +304,14 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
         }
       },
       decoration: InputDecoration(
+        errorStyle: TextStyle(color: Colors.white),
         hintText: widget.newGioiTinh.text,
         border: InputBorder.none,
         suffixIcon: PopupMenuButton<String>(
           color: Colors.blueGrey[100],
           icon: const Icon(
             Icons.arrow_drop_down,
-            color: Colors.blueGrey,
+            color: Colors.white,
           ),
           onSelected: (value) {
             widget.newGioiTinh.text = value;
@@ -319,8 +334,8 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
 
   Widget BuildChucVuFormField() {
     return TextFormField(
-      style: TextStyle(color: Colors.blueGrey[800]),
-      cursorColor: Colors.blueGrey[800],
+      style: TextStyle(color: Colors.white),
+      cursorColor: Colors.white,
       controller: widget.newChucVu,
       validator: (value) {
         if (value!.isEmpty) {
@@ -330,13 +345,14 @@ class _ThemNhanVienState extends State<ThemNhanVien> {
         }
       },
       decoration: InputDecoration(
+        errorStyle: TextStyle(color: Colors.white),
         hintText: widget.newChucVu.text,
         border: InputBorder.none,
         suffixIcon: PopupMenuButton<String>(
           color: Colors.blueGrey[100],
           icon: const Icon(
             Icons.arrow_drop_down,
-            color: Colors.blueGrey,
+            color: Colors.white,
           ),
           onSelected: (value) {
             widget.newChucVu.text = value;
