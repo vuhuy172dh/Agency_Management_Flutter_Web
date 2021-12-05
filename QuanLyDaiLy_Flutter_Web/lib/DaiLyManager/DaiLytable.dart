@@ -23,7 +23,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
   List<dynamic> selectedRow = [];
   bool sort = false;
   TextEditingController searchMa = TextEditingController();
-  TextEditingController searchTen = TextEditingController();
+  TextEditingController searchQuan = TextEditingController();
   TextEditingController searchLoai = TextEditingController();
   TextEditingController newMaDL = TextEditingController();
   TextEditingController newName = TextEditingController();
@@ -102,20 +102,33 @@ class _TableDaiLyState extends State<TableDaiLy> {
                           TimKiem(
                             formKey: formKeySearch,
                             searchMa: searchMa,
-                            searchTen: searchTen,
+                            searchTen: searchQuan,
                             searchLoai: searchLoai,
                             hindText1: 'Nhập mã đại lý',
-                            hindText2: 'Nhập tên đại lý',
+                            hindText2: 'Nhập quận',
                             hindText3: 'Nhập loại đại lý',
                           ),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.blueGrey[800]),
                               onPressed: () {
-                                sort = !sort;
+                                // sort = !sort;
                                 setState(() {});
                               },
-                              child: Text('Search'))
+                              child: Text('Search')),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey[800]),
+                              onPressed: () {
+                                searchMa.clear();
+                                searchLoai.clear();
+                                searchQuan.clear();
+                                setState(() {});
+                              },
+                              child: Text('Home')),
                         ],
                       )
                     ],
@@ -124,11 +137,15 @@ class _TableDaiLyState extends State<TableDaiLy> {
                 Expanded(child: Container()),
                 // Tạo nút thêm (thêm đại lý)
                 GestureDetector(
+                  key: Key('ThemDL'),
                   onTap: () {
+                    newDate.text =
+                        '${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().year}';
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
+                          key: Key('themdl'),
                           scrollable: true,
                           title: Text(
                             'THÊM ĐẠI LÝ',
@@ -152,6 +169,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                           ),
                           actions: [
                             TextButton(
+                              key: Key('ThemSubmit'),
                               onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
@@ -203,6 +221,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               ),
                             ),
                             TextButton(
+                                key: Key('ThemCancel'),
                                 onPressed: () {
                                   newMaDL.text = '';
                                   newName.text = '';
@@ -249,6 +268,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
 
                 // Tạo nút xóa (xóa đại lý)
                 GestureDetector(
+                  key: Key('xoaDL'),
                   onTap: () {
                     if (selectedData.isEmpty) {
                       showDialog(
@@ -283,9 +303,11 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
+                                key: Key('xoaDLBut'),
                                 onPressed: () async {
+                                  var data;
                                   while (selectedData.isNotEmpty) {
-                                    var data =
+                                    data =
                                         await supabaseManager.deleteDataDaiLy(
                                             selectedData.removeLast());
                                     if (data != null) {
@@ -298,7 +320,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                       break;
                                     }
                                   }
-                                  if (selectedData.isEmpty) {
+                                  if (data == null) {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
@@ -358,6 +380,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
 
                 // Tạo nút sửa (sửa đại lý)
                 GestureDetector(
+                  key: Key('suaDL'),
                   onTap: () {
                     if (selectedRow.length < 1) {
                       showDialog(
@@ -443,6 +466,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             ),
                             actions: [
                               TextButton(
+                                key: Key('suaSubmit'),
                                 onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
@@ -574,6 +598,17 @@ class _TableDaiLyState extends State<TableDaiLy> {
                           child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Text(
+                            'TỔNG QUÁT',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                color: Colors.blueGrey[600]),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           soluongdaily(),
                           const SizedBox(
                             height: 10,
@@ -607,9 +642,9 @@ class _TableDaiLyState extends State<TableDaiLy> {
       'TIỀN NỢ'
     ];
     return FutureBuilder(
-      // future: supabaseManager.readDataDaiLy(
-      //     searchMa.text, searchTen.text, searchLoai.text),
-      future: supabaseManager.readData('DAILY'),
+      future: supabaseManager.readDataDaiLy(
+          searchMa.text, searchQuan.text, searchLoai.text),
+      // future: supabaseManager.readData('DAILY'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

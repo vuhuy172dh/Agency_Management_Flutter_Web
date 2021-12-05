@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:do_an/NhanVien/check_box.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
@@ -19,6 +20,7 @@ const supabaseKey =
 
 class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
   final _formKey = GlobalKey<FormState>();
+  final _formKeySua = GlobalKey<FormState>();
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _confirmPassword = TextEditingController();
@@ -26,11 +28,44 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
   TextEditingController _tennhanvien = TextEditingController();
   TextEditingController _chucvu = TextEditingController();
   TextEditingController _cv = TextEditingController();
+  TextEditingController _ten = TextEditingController();
   SupabaseManager supabaseManager = SupabaseManager();
   final client = SupabaseClient(supabaseUrl, supabaseKey);
   final datasets = <String, dynamic>{};
-  List<int> selectedData = [];
+  List<String> selectedData = [];
   List<dynamic> selectedRow = [];
+
+  void _showTopFlash(
+      Color? backgroundcolor, TextStyle? contentStyle, String content) {
+    showFlash(
+      context: context,
+      duration: const Duration(seconds: 2),
+      persistent: true,
+      builder: (_, controller) {
+        return Flash(
+          backgroundColor: backgroundcolor,
+          brightness: Brightness.light,
+          boxShadows: [BoxShadow(blurRadius: 4)],
+          barrierDismissible: true,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: MediaQuery.of(context).size.width - 350),
+          position: FlashPosition.top,
+          behavior: FlashBehavior.floating,
+          controller: controller,
+          child: FlashBar(
+            content: Text(
+              content,
+              style: contentStyle,
+            ),
+            showProgressIndicator: true,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,24 +161,70 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
                                         );
                                       });
                                 } else {
+                                  _ten.text = selectedRow[0][0];
+                                  _cv.text = selectedRow[0][2];
                                   await showDialog(
                                       context: context,
                                       builder: (context) {
                                         return AlertDialog(
                                           insetPadding: EdgeInsets.symmetric(
-                                              vertical: 200),
-                                          title: Text(
-                                            'CHỌN CHỨC VỤ',
-                                            style: TextStyle(
-                                                color: Colors.blueGrey,
-                                                fontWeight: FontWeight.bold),
+                                              vertical: 250),
+                                          title: Center(
+                                            child: Text(
+                                              'SỬA THÔNG TIN',
+                                              style: TextStyle(
+                                                  color: Colors.blueGrey,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
                                           content: PhanQuyen(
+                                            formKey: _formKeySua,
                                             cv: _cv,
+                                            ten: _ten,
                                           ),
                                           actions: [
                                             ElevatedButton(
-                                                onPressed: () {},
+                                                onPressed: () async {
+                                                  var isValid = _formKeySua
+                                                      .currentState!
+                                                      .validate();
+                                                  if (isValid) {
+                                                    var data =
+                                                        await supabaseManager
+                                                            .updateAcountData(
+                                                                selectedRow[0]
+                                                                    [1],
+                                                                _ten.text,
+                                                                _cv.text);
+                                                    if (data != null) {
+                                                      _showTopFlash(
+                                                          Colors.white,
+                                                          TextStyle(
+                                                              color: Colors.red,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Sửa không thành công');
+                                                    } else {
+                                                      _showTopFlash(
+                                                          Colors.green,
+                                                          TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          'Sửa thành công');
+                                                    }
+                                                    setState(() {
+                                                      _ten.clear();
+                                                      _cv.clear();
+                                                      selectedData.clear();
+                                                      selectedRow.clear();
+                                                      Navigator.pop(context);
+                                                    });
+                                                  }
+                                                },
                                                 style: ElevatedButton.styleFrom(
                                                     primary: Colors.blueGrey),
                                                 child: Text(
@@ -154,6 +235,7 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
                                             ElevatedButton(
                                                 onPressed: () {
                                                   _cv.clear();
+                                                  _ten.clear();
                                                   Navigator.pop(context);
                                                 },
                                                 style: ElevatedButton.styleFrom(
@@ -495,16 +577,16 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
         final cells = [temp['chusohuu'], temp['tendangnhap'], temp['status']];
         return DataRow(
           cells: getCells(cells),
-          selected: selectedData.contains(temp['id']),
+          selected: selectedData.contains(temp['tendangnhap']),
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(temp['id'])
-                : selectedData.remove(temp['id']);
+                ? selectedData.add(temp['tendangnhap'])
+                : selectedData.remove(temp['tendangnhap']);
 
             isAdding
                 ? selectedRow.add(cells)
-                : selectedRow.removeWhere((element) => element[0] == cells[0]);
+                : selectedRow.removeWhere((element) => element[1] == cells[1]);
           }),
         );
       }).toList();
@@ -564,24 +646,32 @@ class _TaoTaiKhoanState extends State<TaoTaiKhoan> {
       var data = await supabaseManager.addDataAccount(
           _email.text, _tennhanvien.text, _chucvu.text);
       if (data != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(data)));
+        _showTopFlash(
+            Colors.white,
+            TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            'Tạo tài khoản không thành công');
       } else {
-        await client.auth.signUp(
-          _email.text,
-          _password.text,
-        );
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Tạo thành công')));
+        var verify = await client.auth.signUp(_email.text, _password.text);
+        if (verify.error != null) {
+          _showTopFlash(
+              Colors.white,
+              TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              'Tạo tài khoản không thành công');
+          supabaseManager.deleteDataAcountUser(_email.text);
+        } else {
+          _showTopFlash(
+              Colors.green,
+              TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              'Tạo tài khoản thành công');
+          _tennhanvien.clear();
+          _chucvu.clear();
+          _manhanvien.clear();
+          _email.clear();
+          _password.clear();
+          _confirmPassword.clear();
+        }
       }
+      setState(() {});
     }
-    setState(() {
-      _tennhanvien.clear();
-      _chucvu.clear();
-      _manhanvien.clear();
-      _email.clear();
-      _password.clear();
-      _confirmPassword.clear();
-    });
   }
 }

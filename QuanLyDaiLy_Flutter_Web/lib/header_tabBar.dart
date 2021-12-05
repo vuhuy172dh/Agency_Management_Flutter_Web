@@ -1,9 +1,6 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/pop_menu.dart';
-import 'package:do_an/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
-import 'package:supabase/supabase.dart';
 
 class TabBarWidget extends StatelessWidget {
   final List<Tab> tabs;
@@ -31,7 +28,7 @@ class TabBarWidget extends StatelessWidget {
             CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
-                  'girl_xinh.jpg',
+                  'user.png',
                   width: 50,
                   height: 50,
                   fit: BoxFit.cover,

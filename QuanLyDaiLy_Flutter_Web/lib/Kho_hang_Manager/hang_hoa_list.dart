@@ -31,7 +31,7 @@ class _HangHoaListState extends State<HangHoaList> {
   final ValueNotifier<DateTime?> nsxSub = ValueNotifier(null);
   final ValueNotifier<DateTime?> hsdSub = ValueNotifier(null);
   TextEditingController _searchMa = TextEditingController();
-  TextEditingController _searchTen = TextEditingController();
+  TextEditingController _searchDonVi = TextEditingController();
   TextEditingController _searchSoluong = TextEditingController();
 
   void _showTopFlash(
@@ -100,10 +100,10 @@ class _HangHoaListState extends State<HangHoaList> {
                         TimKiem(
                             formKey: formSearchKey,
                             searchMa: _searchMa,
-                            searchTen: _searchTen,
+                            searchTen: _searchDonVi,
                             searchLoai: _searchSoluong,
                             hindText1: 'Nhập mã mặt hàng',
-                            hindText2: 'Nhập tên mặt hàng',
+                            hindText2: 'Nhập đơn vị',
                             hindText3: 'Nhập số lượng'),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -113,6 +113,20 @@ class _HangHoaListState extends State<HangHoaList> {
                           },
                           child: Text('Search'),
                         ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {
+                            _searchMa.clear();
+                            _searchSoluong.clear();
+                            _searchDonVi.clear();
+                            setState(() {});
+                          },
+                          child: Text('Home'),
+                        ),
                       ]),
                     )
                   ],
@@ -120,7 +134,10 @@ class _HangHoaListState extends State<HangHoaList> {
                 Expanded(child: Container()),
                 // tạo nút THÊM
                 GestureDetector(
+                  key: Key('ThemMH'),
                   onTap: () {
+                    _newHanSD.text = "";
+                    _newNgaySX.text = "";
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -149,6 +166,7 @@ class _HangHoaListState extends State<HangHoaList> {
                           ),
                           actions: [
                             TextButton(
+                              key: Key('ThemMHSubmit'),
                               onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
@@ -247,6 +265,7 @@ class _HangHoaListState extends State<HangHoaList> {
                 ),
                 // Tạo nút xóa
                 GestureDetector(
+                  key: Key('XoaMH'),
                   onTap: () {
                     if (selectedData.isEmpty) {
                       showDialog(
@@ -281,9 +300,11 @@ class _HangHoaListState extends State<HangHoaList> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
+                                key: Key('XoaMHYes'),
                                 onPressed: () async {
+                                  var deletedata;
                                   while (selectedData.isNotEmpty) {
-                                    var deletedata =
+                                    deletedata =
                                         await supabaseManager.deleteDataHangHoa(
                                             selectedData.removeLast());
                                     if (deletedata != null) {
@@ -296,7 +317,7 @@ class _HangHoaListState extends State<HangHoaList> {
                                     }
                                     break;
                                   }
-                                  if (selectedData.isEmpty) {
+                                  if (deletedata == null) {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
@@ -355,6 +376,7 @@ class _HangHoaListState extends State<HangHoaList> {
                 ),
                 // tạo nút sửa
                 GestureDetector(
+                  key: Key('SuaMH'),
                   onTap: () {
                     if (selectedRow.length < 1) {
                       showDialog(
@@ -442,6 +464,7 @@ class _HangHoaListState extends State<HangHoaList> {
                             ),
                             actions: [
                               TextButton(
+                                key: Key('SuaMHSubmit'),
                                 onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
@@ -572,7 +595,7 @@ class _HangHoaListState extends State<HangHoaList> {
 
     return FutureBuilder(
       future: supabaseManager.readDataMatHang(
-          _searchMa.text, _searchTen.text, _searchSoluong.text),
+          _searchMa.text, _searchDonVi.text, _searchSoluong.text),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

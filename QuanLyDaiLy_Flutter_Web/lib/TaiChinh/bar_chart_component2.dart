@@ -4,15 +4,15 @@ import 'package:supabase/supabase.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
-class BarChartComponent extends StatefulWidget {
-  const BarChartComponent({Key? key}) : super(key: key);
+class BarChartComponent2 extends StatefulWidget {
+  const BarChartComponent2({Key? key}) : super(key: key);
 
   @override
-  _BarChartComponentState createState() => _BarChartComponentState();
+  _BarChartComponent2State createState() => _BarChartComponent2State();
 }
 
-class _BarChartComponentState extends State<BarChartComponent> {
-  late List<tienxuatData> _chartData = [];
+class _BarChartComponent2State extends State<BarChartComponent2> {
+  late List<tiennoData> _chartData = [];
   late TooltipBehavior _tooltipBehavior;
   SupabaseManager supabaseManager = SupabaseManager();
 
@@ -29,7 +29,7 @@ class _BarChartComponentState extends State<BarChartComponent> {
 
   Widget buidBarChart() {
     return FutureBuilder(
-      future: supabaseManager.readDataThongKeTien(2021),
+      future: supabaseManager.readDataDanhSachTienNoDaiLy(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -45,27 +45,28 @@ class _BarChartComponentState extends State<BarChartComponent> {
 
         for (var i in data) {
           final temp = (i as Map<String, dynamic>);
-          _chartData.add(tienxuatData(temp['_thang'], temp['_tien']));
+          _chartData.add(tiennoData(temp['tendaily'], temp['tienno']));
         }
         return Builder(
           builder: (context) {
             return Container(
               child: SfCartesianChart(
                 title: ChartTitle(
-                    text: 'DOANH SỐ XUẤT HÀNG THEO THÁNG TRONG NĂM',
+                    text: 'TIỀN NỢ HIỆN TẠI CỦA CÁC ĐẠI LÝ',
                     textStyle: TextStyle(fontWeight: FontWeight.bold)),
                 legend: Legend(isVisible: true),
                 tooltipBehavior: _tooltipBehavior,
                 series: <ChartSeries>[
-                  BarSeries<tienxuatData, String>(
-                      name: 'Tổng Tiền Xuất',
+                  BarSeries<tiennoData, String>(
+                      name: 'Tiền Nợ',
                       dataSource: _chartData,
-                      xValueMapper: (tienxuatData tx, _) => tx.thang.toString(),
-                      yValueMapper: (tienxuatData tx, _) => tx.tien,
+                      xValueMapper: (tiennoData tx, _) => tx.tendl,
+                      yValueMapper: (tiennoData tx, _) => tx.tn,
                       dataLabelSettings: DataLabelSettings(isVisible: true),
                       enableTooltip: true)
                 ],
-                primaryXAxis: CategoryAxis(title: AxisTitle(text: 'Tháng')),
+                primaryXAxis:
+                    CategoryAxis(title: AxisTitle(text: 'Tên Đại Lý')),
                 primaryYAxis: NumericAxis(
                     edgeLabelPlacement: EdgeLabelPlacement.shift,
                     numberFormat: NumberFormat.simpleCurrency(
@@ -80,8 +81,8 @@ class _BarChartComponentState extends State<BarChartComponent> {
   }
 }
 
-class tienxuatData {
-  tienxuatData(this.thang, this.tien);
-  final int thang;
-  final int tien;
+class tiennoData {
+  tiennoData(this.tendl, this.tn);
+  final String tendl;
+  final int tn;
 }

@@ -90,6 +90,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10))),
                               child: TextFormField(
+                                key: Key('madaily'),
                                 enabled: widget.Checksua,
                                 initialValue: widget.maDL.text,
                                 style: TextStyle(color: Colors.white),
@@ -138,6 +139,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10))),
                               child: TextFormField(
+                                key: Key('tendaily'),
                                 autofocus: widget.Checksua ? false : true,
                                 initialValue: widget.tenDL.text,
                                 style: TextStyle(color: Colors.white),
@@ -236,6 +238,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10))),
                               child: TextFormField(
+                                key: Key('sodienthoai'),
                                 initialValue: widget.sodtDL.text,
                                 style: TextStyle(color: Colors.white),
                                 cursorColor: Colors.white,
@@ -282,6 +285,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10))),
                               child: TextFormField(
+                                key: Key('email'),
                                 initialValue: widget.email.text,
                                 style: TextStyle(color: Colors.white),
                                 cursorColor: Colors.white,
@@ -370,6 +374,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                   ),
                   Expanded(
                     child: Container(
+                      key: Key('ngay'),
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
                           color: Colors.blueGrey,
@@ -481,6 +486,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
         }
         return Builder(builder: (context) {
           return TextFormField(
+            key: Key('loaidaily'),
             style: TextStyle(color: Colors.white),
             cursorColor: Colors.white,
             controller: widget.loaiDL,
@@ -546,6 +552,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
         }
         return Builder(builder: (context) {
           return TextFormField(
+            key: Key('quan'),
             style: TextStyle(color: Colors.white),
             cursorColor: Colors.white,
             controller: widget.quan,

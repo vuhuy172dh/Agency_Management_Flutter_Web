@@ -49,15 +49,13 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  child: Text(
-                    'QUẢN LÝ ĐẠI LÝ',
-                    style: TextStyle(
-                        color: Colors.blueGrey[800],
-                        fontStyle: FontStyle.normal,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800),
-                  ),
+                Text(
+                  'QUẢN LÝ ĐẠI LÝ',
+                  style: TextStyle(
+                      color: Colors.blueGrey[800],
+                      fontStyle: FontStyle.normal,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(
                   height: 2,
@@ -82,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                       border: Border.all(color: Colors.black)),
                   child: TextField(
+                    key: Key('email'),
                     autofocus: true,
                     cursorColor: Colors.black,
                     decoration: InputDecoration(
@@ -104,6 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                       border: Border.all(color: Colors.black)),
                   child: TextField(
+                    key: Key('password'),
                     cursorColor: Colors.black,
                     decoration: InputDecoration(
                         hintText: 'Enter password',
@@ -133,6 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 15,
                 ),
                 ElevatedButton(
+                  key: Key('loginButton'),
                   onPressed: _login,
                   style:
                       ElevatedButton.styleFrom(primary: Colors.blueGrey[800]),

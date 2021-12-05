@@ -104,8 +104,23 @@ class _HoaDonListState extends State<HoaDonList> {
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.blueGrey[800]),
-                              onPressed: () {},
-                              child: Text('Search'))
+                              onPressed: () {
+                                setState(() {});
+                              },
+                              child: Text('Search')),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey[800]),
+                              onPressed: () {
+                                _searchMa.clear();
+                                _searchMaDl.clear();
+                                _searchTenDL.clear();
+                                setState(() {});
+                              },
+                              child: Text('Home')),
                         ],
                       )
                     ],
@@ -222,7 +237,7 @@ class _HoaDonListState extends State<HoaDonList> {
                   width: 5,
                 ),
 
-                // Tạo nút xóa (xóa đại lý)
+                // Tạo nút xóa (xóa hóa đơn)
                 GestureDetector(
                   onTap: () {
                     if (selectedData.isEmpty) {
@@ -259,8 +274,9 @@ class _HoaDonListState extends State<HoaDonList> {
                             actions: [
                               TextButton(
                                 onPressed: () async {
+                                  var delData;
                                   while (selectedData.isNotEmpty) {
-                                    var delData =
+                                    delData =
                                         await supabaseManager.deleteDataHoaDon(
                                             selectedData.removeLast());
                                     if (delData != null) {
@@ -273,7 +289,7 @@ class _HoaDonListState extends State<HoaDonList> {
                                       break;
                                     }
                                   }
-                                  if (selectedData.isEmpty) {
+                                  if (delData == null) {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
@@ -505,7 +521,7 @@ class _HoaDonListState extends State<HoaDonList> {
               alignment: Alignment.topCenter,
               margin: EdgeInsets.all(5),
               decoration: BoxDecoration(
-                  color: Colors.blueGrey[300],
+                  color: Colors.blueGrey[200],
                   borderRadius: BorderRadius.all(Radius.circular(5))),
               child: ScrollableWidget(child: buildDataTable()),
             ),
@@ -528,7 +544,8 @@ class _HoaDonListState extends State<HoaDonList> {
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readDataChiTietPhieuThu(),
+      future: supabaseManager.readDataChiTietPhieuThu(
+          _searchMa.text, _searchMaDl.text, _searchTenDL.text),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

@@ -35,8 +35,8 @@ class SupabaseManager {
         'donvi': dv,
         'gianhap': gianhap,
         'giaxuat': giaxuat,
-        'hansudung': hsd,
-        'ngaysanxuat': nsx,
+        'hansudung': hsd.isEmpty ? null : hsd,
+        'ngaysanxuat': nsx.isEmpty ? null : nsx,
       }
     ]).execute();
     if (response.error != null) {
@@ -206,6 +206,15 @@ class SupabaseManager {
   }
 
   //
+  readDataNhanVien(String ma, String gt, String cv) async {
+    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
+        'nhanvien_table',
+        params: {'ma': ma, 'gt': gt, 'cv': cv}).execute();
+    print(response.data);
+    return response;
+  }
+
+  //
   readDataLoaiDL() async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
@@ -268,29 +277,33 @@ class SupabaseManager {
   }
 
   //
-  readDataChiTietPhieuThu() async {
+  readDataChiTietPhieuThu(
+      String maphieuthu, String madaily, String tendaily) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
-        .rpc('chitietphieuthutien_table')
-        .execute();
+        .rpc('chitietphieuthutien_table', params: {
+      'maphieu': maphieuthu,
+      'madl': madaily,
+      'tendl': tendaily
+    }).execute();
     print(response.data);
     return response;
   }
 
   //
-  readDataDaiLy(String ma, String ten, String loai) async {
+  readDataDaiLy(String ma, String quan, String loai) async {
     var response = await Injector.appInstance.get<SupabaseClient>().rpc(
         'timkiemdaily',
-        params: {'ma': ma, 'ten': ten, 'loai': loai}).execute();
+        params: {'ma': ma, 'loc': quan, 'loai': loai}).execute();
     print(response.data);
     return response;
   }
 
   //
-  readDataMatHang(String ma, String ten, String sl) async {
-    var response = await Injector.appInstance.get<SupabaseClient>().rpc(
-        'timkiemhang',
-        params: {'mamh': ma, 'tenmh': ten, 'sl': sl}).execute();
+  readDataMatHang(String ma, String dv, String sl) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('timkiemhang', params: {'mamh': ma, 'dv': dv, 'sl': sl}).execute();
     print(response.data);
     return response;
   }
@@ -344,6 +357,15 @@ class SupabaseManager {
   }
 
   //
+  readDataDanhSachTienNoDaiLy() async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('danhsachtiennodaily')
+        .execute();
+    return response;
+  }
+
+  //
   createPolicyDaiLy(String tentaikhoan) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
@@ -378,7 +400,7 @@ class SupabaseManager {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
         .from('profiles')
-        .select('name')
+        .select('name, chucvu')
         .execute();
     print(response.data);
     return response;
@@ -390,6 +412,24 @@ class SupabaseManager {
         .get<SupabaseClient>()
         .rpc('getsoluongquan')
         .execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataTimKiemPhieuNhap(String ma) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('timkiemphieunhap', params: {'maphieu': ma}).execute();
+    print(response.data);
+    return response;
+  }
+
+  //
+  readDataTimKiemPhieuXuat(String ma) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .rpc('timkiemphieuxuat', params: {'maphieu': ma}).execute();
     print(response.data);
     return response;
   }
@@ -499,12 +539,12 @@ class SupabaseManager {
   }
 
   //
-  updateAcountData(int id, String chucvu) async {
+  updateAcountData(String tendangnhap, String ten, String chucvu) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
         .from('acount_user')
-        .update({'status': chucvu})
-        .eq('id', id)
+        .update({'status': chucvu, 'chusohuu': ten})
+        .eq('tendangnhap', tendangnhap)
         .execute();
     if (response.error != null) {
       return response.error!.message;
@@ -556,8 +596,12 @@ class SupabaseManager {
         .delete()
         .eq('quan', quan)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
+    }
+    if (response.error != null || data.isEmpty) {
+      return 'Có lỗi';
     }
   }
 
@@ -569,8 +613,12 @@ class SupabaseManager {
         .delete()
         .eq('loaiDL', loai)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
+    }
+    if (response.error != null || data.isEmpty) {
+      return "có lỗi";
     }
   }
 
@@ -582,8 +630,12 @@ class SupabaseManager {
         .delete()
         .eq('madaily', id)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
+    }
+    if (response.error != null || data.isEmpty) {
+      return 'Có lỗi';
     }
   }
 
@@ -595,18 +647,23 @@ class SupabaseManager {
         .delete()
         .eq('mamathang', id)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
+    }
+    if (response.error != null || data.isEmpty) {
+      return 'Có lỗi';
     }
   }
 
   //
-  deleteDataCTPN(int id) async {
+  deleteDataCTPN(int idPN, int idMH) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
         .from('CHITIETPHIEUNHAP')
         .delete()
-        .eq('stt', id)
+        .eq('maphieunhap', idPN)
+        .eq('mamathang', idMH)
         .execute();
   }
 
@@ -618,18 +675,23 @@ class SupabaseManager {
         .delete()
         .eq('maphieunhap', id)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
+    }
+    if (response.error != null || data.isEmpty) {
+      return 'Có lỗi';
     }
   }
 
   //
-  deleteDataCTPX(int id) async {
+  deleteDataCTPX(int idPX, int idMH) async {
     var response = await Injector.appInstance
         .get<SupabaseClient>()
         .from('CHITIETPHIEUXUATHANG')
         .delete()
-        .eq('stt', id)
+        .eq('maphieuxuat', idPX)
+        .eq('mamathang', idMH)
         .execute();
   }
 
@@ -641,8 +703,12 @@ class SupabaseManager {
         .delete()
         .eq('maphieuxuat', id)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
+    }
+    if (response.error != null || data.isEmpty) {
+      return 'Có lỗi';
     }
   }
 
@@ -654,8 +720,12 @@ class SupabaseManager {
         .delete()
         .eq('maphieuthu', id)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
+    }
+    if (response.error != null || data.isEmpty) {
+      return "Có lỗi";
     }
   }
 
@@ -667,8 +737,22 @@ class SupabaseManager {
         .delete()
         .eq('manhanvien', id)
         .execute();
-    if (response.error != null) {
-      return response.error!.message;
+    var data;
+    if (response.data != null) {
+      data = response.data as List<dynamic>;
     }
+    if (response.error != null || data.isEmpty) {
+      return "có lỗi";
+    }
+  }
+
+  //
+  deleteDataAcountUser(String tdn) async {
+    var response = await Injector.appInstance
+        .get<SupabaseClient>()
+        .from('acount_user')
+        .delete()
+        .eq('tendangnhap', tdn)
+        .execute();
   }
 }

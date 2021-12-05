@@ -36,20 +36,39 @@ class _ProfilePageState extends State<ProfilePage> {
         datasets['Supabase Query'] as List<dynamic>;
         final temp = datasets['Supabase Query'][0] as Map<String, dynamic>;
         final name = temp['name'];
+        final cv = temp['chucvu'];
 
         return Builder(
           builder: (context) {
             return Container(
-              child: Row(
-                children: [
-                  Text('TÊN NGƯỜI DÙNG:'),
-                  const SizedBox(
-                    width: 10,
+                height: 50,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text('TÊN NGƯỜI DÙNG:'),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text(name)
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Text('CHỨC VỤ:'),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text(cv)
+                        ],
+                      ),
+                    ],
                   ),
-                  Text(name)
-                ],
-              ),
-            );
+                ));
           },
         );
       },

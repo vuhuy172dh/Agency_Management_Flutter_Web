@@ -108,8 +108,22 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               primary: Colors.blueGrey[800]),
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {});
+                          },
                           child: Text('Search'),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {
+                            _searchMa.clear();
+                            setState(() {});
+                          },
+                          child: Text('Home'),
                         ),
                       ],
                     )
@@ -303,7 +317,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                     backgroundColor: Colors.blueGrey[800]),
                                 child: Text('Cancel',
                                     style: TextStyle(
-                                        color: Colors.blueGrey[800],
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold)))
                           ],
                         );
@@ -364,8 +378,9 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                             actions: [
                               TextButton(
                                 onPressed: () async {
+                                  var delData;
                                   while (selectedData.isNotEmpty) {
-                                    var delData = await supabaseManager
+                                    delData = await supabaseManager
                                         .deleteDataPhieuNhap(
                                             selectedData.removeLast());
                                     if (delData != null) {
@@ -378,7 +393,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                       break;
                                     }
                                   }
-                                  if (selectedData.isEmpty) {
+                                  if (delData == null) {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
@@ -625,7 +640,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
     final columns = ['MÃ PHIÊU NHẬP', 'THÀNH TIỀN', 'NGÀY NHẬP'];
 
     return FutureBuilder(
-      future: supabaseManager.readData('PHIEUNHAPHANG'),
+      future: supabaseManager.readDataTimKiemPhieuNhap(_searchMa.text),
+      // future: supabaseManager.readData('PHIEUNHAPHANG'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

@@ -101,6 +101,7 @@ class _ThemMatHangState extends State<ThemMatHang> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(8))),
                               child: TextFormField(
+                                key: Key('mamathang'),
                                 autofocus: true,
                                 validator: (value) {
                                   if (value!.isEmpty) {
@@ -152,6 +153,7 @@ class _ThemMatHangState extends State<ThemMatHang> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(8))),
                               child: TextFormField(
+                                key: Key('tenmathang'),
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "Chưa nhập TÊN MẶT HÀNG";
@@ -204,6 +206,7 @@ class _ThemMatHangState extends State<ThemMatHang> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(8))),
                           child: TextFormField(
+                            key: Key('donvi'),
                             initialValue: widget.newDonVi.text,
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -279,6 +282,7 @@ class _ThemMatHangState extends State<ThemMatHang> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(8))),
                                 child: TextFormField(
+                                  key: Key('gianhap'),
                                   initialValue: widget.newGiaNhap.text,
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -330,6 +334,7 @@ class _ThemMatHangState extends State<ThemMatHang> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(8))),
                                 child: TextFormField(
+                                  key: Key('giaxuat'),
                                   initialValue: widget.newGiaXuat.text,
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -488,11 +493,11 @@ class _ThemMatHangState extends State<ThemMatHang> {
                                                   '${date!.month}-${date.day}-${date.year}';
                                             },
                                             child: buildDateTimePicker(
-                                              widget.newNgaySanXuat.text,
-                                              widget.newNgaySanXuat,
-                                              'Bạn chưa nhập Ngày Sản Xuất',
-                                              Colors.blueGrey,
-                                            ));
+                                                widget.newNgaySanXuat.text,
+                                                widget.newNgaySanXuat,
+                                                'Bạn chưa nhập Ngày Sản Xuất',
+                                                Colors.blueGrey,
+                                                isCheck: false));
                                       }),
                                 )),
                               ],
@@ -565,11 +570,11 @@ class _ThemMatHangState extends State<ThemMatHang> {
                                                   '${date!.month}-${date.day}-${date.year}';
                                             },
                                             child: buildDateTimePicker(
-                                              widget.newHanSuDung.text,
-                                              widget.newHanSuDung,
-                                              'Bạn chưa nhập Hạn Sử Dụng',
-                                              Colors.blueGrey,
-                                            ));
+                                                widget.newHanSuDung.text,
+                                                widget.newHanSuDung,
+                                                'Bạn chưa nhập Hạn Sử Dụng',
+                                                Colors.blueGrey,
+                                                isCheck: false));
                                       }),
                                 )),
                               ],

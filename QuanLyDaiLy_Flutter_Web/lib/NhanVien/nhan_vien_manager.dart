@@ -27,7 +27,7 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
   TextEditingController _sodienthoai = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _searchMa = TextEditingController();
-  TextEditingController _searchTen = TextEditingController();
+  TextEditingController _searchGioiTinh = TextEditingController();
   TextEditingController _searchChucvu = TextEditingController();
 
   void _showTopFlash(
@@ -100,16 +100,31 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
                               child: TimKiem(
                                   formKey: formKeySearch,
                                   searchMa: _searchMa,
-                                  searchTen: _searchTen,
+                                  searchTen: _searchGioiTinh,
                                   searchLoai: _searchChucvu,
                                   hindText1: 'Nhập mã nhân viên',
-                                  hindText2: 'Nhập tên nhân viên',
+                                  hindText2: 'Nhập giới tính',
                                   hindText3: "Nhập chức vụ")),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.blueGrey[800]),
-                              onPressed: () {},
-                              child: Text('Search'))
+                              onPressed: () {
+                                setState(() {});
+                              },
+                              child: Text('Search')),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey[800]),
+                              onPressed: () {
+                                _searchMa.clear();
+                                _searchGioiTinh.clear();
+                                _searchChucvu.clear();
+                                setState(() {});
+                              },
+                              child: Text('Home')),
                         ],
                       ),
                     ],
@@ -538,7 +553,7 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
               alignment: Alignment.topCenter,
               margin: EdgeInsets.all(5),
               decoration: BoxDecoration(
-                  color: Colors.blueGrey[300],
+                  color: Colors.blueGrey[200],
                   borderRadius: BorderRadius.all(Radius.circular(5))),
               child: ScrollableWidget(child: buildDataTable()),
             ),
@@ -559,7 +574,9 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readData('NHANVIEN'),
+      future: supabaseManager.readDataNhanVien(
+          _searchMa.text, _searchGioiTinh.text, _searchChucvu.text),
+      // future: supabaseManager.readData('NHANVIEN'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

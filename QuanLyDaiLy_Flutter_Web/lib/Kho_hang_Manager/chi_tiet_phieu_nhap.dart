@@ -187,6 +187,7 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                                 onPressed: () async {
                                   while (selectedData.isNotEmpty) {
                                     await supabaseManager.deleteDataCTPN(
+                                        widget.maphieunhap,
                                         selectedData.removeLast());
                                   }
                                   setState(() {
@@ -305,16 +306,15 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
           temp['_soluongnhap'],
           temp['_gianhap']
         ];
-        final cell_temp = [temp['_stt']];
 
         return DataRow(
           cells: getCells(cells),
-          selected: selectedData.contains(cell_temp[0]),
+          selected: selectedData.contains(cells[0]),
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cell_temp[0])
-                : selectedData.remove(cell_temp[0]);
+                ? selectedData.add(cells[0])
+                : selectedData.remove(cells[0]);
           }),
         );
       }).toList();

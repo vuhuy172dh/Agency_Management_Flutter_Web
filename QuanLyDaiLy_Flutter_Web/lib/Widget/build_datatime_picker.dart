@@ -3,11 +3,11 @@ import 'package:flutter/widgets.dart';
 
 Widget buildDateTimePicker(String data, TextEditingController _controller,
     String error_text, Color textColor,
-    {Color? error_color = null}) {
+    {Color? error_color = null, bool isCheck = true}) {
   return TextFormField(
     validator: (value) {
       if (data.isEmpty) {
-        return error_text;
+        return isCheck ? error_text : null;
       } else {
         return null;
       }

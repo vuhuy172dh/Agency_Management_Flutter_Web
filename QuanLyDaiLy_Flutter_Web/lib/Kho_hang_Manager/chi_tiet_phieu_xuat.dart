@@ -189,6 +189,7 @@ class _ChiTietPhieuXuatState extends State<ChiTietPhieuXuat> {
                                 onPressed: () async {
                                   while (selectedData.isNotEmpty) {
                                     await supabaseManager.deleteDataCTPX(
+                                        widget.maphieuxuat,
                                         selectedData.removeLast());
                                   }
                                   setState(() {
@@ -308,16 +309,14 @@ class _ChiTietPhieuXuatState extends State<ChiTietPhieuXuat> {
           temp['_giaxuat']
         ];
 
-        final cell_temp = [temp['_stt']];
-
         return DataRow(
           cells: getCells(cells),
-          selected: selectedData.contains(cell_temp[0]),
+          selected: selectedData.contains(cells[0]),
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cell_temp[0])
-                : selectedData.remove(cell_temp[0]);
+                ? selectedData.add(cells[0])
+                : selectedData.remove(cells[0]);
           }),
         );
       }).toList();

@@ -24,12 +24,15 @@ class _HomePageState extends State<HomePage> {
           child: Text(
             'ĐẠI LÝ',
             style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+            key: Key('DAILY'),
           ),
         ),
         Tab(
+          // key: Key('KH'),
           child: Text(
             'KHO HÀNG',
             style: TextStyle(fontFamily: 'Calistoga', fontSize: 15),
+            key: Key('KHOHANG'),
           ),
         ),
         Tab(

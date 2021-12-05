@@ -110,8 +110,22 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               primary: Colors.blueGrey[800]),
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {});
+                          },
                           child: Text('Search'),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {
+                            _searchMa.clear();
+                            setState(() {});
+                          },
+                          child: Text('Home'),
                         ),
                       ],
                     )
@@ -376,8 +390,9 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                             actions: [
                               TextButton(
                                 onPressed: () async {
+                                  var delData;
                                   while (selectedData.isNotEmpty) {
-                                    var delData = await supabaseManager
+                                    delData = await supabaseManager
                                         .deleteDataPhieuXuat(
                                             selectedData.removeLast());
                                     if (delData != null) {
@@ -390,7 +405,7 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
                                     }
                                     break;
                                   }
-                                  if (selectedData.isEmpty) {
+                                  if (delData == null) {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
@@ -651,7 +666,8 @@ class _PhieuXuatListState extends State<PhieuXuatList> {
 
     SupabaseManager supabaseManager = SupabaseManager();
     return FutureBuilder(
-      future: supabaseManager.readData('PHIEUXUATHANG'),
+      future: supabaseManager.readDataTimKiemPhieuXuat(_searchMa.text),
+      // future: supabaseManager.readData('PHIEUXUATHANG'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();

@@ -180,7 +180,10 @@ class _BaoCaoThangState extends State<BaoCaoThang> {
                                     child: Text(
                                       'Search',
                                       style: TextStyle(color: Colors.white),
-                                    ))
+                                    )),
+                                const SizedBox(
+                                  width: 5,
+                                ),
                               ],
                             ),
                           )
@@ -196,7 +199,7 @@ class _BaoCaoThangState extends State<BaoCaoThang> {
                     alignment: Alignment.topCenter,
                     margin: EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                        color: Colors.blueGrey[300],
+                        color: Colors.blueGrey[200],
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                     child: ScrollableWidget(
                         child: buildDataTable(int.parse(_monthController.text),

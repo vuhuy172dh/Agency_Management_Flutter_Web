@@ -2,6 +2,7 @@ import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/new_pass.dart';
 import 'package:do_an/profile_container.dart';
 import 'package:do_an/splash_screen.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:supabase/supabase.dart';
@@ -14,6 +15,39 @@ class PopupOptionMenu extends StatelessWidget {
     final formFieldKey = GlobalKey<FormFieldState>();
     TextEditingController new_password = TextEditingController();
     SupabaseManager supabaseManager = SupabaseManager();
+
+    void _showTopFlash(
+        Color? backgroundcolor, TextStyle? contentStyle, String content) {
+      showFlash(
+        context: context,
+        duration: const Duration(seconds: 2),
+        persistent: true,
+        builder: (_, controller) {
+          return Flash(
+            backgroundColor: backgroundcolor,
+            brightness: Brightness.light,
+            boxShadows: [BoxShadow(blurRadius: 4)],
+            barrierDismissible: true,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            margin: EdgeInsets.only(
+                top: 10,
+                left: 10,
+                right: MediaQuery.of(context).size.width - 350),
+            position: FlashPosition.top,
+            behavior: FlashBehavior.floating,
+            controller: controller,
+            child: FlashBar(
+              content: Text(
+                content,
+                style: contentStyle,
+              ),
+              showProgressIndicator: true,
+            ),
+          );
+        },
+      );
+    }
+
     return PopupMenuButton(
         icon: Icon(Icons.arrow_drop_down_circle),
         onSelected: (value) async {
@@ -59,11 +93,19 @@ class PopupOptionMenu extends StatelessWidget {
                               var data = await supabaseManager
                                   .updatePassword(new_password.text);
                               if (data != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(data)));
+                                _showTopFlash(
+                                    Colors.white,
+                                    TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                    data);
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Đổi thành công')));
+                                _showTopFlash(
+                                    Colors.green,
+                                    TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                    'Đổi mật khẩu thành công!!!');
                                 new_password.clear();
                                 Navigator.pop(context);
                               }
