@@ -409,7 +409,7 @@ class _HoaDonListState extends State<HoaDonList> {
                           return AlertDialog(
                             insetPadding: EdgeInsets.symmetric(vertical: 100),
                             title: Text(
-                              'SỬA ĐẠI LÝ',
+                              'SỬA HÓA ĐƠN',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
