@@ -19,7 +19,7 @@ class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   final TextEditingController _monthController = TextEditingController();
-  String? yearValue;
+  final TextEditingController yearValue = TextEditingController();
   final monthList = [
     '1',
     '2',
@@ -34,6 +34,7 @@ class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
     '11',
     '12'
   ];
+  bool checkHome = true;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,7 @@ class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
                           ),
                           // KHUNG TÌM KIẾM THEO THÁNG
                           Container(
-                            width: 300,
+                            width: 350,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -158,9 +159,7 @@ class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
                                         }
                                         return null;
                                       },
-                                      onChanged: (value) {
-                                        yearValue = value;
-                                      },
+                                      controller: yearValue,
                                     )),
                                 const SizedBox(
                                   width: 10,
@@ -174,11 +173,30 @@ class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
                                       final isValid1 =
                                           monthKey.currentState!.validate();
                                       if (isValid && isValid1) {
-                                        setState(() {});
+                                        setState(() {
+                                          checkHome = false;
+                                        });
                                       }
                                     },
                                     child: Text(
                                       'Search',
+                                      style: TextStyle(color: Colors.white),
+                                    )),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey[800]),
+                                    onPressed: () {
+                                      setState(() {
+                                        checkHome = true;
+                                        _monthController.clear();
+                                        yearValue.clear();
+                                      });
+                                    },
+                                    child: Text(
+                                      'Home',
                                       style: TextStyle(color: Colors.white),
                                     ))
                               ],
@@ -189,7 +207,7 @@ class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
             ),
           ),
           Expanded(
-            child: _monthController.text == null || yearValue == null
+            child: checkHome == true
                 ? BarChartComponent2()
                 : Container(
                     alignment: Alignment.topCenter,
@@ -199,7 +217,7 @@ class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                     child: ScrollableWidget(
                         child: buildDataTable(int.parse(_monthController.text),
-                            int.parse(yearValue!))),
+                            int.parse(yearValue.text))),
                   ),
           )
         ],

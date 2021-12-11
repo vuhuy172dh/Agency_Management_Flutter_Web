@@ -97,12 +97,15 @@ class _ThemMatHangState extends State<ThemMatHang> {
                               padding: EdgeInsets.all(8),
                               margin: EdgeInsets.symmetric(vertical: 2),
                               decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: widget.isCheck
+                                      ? Colors.white70
+                                      : Colors.white,
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(8))),
                               child: TextFormField(
                                 key: Key('mamathang'),
-                                autofocus: true,
+                                enabled: widget.isCheck ? false : true,
+                                autofocus: widget.isCheck ? false : true,
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "Chưa nhập MÃ MẶT HÀNG";
@@ -154,6 +157,7 @@ class _ThemMatHangState extends State<ThemMatHang> {
                                       BorderRadius.all(Radius.circular(8))),
                               child: TextFormField(
                                 key: Key('tenmathang'),
+                                autofocus: widget.isCheck ? true : false,
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "Chưa nhập TÊN MẶT HÀNG";
@@ -384,7 +388,7 @@ class _ThemMatHangState extends State<ThemMatHang> {
                           margin: EdgeInsets.symmetric(vertical: 2),
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                              color: Colors.white30,
+                              color: Colors.white70,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(8))),
                           child: TextFormField(

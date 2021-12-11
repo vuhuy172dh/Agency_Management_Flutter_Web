@@ -5,7 +5,7 @@ import 'package:supabase/supabase.dart';
 
 class ThemDaiLy extends StatefulWidget {
   final formkey;
-  final bool Checksua;
+  final bool checksua;
   final TextEditingController maDL;
   final TextEditingController tenDL;
   final TextEditingController loaiDL;
@@ -18,7 +18,7 @@ class ThemDaiLy extends StatefulWidget {
   const ThemDaiLy(
       {Key? key,
       required this.formkey,
-      required this.Checksua,
+      required this.checksua,
       required this.maDL,
       required this.tenDL,
       required this.loaiDL,
@@ -84,14 +84,14 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                             child: Container(
                               padding: EdgeInsets.all(5),
                               decoration: BoxDecoration(
-                                  color: widget.Checksua
+                                  color: widget.checksua
                                       ? Colors.blueGrey
                                       : Colors.blueGrey[300],
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10))),
                               child: TextFormField(
                                 key: Key('madaily'),
-                                enabled: widget.Checksua,
+                                enabled: widget.checksua,
                                 initialValue: widget.maDL.text,
                                 style: TextStyle(color: Colors.white),
                                 autofocus: true,
@@ -140,7 +140,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                                       BorderRadius.all(Radius.circular(10))),
                               child: TextFormField(
                                 key: Key('tendaily'),
-                                autofocus: widget.Checksua ? false : true,
+                                autofocus: widget.checksua ? false : true,
                                 initialValue: widget.tenDL.text,
                                 style: TextStyle(color: Colors.white),
                                 cursorColor: Colors.white,
@@ -444,7 +444,7 @@ class _ThemDaiLyState extends State<ThemDaiLy> {
                       child: TextFormField(
                         enabled: false,
                         initialValue:
-                            widget.Checksua == true ? '0' : widget.tienno.text,
+                            widget.checksua == true ? '0' : widget.tienno.text,
                         style: TextStyle(color: Colors.white),
                         cursorColor: Colors.white,
                         decoration: InputDecoration(

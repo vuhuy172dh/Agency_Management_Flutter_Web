@@ -22,17 +22,17 @@ class _TableDaiLyState extends State<TableDaiLy> {
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
   bool sort = false;
-  TextEditingController searchMa = TextEditingController();
-  TextEditingController searchQuan = TextEditingController();
-  TextEditingController searchLoai = TextEditingController();
-  TextEditingController newMaDL = TextEditingController();
-  TextEditingController newName = TextEditingController();
-  TextEditingController newPhone = TextEditingController();
-  TextEditingController newLoca = TextEditingController();
-  TextEditingController newType = TextEditingController();
-  TextEditingController newDate = TextEditingController();
-  TextEditingController newEmail = TextEditingController();
-  TextEditingController newTienno = TextEditingController();
+  TextEditingController _searchMa = TextEditingController();
+  TextEditingController _searchQuan = TextEditingController();
+  TextEditingController _searchLoai = TextEditingController();
+  TextEditingController _newMaDL = TextEditingController();
+  TextEditingController _newName = TextEditingController();
+  TextEditingController _newPhone = TextEditingController();
+  TextEditingController _newLoca = TextEditingController();
+  TextEditingController _newType = TextEditingController();
+  TextEditingController _newDate = TextEditingController();
+  TextEditingController _newEmail = TextEditingController();
+  TextEditingController _newTienno = TextEditingController();
   final ValueNotifier<DateTime?> dateSub = ValueNotifier(null);
 
   void _showTopFlash(
@@ -101,9 +101,9 @@ class _TableDaiLyState extends State<TableDaiLy> {
                         children: [
                           TimKiem(
                             formKey: formKeySearch,
-                            searchMa: searchMa,
-                            searchTen: searchQuan,
-                            searchLoai: searchLoai,
+                            searchMa: _searchMa,
+                            searchTen: _searchQuan,
+                            searchLoai: _searchLoai,
                             hindText1: 'Nhập mã đại lý',
                             hindText2: 'Nhập quận',
                             hindText3: 'Nhập loại đại lý',
@@ -123,9 +123,9 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.blueGrey[800]),
                               onPressed: () {
-                                searchMa.clear();
-                                searchLoai.clear();
-                                searchQuan.clear();
+                                _searchMa.clear();
+                                _searchLoai.clear();
+                                _searchQuan.clear();
                                 setState(() {});
                               },
                               child: Text('Home')),
@@ -139,7 +139,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                 GestureDetector(
                   key: Key('ThemDL'),
                   onTap: () {
-                    newDate.text =
+                    _newDate.text =
                         '${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().year}';
                     showDialog(
                       context: context,
@@ -156,15 +156,15 @@ class _TableDaiLyState extends State<TableDaiLy> {
                           ),
                           content: ThemDaiLy(
                             formkey: formKey,
-                            Checksua: true,
-                            maDL: newMaDL,
-                            tenDL: newName,
-                            loaiDL: newType,
-                            quan: newLoca,
-                            email: newEmail,
-                            sodtDL: newPhone,
-                            tienno: newTienno,
-                            ngaytiepnhan: newDate,
+                            checksua: true,
+                            maDL: _newMaDL,
+                            tenDL: _newName,
+                            loaiDL: _newType,
+                            quan: _newLoca,
+                            email: _newEmail,
+                            sodtDL: _newPhone,
+                            tienno: _newTienno,
+                            ngaytiepnhan: _newDate,
                             dateSub: dateSub,
                           ),
                           actions: [
@@ -175,13 +175,13 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                     formKey.currentState!.validate();
                                 if (isValid) {
                                   var addData = await supabaseManager.addData(
-                                      int.parse(newMaDL.text),
-                                      newName.text,
-                                      int.parse(newType.text),
-                                      int.parse(newPhone.text),
-                                      newDate.text,
-                                      newEmail.text,
-                                      newLoca.text);
+                                      int.parse(_newMaDL.text),
+                                      _newName.text,
+                                      int.parse(_newType.text),
+                                      int.parse(_newPhone.text),
+                                      _newDate.text,
+                                      _newEmail.text,
+                                      _newLoca.text);
                                   if (addData != null) {
                                     _showTopFlash(
                                         Colors.white,
@@ -198,14 +198,14 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                         'Thêm đại lý thành công!!!');
                                   }
                                   setState(() {
-                                    newMaDL.clear();
-                                    newName.clear();
-                                    newLoca.clear();
-                                    newLoca.clear();
-                                    newPhone.clear();
-                                    newType.clear();
-                                    newEmail.clear();
-                                    newDate.clear();
+                                    _newMaDL.clear();
+                                    _newName.clear();
+                                    _newLoca.clear();
+                                    _newLoca.clear();
+                                    _newPhone.clear();
+                                    _newType.clear();
+                                    _newEmail.clear();
+                                    _newDate.clear();
                                     dateSub.value = null;
                                     Navigator.pop(context);
                                   });
@@ -223,13 +223,13 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             TextButton(
                                 key: Key('ThemCancel'),
                                 onPressed: () {
-                                  newMaDL.text = '';
-                                  newName.text = '';
-                                  newType.text = '';
-                                  newPhone.text = '';
-                                  newLoca.text = '';
-                                  newEmail.text = '';
-                                  newDate.text = '';
+                                  _newMaDL.text = '';
+                                  _newName.text = '';
+                                  _newType.text = '';
+                                  _newPhone.text = '';
+                                  _newLoca.text = '';
+                                  _newEmail.text = '';
+                                  _newDate.text = '';
                                   dateSub.value = null;
                                   setState(() {
                                     Navigator.pop(context);
@@ -431,14 +431,14 @@ class _TableDaiLyState extends State<TableDaiLy> {
                             );
                           });
                     } else {
-                      newMaDL.text = selectedRow[0][0].toString();
-                      newName.text = selectedRow[0][1].toString();
-                      newType.text = selectedRow[0][2].toString();
-                      newPhone.text = selectedRow[0][3].toString();
-                      newEmail.text = selectedRow[0][4].toString();
-                      newLoca.text = selectedRow[0][5].toString();
-                      newDate.text = selectedRow[0][6].toString();
-                      newTienno.text = selectedRow[0][7].toString();
+                      _newMaDL.text = selectedRow[0][0].toString();
+                      _newName.text = selectedRow[0][1].toString();
+                      _newType.text = selectedRow[0][2].toString();
+                      _newPhone.text = selectedRow[0][3].toString();
+                      _newEmail.text = selectedRow[0][4].toString();
+                      _newLoca.text = selectedRow[0][5].toString();
+                      _newDate.text = selectedRow[0][6].toString();
+                      _newTienno.text = selectedRow[0][7].toString();
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -452,16 +452,16 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                   color: Colors.blueGrey[800]),
                             ),
                             content: ThemDaiLy(
-                              Checksua: false,
+                              checksua: false,
                               formkey: formKey,
-                              maDL: newMaDL,
-                              tenDL: newName,
-                              loaiDL: newType,
-                              email: newEmail,
-                              sodtDL: newPhone,
-                              ngaytiepnhan: newDate,
-                              quan: newLoca,
-                              tienno: newTienno,
+                              maDL: _newMaDL,
+                              tenDL: _newName,
+                              loaiDL: _newType,
+                              email: _newEmail,
+                              sodtDL: _newPhone,
+                              ngaytiepnhan: _newDate,
+                              quan: _newLoca,
+                              tienno: _newTienno,
                               dateSub: dateSub,
                             ),
                             actions: [
@@ -473,13 +473,13 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                   if (isValid) {
                                     var updateData =
                                         await supabaseManager.updateDaiLyData(
-                                            int.parse(newMaDL.text),
-                                            newName.text,
-                                            int.parse(newType.text),
-                                            int.parse(newPhone.text),
-                                            newDate.text,
-                                            newEmail.text,
-                                            newLoca.text);
+                                            int.parse(_newMaDL.text),
+                                            _newName.text,
+                                            int.parse(_newType.text),
+                                            int.parse(_newPhone.text),
+                                            _newDate.text,
+                                            _newEmail.text,
+                                            _newLoca.text);
                                     if (updateData != null) {
                                       _showTopFlash(
                                           Colors.white,
@@ -496,13 +496,13 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                           'Sửa đại lý thành công!!!');
                                     }
                                     setState(() {
-                                      newMaDL.clear();
-                                      newName.clear();
-                                      newType.clear();
-                                      newLoca.clear();
-                                      newEmail.clear();
-                                      newPhone.clear();
-                                      newDate.clear();
+                                      _newMaDL.clear();
+                                      _newName.clear();
+                                      _newType.clear();
+                                      _newLoca.clear();
+                                      _newEmail.clear();
+                                      _newPhone.clear();
+                                      _newDate.clear();
                                       dateSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
@@ -520,13 +520,13 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      newMaDL.clear();
-                                      newName.clear();
-                                      newType.clear();
-                                      newLoca.clear();
-                                      newEmail.clear();
-                                      newPhone.clear();
-                                      newDate.clear();
+                                      _newMaDL.clear();
+                                      _newName.clear();
+                                      _newType.clear();
+                                      _newLoca.clear();
+                                      _newEmail.clear();
+                                      _newPhone.clear();
+                                      _newDate.clear();
                                       dateSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
@@ -643,7 +643,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
     ];
     return FutureBuilder(
       future: supabaseManager.readDataDaiLy(
-          searchMa.text, searchQuan.text, searchLoai.text),
+          _searchMa.text, _searchQuan.text, _searchLoai.text),
       // future: supabaseManager.readData('DAILY'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {

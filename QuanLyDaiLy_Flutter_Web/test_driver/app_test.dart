@@ -116,6 +116,30 @@ void main() {
       await driver.tap(find.byValueKey('DAILY'));
       await driver.waitUntilNoTransientCallbacks();
     });
+    // test('Test Tài Chính Page', () async {});
+  });
+
+  group('test kho hàng', () {
+    final topFlash = find.byType('FlashBar');
+    final emailText = find.byValueKey('email');
+    final passText = find.byValueKey('password');
+    final loginBtn = find.byValueKey('loginButton');
+    final homepage = find.byType('HomePage');
+
+    late FlutterDriver driver;
+    setUpAll(() async {
+      driver = await FlutterDriver.connect();
+    });
+
+    test("Log in correct", () async {
+      await driver.tap(emailText);
+      await driver.enterText('quochuy123dh@tql.com');
+      await driver.tap(passText);
+      await driver.enterText('123456789');
+      await driver.tap(loginBtn);
+      await driver.waitFor(homepage);
+      await driver.waitUntilNoTransientCallbacks();
+    });
 
     test('Navigate Kho Hàng', () async {
       await driver.tap(find.byValueKey('KHOHANG'));
@@ -180,7 +204,9 @@ void main() {
       await driver.waitFor(find.byType('PhieuXuatList'));
       await driver.waitUntilNoTransientCallbacks();
     });
-
-    // test('Test Tài Chính Page', () async {});
   });
+
+  group('Test Tài Chính', () {});
+
+  group('Test Nhân Viên', () {});
 }
