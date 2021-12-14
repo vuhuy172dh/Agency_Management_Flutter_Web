@@ -26,7 +26,7 @@ Widget SwitchPage(int _index) {
 
 class _TaiChinhSideBarState extends State<TaiChinhSideBar> {
   List<String> TaiChinh = [
-    'Danh sách các hóa đơn',
+    'Danh sách phiếu thu tiền',
     'Báo cáo doanh số',
     'Báo cáo công nợ',
   ];

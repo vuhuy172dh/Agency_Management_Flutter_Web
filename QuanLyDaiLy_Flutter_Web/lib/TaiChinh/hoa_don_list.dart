@@ -20,10 +20,10 @@ class _HoaDonListState extends State<HoaDonList> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
-  TextEditingController newMaHoaDon = TextEditingController();
-  TextEditingController newMaDL = TextEditingController();
-  TextEditingController newNgayThu = TextEditingController();
-  TextEditingController newSoTienThu = TextEditingController();
+  TextEditingController _newMaHoaDon = TextEditingController();
+  TextEditingController _newMaDL = TextEditingController();
+  TextEditingController _newNgayThu = TextEditingController();
+  TextEditingController _newSoTienThu = TextEditingController();
   final ValueNotifier<DateTime?> _ngaythuSub = ValueNotifier(null);
   TextEditingController _searchMa = TextEditingController();
   TextEditingController _searchMaDl = TextEditingController();
@@ -82,7 +82,7 @@ class _HoaDonListState extends State<HoaDonList> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
-                          "DANH SÁCH CÁC HÓA ĐƠN",
+                          "DANH SÁCH PHIẾU THU TIỀN",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 30,
@@ -136,7 +136,7 @@ class _HoaDonListState extends State<HoaDonList> {
                         return AlertDialog(
                           insetPadding: EdgeInsets.symmetric(vertical: 100),
                           title: Text(
-                            'THÊM HÓA ĐƠN',
+                            'THÊM PHIẾU THU TIỀN',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -145,10 +145,10 @@ class _HoaDonListState extends State<HoaDonList> {
                           content: ThemHoaDon(
                             formKey: formKey,
                             isCheck: false,
-                            newMaPhieu: newMaHoaDon,
-                            newMaDL: newMaDL,
-                            newSoTienThu: newSoTienThu,
-                            newNgayThu: newNgayThu,
+                            newMaPhieu: _newMaHoaDon,
+                            newMaDL: _newMaDL,
+                            newSoTienThu: _newSoTienThu,
+                            newNgayThu: _newNgayThu,
                             ngaythuSub: _ngaythuSub,
                           ),
                           actions: [
@@ -159,10 +159,10 @@ class _HoaDonListState extends State<HoaDonList> {
                                 if (isValid) {
                                   var addData =
                                       await supabaseManager.addDataHoaDon(
-                                          int.parse(newMaHoaDon.text),
-                                          newNgayThu.text,
-                                          int.parse(newMaDL.text),
-                                          int.parse(newSoTienThu.text));
+                                          int.parse(_newMaHoaDon.text),
+                                          _newNgayThu.text,
+                                          int.parse(_newMaDL.text),
+                                          int.parse(_newSoTienThu.text));
                                   if (addData != null) {
                                     _showTopFlash(
                                         Colors.white,
@@ -179,10 +179,10 @@ class _HoaDonListState extends State<HoaDonList> {
                                         'Thêm hóa đơn thành công!!!');
                                   }
                                   setState(() {
-                                    newMaDL.clear();
-                                    newMaHoaDon.clear();
-                                    newNgayThu.clear();
-                                    newSoTienThu.clear();
+                                    _newMaDL.clear();
+                                    _newMaHoaDon.clear();
+                                    _newNgayThu.clear();
+                                    _newSoTienThu.clear();
                                     _ngaythuSub.value = null;
                                     Navigator.pop(context);
                                   });
@@ -199,10 +199,10 @@ class _HoaDonListState extends State<HoaDonList> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  newMaDL.clear();
-                                  newMaHoaDon.clear();
-                                  newNgayThu.clear();
-                                  newSoTienThu.clear();
+                                  _newMaDL.clear();
+                                  _newMaHoaDon.clear();
+                                  _newNgayThu.clear();
+                                  _newSoTienThu.clear();
                                   _ngaythuSub.value = null;
                                   Navigator.pop(context);
                                 },
@@ -399,17 +399,17 @@ class _HoaDonListState extends State<HoaDonList> {
                             );
                           });
                     } else {
-                      newMaHoaDon.text = selectedRow[0][0].toString();
-                      newMaDL.text = selectedRow[0][1].toString();
-                      newNgayThu.text = selectedRow[0][7].toString();
-                      newSoTienThu.text = selectedRow[0][6].toString();
+                      _newMaHoaDon.text = selectedRow[0][0].toString();
+                      _newMaDL.text = selectedRow[0][1].toString();
+                      _newNgayThu.text = selectedRow[0][7].toString();
+                      _newSoTienThu.text = selectedRow[0][6].toString();
                       showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
                             insetPadding: EdgeInsets.symmetric(vertical: 100),
                             title: Text(
-                              'SỬA HÓA ĐƠN',
+                              'SỬA PHIẾU THU TIỀN',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -418,10 +418,10 @@ class _HoaDonListState extends State<HoaDonList> {
                             content: ThemHoaDon(
                               formKey: formKey,
                               isCheck: true,
-                              newMaPhieu: newMaHoaDon,
-                              newMaDL: newMaDL,
-                              newSoTienThu: newSoTienThu,
-                              newNgayThu: newNgayThu,
+                              newMaPhieu: _newMaHoaDon,
+                              newMaDL: _newMaDL,
+                              newSoTienThu: _newSoTienThu,
+                              newNgayThu: _newNgayThu,
                               ngaythuSub: _ngaythuSub,
                             ),
                             actions: [
@@ -432,10 +432,10 @@ class _HoaDonListState extends State<HoaDonList> {
                                   if (isValid) {
                                     var updateData =
                                         await supabaseManager.updateHoaDonData(
-                                            int.parse(newMaHoaDon.text),
-                                            newNgayThu.text,
-                                            int.parse(newMaDL.text),
-                                            int.parse(newSoTienThu.text));
+                                            int.parse(_newMaHoaDon.text),
+                                            _newNgayThu.text,
+                                            int.parse(_newMaDL.text),
+                                            int.parse(_newSoTienThu.text));
                                     if (updateData != null) {
                                       _showTopFlash(
                                           Colors.white,
@@ -452,10 +452,10 @@ class _HoaDonListState extends State<HoaDonList> {
                                           'Sửa hóa đơn thành công!!!');
                                     }
                                     setState(() {
-                                      newMaDL.clear();
-                                      newMaHoaDon.clear();
-                                      newNgayThu.clear();
-                                      newSoTienThu.clear();
+                                      _newMaDL.clear();
+                                      _newMaHoaDon.clear();
+                                      _newNgayThu.clear();
+                                      _newSoTienThu.clear();
                                       _ngaythuSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
@@ -473,10 +473,10 @@ class _HoaDonListState extends State<HoaDonList> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      newMaDL.clear();
-                                      newMaHoaDon.clear();
-                                      newNgayThu.clear();
-                                      newSoTienThu.clear();
+                                      _newMaDL.clear();
+                                      _newMaHoaDon.clear();
+                                      _newNgayThu.clear();
+                                      _newSoTienThu.clear();
                                       _ngaythuSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();

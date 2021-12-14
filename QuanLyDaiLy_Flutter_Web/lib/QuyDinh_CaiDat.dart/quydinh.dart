@@ -22,10 +22,10 @@ class _QuyDinhState extends State<QuyDinh> {
   List<dynamic> selectedLoaiRow = [];
   final formKeyToChuc = GlobalKey<FormState>();
   final formKeyTienNo = GlobalKey<FormState>();
-  TextEditingController quan = TextEditingController();
-  TextEditingController soluong = TextEditingController();
-  TextEditingController loai = TextEditingController();
-  TextEditingController tienno = TextEditingController();
+  TextEditingController _quan = TextEditingController();
+  TextEditingController _soluong = TextEditingController();
+  TextEditingController _loai = TextEditingController();
+  TextEditingController _tienno = TextEditingController();
 
   void _showTopFlash(
       Color? backgroundcolor, TextStyle? contentStyle, String content) {
@@ -122,8 +122,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                           content: ThemQuyDinh(
                                               isChecked: false,
                                               formKey: formKeyToChuc,
-                                              ten: quan,
-                                              noidung: soluong,
+                                              ten: _quan,
+                                              noidung: _soluong,
                                               tieude1: 'QUẬN',
                                               tieude2: 'SỐ LƯỢNG ĐẠI LÝ'),
                                           actions: [
@@ -136,9 +136,9 @@ class _QuyDinhState extends State<QuyDinh> {
                                                     var data =
                                                         await supabaseManager
                                                             .addDataQCTC(
-                                                                quan.text,
+                                                                _quan.text,
                                                                 int.parse(
-                                                                    soluong
+                                                                    _soluong
                                                                         .text));
                                                     if (data != null) {
                                                       _showTopFlash(
@@ -162,8 +162,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                     }
 
                                                     setState(() {
-                                                      quan.clear();
-                                                      soluong.clear();
+                                                      _quan.clear();
+                                                      _soluong.clear();
                                                       Navigator.pop(context);
                                                     });
                                                   }
@@ -178,8 +178,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                             ElevatedButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    quan.clear();
-                                                    soluong.clear();
+                                                    _quan.clear();
+                                                    _soluong.clear();
                                                     Navigator.pop(context);
                                                   });
                                                 },
@@ -203,8 +203,9 @@ class _QuyDinhState extends State<QuyDinh> {
                                     primary: Colors.blueGrey),
                                 onPressed: () async {
                                   if (selectedRow.length == 1) {
-                                    quan.text = selectedRow[0][0];
-                                    soluong.text = selectedRow[0][1].toString();
+                                    _quan.text = selectedRow[0][0];
+                                    _soluong.text =
+                                        selectedRow[0][1].toString();
                                     showDialog(
                                         context: context,
                                         builder: (context) {
@@ -219,8 +220,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                             content: ThemQuyDinh(
                                               isChecked: true,
                                               formKey: formKeyToChuc,
-                                              noidung: soluong,
-                                              ten: quan,
+                                              noidung: _soluong,
+                                              ten: _quan,
                                               tieude1: 'QUẬN',
                                               tieude2: 'SỐ LƯỢNG ĐẠI LÝ',
                                             ),
@@ -234,9 +235,9 @@ class _QuyDinhState extends State<QuyDinh> {
                                                       var Updatedata =
                                                           await supabaseManager
                                                               .updateQCTC(
-                                                                  quan.text,
+                                                                  _quan.text,
                                                                   int.parse(
-                                                                      soluong
+                                                                      _soluong
                                                                           .text));
 
                                                       if (Updatedata != null) {
@@ -263,8 +264,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                       setState(() {
                                                         selectedData.clear();
                                                         selectedRow.clear();
-                                                        quan.clear();
-                                                        soluong.clear();
+                                                        _quan.clear();
+                                                        _soluong.clear();
                                                         Navigator.pop(context);
                                                       });
                                                     }
@@ -280,8 +281,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                   )),
                                               ElevatedButton(
                                                   onPressed: () {
-                                                    quan.clear();
-                                                    soluong.clear();
+                                                    _quan.clear();
+                                                    _soluong.clear();
                                                     selectedData.clear();
                                                     selectedRow.clear();
                                                     setState(() {
@@ -567,8 +568,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                           content: ThemQuyDinh(
                                               isChecked: false,
                                               formKey: formKeyTienNo,
-                                              ten: loai,
-                                              noidung: tienno,
+                                              ten: _loai,
+                                              noidung: _tienno,
                                               tieude1: 'LOẠI ĐẠI LÝ',
                                               tieude2: 'TIỀN NỢ TỐI ĐA'),
                                           actions: [
@@ -582,9 +583,10 @@ class _QuyDinhState extends State<QuyDinh> {
                                                         await supabaseManager
                                                             .addDataQDTN(
                                                                 int.parse(
-                                                                    loai.text),
-                                                                int.parse(tienno
-                                                                    .text));
+                                                                    _loai.text),
+                                                                int.parse(
+                                                                    _tienno
+                                                                        .text));
                                                     if (data != null) {
                                                       _showTopFlash(
                                                           Colors.white,
@@ -606,8 +608,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                           'Thêm quy định thành công');
                                                     }
                                                     setState(() {
-                                                      loai.clear();
-                                                      tienno.clear();
+                                                      _loai.clear();
+                                                      _tienno.clear();
                                                       Navigator.pop(context);
                                                     });
                                                   }
@@ -641,9 +643,9 @@ class _QuyDinhState extends State<QuyDinh> {
                                     primary: Colors.blueGrey),
                                 onPressed: () {
                                   if (selectedLoaiRow.length == 1) {
-                                    loai.text =
+                                    _loai.text =
                                         selectedLoaiRow[0][0].toString();
-                                    tienno.text =
+                                    _tienno.text =
                                         selectedLoaiRow[0][1].toString();
                                     showDialog(
                                         context: context,
@@ -659,8 +661,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                             content: ThemQuyDinh(
                                               isChecked: true,
                                               formKey: formKeyTienNo,
-                                              noidung: tienno,
-                                              ten: loai,
+                                              noidung: _tienno,
+                                              ten: _loai,
                                               tieude1: 'LOẠI ĐẠI LÝ',
                                               tieude2: 'TIỀN NỢ TỐI ĐA',
                                             ),
@@ -674,10 +676,11 @@ class _QuyDinhState extends State<QuyDinh> {
                                                       var Updatedata =
                                                           await supabaseManager
                                                               .updateQDTN(
-                                                                  int.parse(loai
+                                                                  int.parse(_loai
                                                                       .text),
-                                                                  int.parse(tienno
-                                                                      .text));
+                                                                  int.parse(
+                                                                      _tienno
+                                                                          .text));
 
                                                       if (Updatedata != null) {
                                                         _showTopFlash(
@@ -704,8 +707,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                         selectedLoaiData
                                                             .clear();
                                                         selectedLoaiRow.clear();
-                                                        loai.clear();
-                                                        tienno.clear();
+                                                        _loai.clear();
+                                                        _tienno.clear();
                                                         Navigator.pop(context);
                                                       });
                                                     }
@@ -721,8 +724,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                   )),
                                               ElevatedButton(
                                                   onPressed: () {
-                                                    loai.clear();
-                                                    tienno.clear();
+                                                    _loai.clear();
+                                                    _tienno.clear();
                                                     selectedLoaiData.clear();
                                                     selectedLoaiRow.clear();
                                                     setState(() {

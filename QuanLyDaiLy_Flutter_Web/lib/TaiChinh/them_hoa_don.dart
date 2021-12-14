@@ -48,7 +48,7 @@ class _ThemHoaDonState extends State<ThemHoaDon> {
                   Container(
                     width: 130,
                     child: Text(
-                      'MÃ HÓA ĐƠN',
+                      'MÃ PHIẾU THU',
                       style: TextStyle(
                           color: Colors.blueGrey[800],
                           fontWeight: FontWeight.bold),
