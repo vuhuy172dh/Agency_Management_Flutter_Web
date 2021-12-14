@@ -16,3 +16,7 @@
 | 8 | Vũ Quốc Huy | 19521642 | Thành Viên |
 | 9 | Nguyễn Chí Cường | 19521299 | Thành Viên | 
 | 10 | Trần Thanh Nguyên | 19520192 | Thành Viên |
+
+Nhóm sử dụng:
++ Flutter framework version 2.2.3
++ Dart SDK version 2.13.4
