@@ -20,3 +20,9 @@
 Nhóm sử dụng:
 + Flutter framework version 2.2.3
 + Dart SDK version 2.13.4
+
+Khi chạy app: 
+
+Tài khoản Admin: 
++ Tên đăng nhập: quochuy123dh@tql.com
++ Mật khẩu: 123456789
