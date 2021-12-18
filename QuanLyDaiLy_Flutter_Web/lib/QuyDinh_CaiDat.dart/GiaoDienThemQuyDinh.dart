@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ThemQuyDinh extends StatefulWidget {
+class GiaoDienThemQuyDinh extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController ten;
   final TextEditingController noidung;
   final String tieude1;
   final String tieude2;
   final bool isChecked;
-  const ThemQuyDinh(
+  const GiaoDienThemQuyDinh(
       {Key? key,
       required this.formKey,
       required this.ten,
@@ -18,10 +18,10 @@ class ThemQuyDinh extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ThemQuyDinhState createState() => _ThemQuyDinhState();
+  _GiaoDienThemQuyDinhState createState() => _GiaoDienThemQuyDinhState();
 }
 
-class _ThemQuyDinhState extends State<ThemQuyDinh> {
+class _GiaoDienThemQuyDinhState extends State<GiaoDienThemQuyDinh> {
   @override
   Widget build(BuildContext context) {
     return Container(

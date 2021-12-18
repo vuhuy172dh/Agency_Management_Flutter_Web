@@ -1,8 +1,7 @@
-import 'package:do_an/Kho_hang_Manager/themMH_into_ChiTietPhieuNhap.dart';
-import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/Models/ChiTietPhieuNhapClass.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase/supabase.dart';
+import 'package:do_an/KhoHangManager/GiaoDienThemCTPN.dart';
 
 class ChiTietPhieuNhap extends StatefulWidget {
   final maphieunhap;
@@ -14,7 +13,6 @@ class ChiTietPhieuNhap extends StatefulWidget {
 }
 
 class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
-  SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   final formKey = GlobalKey<FormState>();
@@ -77,7 +75,7 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: ThemMHCTPN(
+                          content: GiaoDienThemMHCTPN(
                             formKey: formKey,
                             maMH: maMH,
                             soluong: soluong,
@@ -87,8 +85,8 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                               onPressed: () async {
                                 var isValid = formKey.currentState!.validate();
                                 if (isValid) {
-                                  var addData =
-                                      await supabaseManager.addDataCTPN(
+                                  var addData = await CTPN()
+                                      .addChiTietPhieuNhap(
                                           widget.maphieunhap,
                                           int.parse(maMH.text),
                                           int.parse(soluong.text));
@@ -186,7 +184,7 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
                               TextButton(
                                 onPressed: () async {
                                   while (selectedData.isNotEmpty) {
-                                    await supabaseManager.deleteDataCTPN(
+                                    await CTPN().deleteChiTietPhieuNhap(
                                         widget.maphieunhap,
                                         selectedData.removeLast());
                                   }
@@ -258,25 +256,16 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readDataChiTietPhieuNhap(_maphieunhap),
+      future: CTPN().readChiTietPhieuNhap(_maphieunhap),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = this.datasets;
-        datasets['Supabase Query'] = doc.data as List<dynamic>? ?? <dynamic>[];
-
         return Builder(
           builder: (context) {
             return DataTable(
               columns: getColumns(columns),
-              rows: getRowsChiTietPhieu(
-                  (datasets['Supabase Query'] as List<dynamic>)),
+              rows: getRowsChiTietPhieu((snapshot.data as List<CTPN>)),
             );
           },
         );
@@ -296,15 +285,13 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
           ))
       .toList();
 
-  List<DataRow> getRowsChiTietPhieu(List<dynamic> users) =>
-      users.map((dynamic user) {
-        final temp = (user as Map<String, dynamic>);
+  List<DataRow> getRowsChiTietPhieu(List<CTPN> users) => users.map((CTPN user) {
         final cells = [
-          temp['_mamathang'],
-          temp['_tenmathang'],
-          temp['_donvi'],
-          temp['_soluongnhap'],
-          temp['_gianhap']
+          user.mamathang,
+          user.tenmathang,
+          user.donvi,
+          user.soluongnhap,
+          user.gianhap
         ];
 
         return DataRow(
@@ -313,7 +300,7 @@ class _ChiTietPhieuNhapState extends State<ChiTietPhieuNhap> {
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[0])
+                ? selectedData.add(cells[0] as int)
                 : selectedData.remove(cells[0]);
           }),
         );

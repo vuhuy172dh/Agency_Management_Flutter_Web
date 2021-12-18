@@ -1,28 +1,28 @@
-import 'package:do_an/Kho_hang_Manager/chi_tiet_phieu_nhap.dart';
-import 'package:do_an/Kho_hang_Manager/them_phieu_nhap.dart';
-import 'package:do_an/Supabase/supabase_mange.dart';
+import 'package:do_an/KhoHangManager/GiaoDienCTPX.dart';
+import 'package:do_an/KhoHangManager/GiaoDienThemPhieuXuat.dart';
+import 'package:do_an/Models/PhieuXuatKhoClass.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase/supabase.dart';
 
-class PhieuNhapList extends StatefulWidget {
-  const PhieuNhapList({Key? key}) : super(key: key);
+class PhieuXuatList extends StatefulWidget {
+  const PhieuXuatList({Key? key}) : super(key: key);
 
   @override
-  _PhieuNhapListState createState() => _PhieuNhapListState();
+  _PhieuXuatListState createState() => _PhieuXuatListState();
 }
 
-class _PhieuNhapListState extends State<PhieuNhapList> {
+class _PhieuXuatListState extends State<PhieuXuatList> {
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
   final formKey = GlobalKey<FormState>();
-  SupabaseManager supabaseManager = SupabaseManager();
-  TextEditingController _newMaPhieu = TextEditingController();
+  TextEditingController _newMaPhieuXuat = TextEditingController();
+  TextEditingController _newNgayXuat = TextEditingController();
+  TextEditingController _newMaDaiLy = TextEditingController();
   TextEditingController _newThanhTien = TextEditingController();
-  TextEditingController _newNgayNhap = TextEditingController();
-  final ValueNotifier<DateTime?> _ngaynhapSub = ValueNotifier(null);
+  TextEditingController _newSoTienNo = TextEditingController();
+  final ValueNotifier<DateTime?> _ngayxuatSub = ValueNotifier(null);
   TextEditingController _searchMa = TextEditingController();
 
   void _showTopFlash(
@@ -77,7 +77,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                     Container(
                       padding: EdgeInsets.all(10),
                       child: Text(
-                        'DANH SÁCH PHIẾU NHẬP',
+                        'DANH SÁCH PHIẾU XUẤT',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 25,
@@ -142,7 +142,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                 'ERROR',
                                 style: TextStyle(color: Colors.red),
                               ),
-                              content: Text('Bạn chưa chọn đối tượng để xem'),
+                              content: Text(
+                                  'Bạn chưa chọn đối tượng để xem chi tiết'),
                               actions: [
                                 TextButton(
                                     onPressed: () {
@@ -186,7 +187,6 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            scrollable: true,
                             title: Text(
                               'CHI TIẾT PHIẾU',
                               style: TextStyle(
@@ -194,8 +194,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                   fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),
-                            content: ChiTietPhieuNhap(
-                              maphieunhap: selectedData.removeLast(),
+                            content: ChiTietPhieuXuat(
+                              maphieuxuat: selectedData.removeLast(),
                             ),
                             actions: [
                               TextButton(
@@ -203,10 +203,12 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                   Navigator.pop(context);
                                   setState(() {});
                                 },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey[800]),
                                 child: Text(
                                   'Cancel',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
+                                      color: Colors.white,
                                       fontWeight: FontWeight.bold),
                                 ),
                               )
@@ -246,32 +248,45 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          insetPadding: EdgeInsets.symmetric(vertical: 190),
+                          insetPadding: EdgeInsets.symmetric(vertical: 100),
                           title: Text(
-                            'PHIẾU NHẬP KHO',
+                            'PHIẾU XUẤT KHO',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: ThemPhieuNhapKho(
-                              formkey: formKey,
-                              isCheck: false,
-                              newMaPhieuNhap: _newMaPhieu,
-                              newThanhTien: _newThanhTien,
-                              newNgayNhap: _newNgayNhap,
-                              ngaynhapSub: _ngaynhapSub),
+                          content: GiaoDienThemPhieuXuatKho(
+                            formkey: formKey,
+                            isCheck: false,
+                            newMaDaiLy: _newMaDaiLy,
+                            newMaPhieuXuat: _newMaPhieuXuat,
+                            newNgayXuat: _newNgayXuat,
+                            newSoTienNo: _newSoTienNo,
+                            newThanhTien: _newThanhTien,
+                            ngayxuatSub: _ngayxuatSub,
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
-                                  var addData =
-                                      await supabaseManager.addDataPhieuNhap(
-                                    int.parse(_newMaPhieu.text),
-                                    _newNgayNhap.text,
-                                  );
+                                  var addData = await PhieuXuatKho()
+                                      .addPhieuXuatKho(
+                                          int.parse(_newMaPhieuXuat.text),
+                                          _newNgayXuat.text,
+                                          int.parse(_newMaDaiLy.text),
+                                          int.parse(_newSoTienNo.text));
+                                  _newMaDaiLy.clear();
+                                  _newMaPhieuXuat.clear();
+                                  _newSoTienNo.clear();
+                                  _newThanhTien.clear();
+                                  _newNgayXuat.clear();
+                                  _ngayxuatSub.value = null;
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
                                   if (addData != null) {
                                     _showTopFlash(
                                         Colors.white,
@@ -287,13 +302,6 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                             fontWeight: FontWeight.bold),
                                         'Thêm phiếu nhập thành công!!!');
                                   }
-                                  setState(() {
-                                    _newMaPhieu.clear();
-                                    _newNgayNhap.clear();
-                                    _newThanhTien.clear();
-                                    _ngaynhapSub.value = null;
-                                    Navigator.pop(context);
-                                  });
                                 }
                               },
                               style: TextButton.styleFrom(
@@ -307,10 +315,12 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  _newMaPhieu.clear();
-                                  _newNgayNhap.clear();
+                                  _newMaDaiLy.clear();
+                                  _newMaPhieuXuat.clear();
+                                  _newSoTienNo.clear();
                                   _newThanhTien.clear();
-                                  _ngaynhapSub.value = null;
+                                  _newNgayXuat.clear();
+                                  _ngayxuatSub.value = null;
                                   Navigator.pop(context);
                                 },
                                 style: TextButton.styleFrom(
@@ -374,14 +384,14 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text('Bạn chắc chắn muốn xóa'),
+                            title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
                                 onPressed: () async {
                                   var delData;
                                   while (selectedData.isNotEmpty) {
-                                    delData = await supabaseManager
-                                        .deleteDataPhieuNhap(
+                                    delData = await PhieuXuatKho()
+                                        .deletePhieuXuatKho(
                                             selectedData.removeLast());
                                     if (delData != null) {
                                       _showTopFlash(
@@ -390,8 +400,8 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                               color: Colors.red,
                                               fontWeight: FontWeight.bold),
                                           'Xóa phiếu nhập không thành công');
-                                      break;
                                     }
+                                    break;
                                   }
                                   if (delData == null) {
                                     _showTopFlash(
@@ -401,6 +411,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                             fontWeight: FontWeight.bold),
                                         'Xóa phiếu nhập thành công!!!');
                                   }
+
                                   setState(() {
                                     selectedData.clear();
                                     selectedRow.clear();
@@ -502,29 +513,32 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                             );
                           });
                     } else {
-                      _newMaPhieu.text = selectedRow[0][0].toString();
-                      _newThanhTien.text = selectedRow[0][1].toString();
-                      _newNgayNhap.text = selectedRow[0][2];
-
+                      _newMaPhieuXuat.text = selectedRow[0][0].toString();
+                      _newNgayXuat.text = selectedRow[0][1].toString();
+                      _newMaDaiLy.text = selectedRow[0][2].toString();
+                      _newThanhTien.text = selectedRow[0][3].toString();
+                      _newSoTienNo.text = selectedRow[0][4].toString();
                       showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            insetPadding: EdgeInsets.symmetric(vertical: 200),
+                            insetPadding: EdgeInsets.symmetric(vertical: 100),
                             title: Text(
-                              'SỬA PHIẾU NHẬP',
+                              'SỬA PHIẾU XUẤT',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: ThemPhieuNhapKho(
+                            content: GiaoDienThemPhieuXuatKho(
                               formkey: formKey,
                               isCheck: true,
-                              newMaPhieuNhap: _newMaPhieu,
+                              newMaDaiLy: _newMaDaiLy,
+                              newMaPhieuXuat: _newMaPhieuXuat,
+                              newNgayXuat: _newNgayXuat,
+                              newSoTienNo: _newSoTienNo,
                               newThanhTien: _newThanhTien,
-                              newNgayNhap: _newNgayNhap,
-                              ngaynhapSub: _ngaynhapSub,
+                              ngayxuatSub: _ngayxuatSub,
                             ),
                             actions: [
                               TextButton(
@@ -532,32 +546,34 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    var data = await supabaseManager
-                                        .updatePhieuNhapData(
-                                      int.parse(_newMaPhieu.text),
-                                      _newNgayNhap.text,
-                                    );
-                                    if (data != null) {
+                                    var updateData = await PhieuXuatKho()
+                                        .updatePhieuXuatKho(
+                                            int.parse(_newMaPhieuXuat.text),
+                                            _newNgayXuat.text,
+                                            int.parse(_newMaDaiLy.text),
+                                            int.parse(_newSoTienNo.text));
+                                    if (updateData != null) {
                                       _showTopFlash(
                                           Colors.white,
                                           TextStyle(
                                               color: Colors.red,
                                               fontWeight: FontWeight.bold),
-                                          'Sửa phiếu nhập không thành công');
+                                          'Sửa không thành công');
                                     } else {
                                       _showTopFlash(
                                           Colors.green,
                                           TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold),
-                                          'Sửa phiếu nhập thành công!!!');
+                                          'Sửa thành công!!!');
                                     }
-
                                     setState(() {
-                                      _newMaPhieu.clear();
+                                      _newMaDaiLy.clear();
+                                      _newMaPhieuXuat.clear();
+                                      _newNgayXuat.clear();
+                                      _newSoTienNo.clear();
                                       _newThanhTien.clear();
-                                      _newNgayNhap.clear();
-                                      _ngaynhapSub.value = null;
+                                      _ngayxuatSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -574,10 +590,12 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      _newMaPhieu.clear();
+                                      _newMaDaiLy.clear();
+                                      _newMaPhieuXuat.clear();
+                                      _newNgayXuat.clear();
+                                      _newSoTienNo.clear();
                                       _newThanhTien.clear();
-                                      _newNgayNhap.clear();
-                                      _ngaynhapSub.value = null;
+                                      _ngayxuatSub.value = null;
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -617,14 +635,13 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
               ],
             ),
           ),
-          Expanded(child: ListPhieuNhap())
+          Expanded(child: ListPhieuXuat())
         ],
       ),
     );
   }
 
-  // Danh sách phiếu nhập
-  Widget ListPhieuNhap() {
+  Widget ListPhieuXuat() {
     return Container(
       margin: EdgeInsets.all(5),
       alignment: Alignment.topCenter,
@@ -637,28 +654,24 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
   }
 
   Widget buildDataTable() {
-    final columns = ['MÃ PHIÊU NHẬP', 'THÀNH TIỀN', 'NGÀY NHẬP'];
-
+    final columns = [
+      'MÃ PHIẾU XUẤT',
+      'NGÀY XUẤT',
+      'MÃ ĐẠI LÝ',
+      'THÀNH TIỀN',
+      'SỐ TIỀN NỢ',
+    ];
     return FutureBuilder(
-      future: supabaseManager.readDataTimKiemPhieuNhap(_searchMa.text),
-      // future: supabaseManager.readData('PHIEUNHAPHANG'),
+      future: PhieuXuatKho().readPhieuXuatKho(_searchMa.text),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = this.datasets;
-        datasets['Supabase Query'] = doc.data as List<dynamic>? ?? <dynamic>[];
-
         return Builder(
           builder: (context) {
             return DataTable(
               columns: getColumns(columns),
-              rows: getRows((datasets['Supabase Query'] as List<dynamic>)),
+              rows: getRows((snapshot.data as List<PhieuXuatKho>)),
             );
           },
         );
@@ -678,12 +691,14 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
           ))
       .toList();
 
-  List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
-        final temp = (user as Map<String, dynamic>);
+  List<DataRow> getRows(List<PhieuXuatKho> users) =>
+      users.map((PhieuXuatKho user) {
         final cells = [
-          temp['maphieunhap'],
-          temp['thanhtien'],
-          temp['ngaynhap']
+          user.maphieuxuat,
+          user.ngayxuat,
+          user.madaily,
+          user.thanhtien,
+          user.sotienno,
         ];
 
         return DataRow(
@@ -692,7 +707,7 @@ class _PhieuNhapListState extends State<PhieuNhapList> {
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[0])
+                ? selectedData.add(cells[0] as int)
                 : selectedData.remove(cells[0]);
 
             isAdding

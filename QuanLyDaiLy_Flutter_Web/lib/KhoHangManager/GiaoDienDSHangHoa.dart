@@ -1,33 +1,38 @@
+import 'package:do_an/KhoHangManager/GiaoDienThemMatHang.dart';
+import 'package:do_an/Models/MatHangClass.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
-import 'package:do_an/TaiChinh/them_hoa_don.dart';
 import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase/supabase.dart';
 
-class HoaDonList extends StatefulWidget {
-  const HoaDonList({Key? key}) : super(key: key);
+class HangHoaList extends StatefulWidget {
+  const HangHoaList({Key? key}) : super(key: key);
 
   @override
-  _HoaDonListState createState() => _HoaDonListState();
+  _HangHoaListState createState() => _HangHoaListState();
 }
 
-class _HoaDonListState extends State<HoaDonList> {
-  final formKeySearch = GlobalKey<FormState>();
+class _HangHoaListState extends State<HangHoaList> {
   final formKey = GlobalKey<FormState>();
+  final formSearchKey = GlobalKey<FormState>();
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
-  TextEditingController _newMaHoaDon = TextEditingController();
-  TextEditingController _newMaDL = TextEditingController();
-  TextEditingController _newNgayThu = TextEditingController();
-  TextEditingController _newSoTienThu = TextEditingController();
-  final ValueNotifier<DateTime?> _ngaythuSub = ValueNotifier(null);
+  TextEditingController _newMaMH = TextEditingController();
+  TextEditingController _newName = TextEditingController();
+  TextEditingController _newDonVi = TextEditingController();
+  TextEditingController _newGiaNhap = TextEditingController();
+  TextEditingController _newGiaXuat = TextEditingController();
+  TextEditingController _newSoLuong = TextEditingController();
+  TextEditingController _newNgaySX = TextEditingController();
+  TextEditingController _newHanSD = TextEditingController();
+  final ValueNotifier<DateTime?> nsxSub = ValueNotifier(null);
+  final ValueNotifier<DateTime?> hsdSub = ValueNotifier(null);
   TextEditingController _searchMa = TextEditingController();
-  TextEditingController _searchMaDl = TextEditingController();
-  TextEditingController _searchTenDL = TextEditingController();
+  TextEditingController _searchDonVi = TextEditingController();
+  TextEditingController _searchSoluong = TextEditingController();
 
   void _showTopFlash(
       Color? backgroundcolor, TextStyle? contentStyle, String content) {
@@ -75,115 +80,131 @@ class _HoaDonListState extends State<HoaDonList> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Row(
               children: [
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          "DANH SÁCH PHIẾU THU TIỀN",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold),
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      width: 300,
+                      child: Text(
+                        'DANH SÁCH MẶT HÀNG',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold),
                       ),
-                      Row(
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: TimKiem(
-                                  formKey: formKeySearch,
-                                  searchMa: _searchMa,
-                                  searchTen: _searchMaDl,
-                                  searchLoai: _searchTenDL,
-                                  hindText1: "Nhập mã phiếu",
-                                  hindText2: "Nhập mã đại lý",
-                                  hindText3: "Nhập tên đại lý")),
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.blueGrey[800]),
-                              onPressed: () {
-                                setState(() {});
-                              },
-                              child: Text('Search')),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.blueGrey[800]),
-                              onPressed: () {
-                                _searchMa.clear();
-                                _searchMaDl.clear();
-                                _searchTenDL.clear();
-                                setState(() {});
-                              },
-                              child: Text('Home')),
-                        ],
-                      )
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(children: [
+                        TimKiem(
+                            formKey: formSearchKey,
+                            searchMa: _searchMa,
+                            searchTen: _searchDonVi,
+                            searchLoai: _searchSoluong,
+                            hindText1: 'Nhập mã mặt hàng',
+                            hindText2: 'Nhập đơn vị',
+                            hindText3: 'Nhập số lượng'),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {
+                            setState(() {});
+                          },
+                          child: Text('Search'),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[800]),
+                          onPressed: () {
+                            _searchMa.clear();
+                            _searchSoluong.clear();
+                            _searchDonVi.clear();
+                            setState(() {});
+                          },
+                          child: Text('Home'),
+                        ),
+                      ]),
+                    )
+                  ],
                 ),
                 Expanded(child: Container()),
-                // Tạo nút thêm (thêm HÓA ĐƠN)
+                // tạo nút THÊM
                 GestureDetector(
+                  key: Key('ThemMH'),
                   onTap: () {
+                    _newHanSD.text = "";
+                    _newNgaySX.text = "";
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          insetPadding: EdgeInsets.symmetric(vertical: 100),
+                          scrollable: true,
                           title: Text(
-                            'THÊM PHIẾU THU TIỀN',
+                            'THÊM MẶT HÀNG',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: ThemHoaDon(
-                            formKey: formKey,
+                          content: GiaoDienThemMatHang(
                             isCheck: false,
-                            newMaPhieu: _newMaHoaDon,
-                            newMaDL: _newMaDL,
-                            newSoTienThu: _newSoTienThu,
-                            newNgayThu: _newNgayThu,
-                            ngaythuSub: _ngaythuSub,
+                            formKey: formKey,
+                            newMaMH: _newMaMH,
+                            newTenMH: _newName,
+                            newDonVi: _newDonVi,
+                            newGiaNhap: _newGiaNhap,
+                            newGiaXuat: _newGiaXuat,
+                            newNgaySanXuat: _newNgaySX,
+                            newHanSuDung: _newHanSD,
+                            newSoluong: _newSoLuong,
+                            nsxSub: nsxSub,
+                            hsdSub: hsdSub,
                           ),
                           actions: [
                             TextButton(
+                              key: Key('ThemMHSubmit'),
                               onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
-                                  var addData =
-                                      await supabaseManager.addDataHoaDon(
-                                          int.parse(_newMaHoaDon.text),
-                                          _newNgayThu.text,
-                                          int.parse(_newMaDL.text),
-                                          int.parse(_newSoTienThu.text));
+                                  var addData = await MatHang().addMatHang(
+                                      int.parse(_newMaMH.text),
+                                      _newName.text,
+                                      _newDonVi.text,
+                                      int.parse(_newGiaNhap.text),
+                                      int.parse(_newGiaXuat.text),
+                                      _newNgaySX.text,
+                                      _newHanSD.text);
                                   if (addData != null) {
                                     _showTopFlash(
                                         Colors.white,
                                         TextStyle(
                                             color: Colors.red,
                                             fontWeight: FontWeight.bold),
-                                        'Thêm hóa đơn không thành công');
+                                        'Không thể thêm mặt hàng');
                                   } else {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
-                                        'Thêm hóa đơn thành công!!!');
+                                        'Thêm mặt hàng thành công!!!');
                                   }
+                                  _newName.clear();
+                                  _newMaMH.clear();
+                                  _newDonVi.clear();
+                                  _newGiaNhap.clear();
+                                  _newGiaXuat.clear();
+                                  _newNgaySX.clear();
+                                  _newHanSD.clear();
+                                  _newSoLuong.clear();
+                                  nsxSub.value = null;
+                                  hsdSub.value = null;
                                   setState(() {
-                                    _newMaDL.clear();
-                                    _newMaHoaDon.clear();
-                                    _newNgayThu.clear();
-                                    _newSoTienThu.clear();
-                                    _ngaythuSub.value = null;
                                     Navigator.pop(context);
                                   });
                                 }
@@ -199,12 +220,19 @@ class _HoaDonListState extends State<HoaDonList> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  _newMaDL.clear();
-                                  _newMaHoaDon.clear();
-                                  _newNgayThu.clear();
-                                  _newSoTienThu.clear();
-                                  _ngaythuSub.value = null;
-                                  Navigator.pop(context);
+                                  _newName.clear();
+                                  _newMaMH.clear();
+                                  _newDonVi.clear();
+                                  _newGiaNhap.clear();
+                                  _newGiaXuat.clear();
+                                  _newNgaySX.clear();
+                                  _newHanSD.clear();
+                                  _newSoLuong.clear();
+                                  nsxSub.value = null;
+                                  hsdSub.value = null;
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 style: TextButton.styleFrom(
                                     backgroundColor: Colors.blueGrey[800]),
@@ -216,7 +244,6 @@ class _HoaDonListState extends State<HoaDonList> {
                         );
                       },
                     );
-                    setState(() {});
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -236,9 +263,9 @@ class _HoaDonListState extends State<HoaDonList> {
                 const SizedBox(
                   width: 5,
                 ),
-
-                // Tạo nút xóa (xóa hóa đơn)
+                // Tạo nút xóa
                 GestureDetector(
+                  key: Key('XoaMH'),
                   onTap: () {
                     if (selectedData.isEmpty) {
                       showDialog(
@@ -273,34 +300,34 @@ class _HoaDonListState extends State<HoaDonList> {
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
                               TextButton(
+                                key: Key('XoaMHYes'),
                                 onPressed: () async {
-                                  var delData;
+                                  var deletedata;
                                   while (selectedData.isNotEmpty) {
-                                    delData =
-                                        await supabaseManager.deleteDataHoaDon(
-                                            selectedData.removeLast());
-                                    if (delData != null) {
+                                    deletedata = await MatHang().deleteMatHang(
+                                        selectedData.removeLast());
+                                    if (deletedata != null) {
                                       _showTopFlash(
                                           Colors.white,
                                           TextStyle(
                                               color: Colors.red,
                                               fontWeight: FontWeight.bold),
-                                          'Xóa hóa đơn không thành công');
-                                      break;
+                                          'Xóa mặt hàng không thành công');
                                     }
+                                    break;
                                   }
-                                  if (delData == null) {
+                                  if (deletedata == null) {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
-                                        'Xóa hóa đơn thành công!!!');
+                                        'Xóa mặt hàng thành công!!!');
                                   }
-                                  selectedData.clear();
-                                  selectedRow.clear();
-                                  setState(() {});
-                                  Navigator.pop(context);
+                                  setState(() {
+                                    selectedRow.clear();
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text(
                                   'YES',
@@ -346,9 +373,9 @@ class _HoaDonListState extends State<HoaDonList> {
                     ),
                   ),
                 ),
-
-                // Tạo nút sửa (sửa đại lý)
+                // tạo nút sửa
                 GestureDetector(
+                  key: Key('SuaMH'),
                   onTap: () {
                     if (selectedRow.length < 1) {
                       showDialog(
@@ -399,69 +426,88 @@ class _HoaDonListState extends State<HoaDonList> {
                             );
                           });
                     } else {
-                      _newMaHoaDon.text = selectedRow[0][0].toString();
-                      _newMaDL.text = selectedRow[0][1].toString();
-                      _newNgayThu.text = selectedRow[0][7].toString();
-                      _newSoTienThu.text = selectedRow[0][6].toString();
+                      _newMaMH.text = selectedRow[0][0].toString();
+                      _newName.text = selectedRow[0][1].toString();
+                      _newDonVi.text = selectedRow[0][2].toString();
+                      _newGiaNhap.text = selectedRow[0][3].toString();
+                      _newGiaXuat.text = selectedRow[0][4].toString();
+                      _newSoLuong.text = selectedRow[0][5].toString();
+                      _newNgaySX.text = selectedRow[0][6].toString();
+                      _newHanSD.text = selectedRow[0][7].toString();
+
                       showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            insetPadding: EdgeInsets.symmetric(vertical: 100),
+                            scrollable: true,
                             title: Text(
-                              'SỬA PHIẾU THU TIỀN',
+                              'SỬA MẶT HÀNG',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: ThemHoaDon(
-                              formKey: formKey,
+                            content: GiaoDienThemMatHang(
                               isCheck: true,
-                              newMaPhieu: _newMaHoaDon,
-                              newMaDL: _newMaDL,
-                              newSoTienThu: _newSoTienThu,
-                              newNgayThu: _newNgayThu,
-                              ngaythuSub: _ngaythuSub,
+                              formKey: formKey,
+                              newMaMH: _newMaMH,
+                              newTenMH: _newName,
+                              newDonVi: _newDonVi,
+                              newGiaNhap: _newGiaNhap,
+                              newGiaXuat: _newGiaXuat,
+                              newNgaySanXuat: _newNgaySX,
+                              newHanSuDung: _newHanSD,
+                              newSoluong: _newSoLuong,
+                              nsxSub: nsxSub,
+                              hsdSub: hsdSub,
                             ),
                             actions: [
                               TextButton(
+                                key: Key('SuaMHSubmit'),
                                 onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    var updateData =
-                                        await supabaseManager.updateHoaDonData(
-                                            int.parse(_newMaHoaDon.text),
-                                            _newNgayThu.text,
-                                            int.parse(_newMaDL.text),
-                                            int.parse(_newSoTienThu.text));
+                                    var updateData = await MatHang()
+                                        .updateMatHang(
+                                            int.parse(_newMaMH.text),
+                                            _newName.text,
+                                            _newDonVi.text,
+                                            int.parse(_newGiaNhap.text),
+                                            int.parse(_newGiaXuat.text),
+                                            _newNgaySX.text,
+                                            _newHanSD.text);
                                     if (updateData != null) {
                                       _showTopFlash(
                                           Colors.white,
                                           TextStyle(
                                               color: Colors.red,
                                               fontWeight: FontWeight.bold),
-                                          'Sửa hóa đơn không thành công');
+                                          'Sửa mặt hàng không thành công');
                                     } else {
                                       _showTopFlash(
                                           Colors.green,
                                           TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold),
-                                          'Sửa hóa đơn thành công!!!');
+                                          'Sửa mặt hàng thành công!!!');
                                     }
-                                    setState(() {
-                                      _newMaDL.clear();
-                                      _newMaHoaDon.clear();
-                                      _newNgayThu.clear();
-                                      _newSoTienThu.clear();
-                                      _ngaythuSub.value = null;
-                                      selectedData.clear();
-                                      selectedRow.clear();
-                                      Navigator.pop(context);
-                                    });
                                   }
+                                  setState(() {
+                                    _newName.clear();
+                                    _newMaMH.clear();
+                                    _newDonVi.clear();
+                                    _newGiaNhap.clear();
+                                    _newGiaXuat.clear();
+                                    _newNgaySX.clear();
+                                    _newHanSD.clear();
+                                    _newSoLuong.clear();
+                                    nsxSub.value = null;
+                                    hsdSub.value = null;
+                                    selectedRow.clear();
+                                    selectedData.clear();
+                                    Navigator.pop(context);
+                                  });
                                 },
                                 child: Text(
                                   'Submit',
@@ -473,11 +519,14 @@ class _HoaDonListState extends State<HoaDonList> {
                               TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      _newMaDL.clear();
-                                      _newMaHoaDon.clear();
-                                      _newNgayThu.clear();
-                                      _newSoTienThu.clear();
-                                      _ngaythuSub.value = null;
+                                      _newMaMH.text = '';
+                                      _newName.text = '';
+                                      _newDonVi.text = '';
+                                      _newGiaNhap.text = '';
+                                      _newGiaXuat.text = '';
+                                      _newSoLuong.text = '';
+                                      _newNgaySX.text = '';
+                                      _newHanSD.text = '';
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
@@ -495,14 +544,15 @@ class _HoaDonListState extends State<HoaDonList> {
                   },
                   child: Container(
                     alignment: Alignment.center,
+                    margin: EdgeInsets.only(right: 20),
                     height: 50,
                     width: 75,
-                    margin: EdgeInsets.only(right: 20),
                     decoration: BoxDecoration(
-                        color: selectedRow.length != 1
-                            ? Colors.blueGrey[400]
-                            : Colors.blueGrey[800],
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                      color: selectedRow.length != 1
+                          ? Colors.blueGrey[400]
+                          : Colors.blueGrey[800],
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
                     child: Text(
                       'SỬA',
                       textAlign: TextAlign.center,
@@ -517,15 +567,14 @@ class _HoaDonListState extends State<HoaDonList> {
             ),
           ),
           Expanded(
-            child: Container(
-              alignment: Alignment.topCenter,
-              margin: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                  color: Colors.blueGrey[200],
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              child: ScrollableWidget(child: buildDataTable()),
-            ),
-          )
+              child: Container(
+            margin: EdgeInsets.all(5),
+            alignment: Alignment.topCenter,
+            decoration: BoxDecoration(
+                color: Colors.blueGrey[200],
+                borderRadius: BorderRadius.all(Radius.circular(5))),
+            child: ScrollableWidget(child: buildDataTable()),
+          ))
         ],
       ),
     );
@@ -533,36 +582,28 @@ class _HoaDonListState extends State<HoaDonList> {
 
   Widget buildDataTable() {
     final columns = [
-      'MÃ PHIẾU THU TIỀN',
-      'MÃ ĐẠI LÝ',
-      'TÊN ĐẠI LÝ',
-      'QUẬN',
-      'SỐ ĐIỆN THOẠI',
-      'EMAIL',
-      'SỐ TIỀN THU',
-      'NGÀY THU'
+      'MÃ MẶT HÀNG',
+      'TÊN MẶT HÀNG',
+      'ĐƠN VỊ',
+      'GIÁ NHẬP',
+      'GIÁ XUẤT',
+      'SỐ LƯỢNG',
+      'NGÀY SẢN XUẤT',
+      'HẠN SỬ DỤNG'
     ];
 
     return FutureBuilder(
-      future: supabaseManager.readDataChiTietPhieuThu(
-          _searchMa.text, _searchMaDl.text, _searchTenDL.text),
+      future: MatHang()
+          .readMatHang(_searchMa.text, _searchDonVi.text, _searchSoluong.text),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = this.datasets;
-        datasets['Supabase Query'] = doc.data as List<dynamic>? ?? <dynamic>[];
-
         return Builder(
           builder: (context) {
             return DataTable(
               columns: getColumns(columns),
-              rows: getRows((datasets['Supabase Query'] as List<dynamic>)),
+              rows: getRows((snapshot.data as List<MatHang>)),
             );
           },
         );
@@ -575,24 +616,32 @@ class _HoaDonListState extends State<HoaDonList> {
             label: Text(
               column,
               style: TextStyle(
-                  color: Colors.blueGrey[800],
+                  color: Colors.blueGrey,
                   fontWeight: FontWeight.w600,
                   fontSize: 15),
             ),
           ))
       .toList();
 
-  List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
-        final temp = (user as Map<String, dynamic>);
+  List<DataRow> getRows(List<MatHang> users) => users.map((MatHang user) {
+        //final temp = (user as Map<String, dynamic>);
         final cells = [
-          temp['_maphieuthu'],
-          temp['_madaily'],
-          temp['_tendaily'],
-          temp['_quan'],
-          temp['_sodienthoai'],
-          temp['_email'],
-          temp['_sotienthu'],
-          temp['_ngaythu']
+          user.mamathang,
+          user.tenmathang,
+          user.donvi,
+          user.gianhap,
+          user.giaxuat,
+          user.soluong,
+          user.ngaysanxuat,
+          user.hansudung,
+          //temp['mamathang'],
+          //temp['tenmathang'],
+          //temp['donvi'],
+          //temp['gianhap'],
+          //temp['giaxuat'],
+          //temp['soluong'],
+          //temp['ngaysanxuat'],
+          //temp['hansudung']
         ];
 
         return DataRow(
@@ -601,7 +650,7 @@ class _HoaDonListState extends State<HoaDonList> {
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[0])
+                ? selectedData.add(cells[0] as int)
                 : selectedData.remove(cells[0]);
 
             isAdding

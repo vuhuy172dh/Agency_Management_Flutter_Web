@@ -1,17 +1,17 @@
 import 'package:do_an/Supabase/supabase_mange.dart';
-import 'package:do_an/TaiChinh/bar_chart_component.dart';
+import 'package:do_an/TaiChinhManager/bar_chart_component2.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
-class BaoCaoThang extends StatefulWidget {
-  const BaoCaoThang({Key? key}) : super(key: key);
+class BaoCaoCongNo extends StatefulWidget {
+  const BaoCaoCongNo({Key? key}) : super(key: key);
 
   @override
-  _BaoCaoThangState createState() => _BaoCaoThangState();
+  _BaoCaoCongNoState createState() => _BaoCaoCongNoState();
 }
 
-class _BaoCaoThangState extends State<BaoCaoThang> {
+class _BaoCaoCongNoState extends State<BaoCaoCongNo> {
   final formKey = GlobalKey<FormState>();
   final yearKey = GlobalKey<FormFieldState>();
   final monthKey = GlobalKey<FormFieldState>();
@@ -51,12 +51,12 @@ class _BaoCaoThangState extends State<BaoCaoThang> {
             child: Row(
               children: [
                 Container(
-                    width: 450,
+                    width: 430,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "DANH SÁCH BÁO CÁO THÁNG",
+                            "BÁO CÁO CÔNG NỢ ĐẠI LÝ",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 30,
@@ -186,31 +186,29 @@ class _BaoCaoThangState extends State<BaoCaoThang> {
                                   width: 5,
                                 ),
                                 ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.blueGrey[800]),
-                                  onPressed: () {
-                                    setState(() {
-                                      checkHome = true;
-                                      _monthController.clear();
-                                      yearValue.clear();
-                                    });
-                                  },
-                                  child: Text(
-                                    'Home',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey[800]),
+                                    onPressed: () {
+                                      setState(() {
+                                        checkHome = true;
+                                        _monthController.clear();
+                                        yearValue.clear();
+                                      });
+                                    },
+                                    child: Text(
+                                      'Home',
+                                      style: TextStyle(color: Colors.white),
+                                    ))
                               ],
                             ),
                           )
                         ])),
-                Expanded(child: Container()),
               ],
             ),
           ),
           Expanded(
             child: checkHome == true
-                ? BarChartComponent()
+                ? BarChartComponent2()
                 : Container(
                     alignment: Alignment.topCenter,
                     margin: EdgeInsets.all(5),
@@ -228,15 +226,10 @@ class _BaoCaoThangState extends State<BaoCaoThang> {
   }
 
   Widget buildDataTable(int thang, int nam) {
-    final columns = [
-      'MÃ ĐẠI LÝ',
-      'TÊN ĐẠI LÝ',
-      'SỐ PHIẾU XUẤT',
-      'TỔNG GIÁ TRỊ'
-    ];
+    final columns = ['MÃ ĐẠI LÝ', 'TÊN ĐẠI LÝ', 'NỢ ĐẦU', 'NỢ CUỐI'];
 
     return FutureBuilder(
-      future: supabaseManager.readDataBaoCaoThang(thang, nam),
+      future: supabaseManager.readDataBaoCaoCongNo(thang, nam),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
@@ -278,8 +271,8 @@ class _BaoCaoThangState extends State<BaoCaoThang> {
         final cells = [
           temp['_madaily'],
           temp['_tendaily'],
-          temp['_sophieuxuat'],
-          temp['_tonggiatri']
+          temp['_nodau'],
+          temp['_nocuoi']
         ];
 
         return DataRow(

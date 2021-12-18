@@ -1,39 +1,35 @@
-import 'package:do_an/DaiLyManager/them_dai_ly.dart';
+import 'package:do_an/Models/NhanVienClass.dart';
+import 'package:do_an/NhanVien/GiaoDienThemNhanVien.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
-import 'package:do_an/Widget/card_information.dart';
 import 'package:do_an/Widget/tim_kiem.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
 import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
-class TableDaiLy extends StatefulWidget {
-  const TableDaiLy({Key? key}) : super(key: key);
+class NhanVienScreen extends StatefulWidget {
+  const NhanVienScreen({Key? key}) : super(key: key);
 
   @override
-  _TableDaiLyState createState() => _TableDaiLyState();
+  _NhanVienScreenState createState() => _NhanVienScreenState();
 }
 
-class _TableDaiLyState extends State<TableDaiLy> {
+class _NhanVienScreenState extends State<NhanVienScreen> {
   final formKeySearch = GlobalKey<FormState>();
   final formKey = GlobalKey<FormState>();
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   List<int> selectedData = [];
   List<dynamic> selectedRow = [];
-  bool sort = false;
+  TextEditingController _manhanvien = TextEditingController();
+  TextEditingController _tennhanvien = TextEditingController();
+  TextEditingController _gioitinh = TextEditingController();
+  TextEditingController _chucvu = TextEditingController();
+  TextEditingController _sodienthoai = TextEditingController();
+  TextEditingController _email = TextEditingController();
   TextEditingController _searchMa = TextEditingController();
-  TextEditingController _searchQuan = TextEditingController();
-  TextEditingController _searchLoai = TextEditingController();
-  TextEditingController _newMaDL = TextEditingController();
-  TextEditingController _newName = TextEditingController();
-  TextEditingController _newPhone = TextEditingController();
-  TextEditingController _newLoca = TextEditingController();
-  TextEditingController _newType = TextEditingController();
-  TextEditingController _newDate = TextEditingController();
-  TextEditingController _newEmail = TextEditingController();
-  TextEditingController _newTienno = TextEditingController();
-  final ValueNotifier<DateTime?> dateSub = ValueNotifier(null);
+  TextEditingController _searchGioiTinh = TextEditingController();
+  TextEditingController _searchChucvu = TextEditingController();
 
   void _showTopFlash(
       Color? backgroundcolor, TextStyle? contentStyle, String content) {
@@ -82,37 +78,38 @@ class _TableDaiLyState extends State<TableDaiLy> {
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "DANH SÁCH CÁC ĐẠI LÝ",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          "DANH SÁCH CÁC NHÂN VIÊN",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                       const SizedBox(
                         height: 5,
                       ),
-                      // khung tìm kiếm theo mã đại lý
                       Row(
                         children: [
-                          TimKiem(
-                            formKey: formKeySearch,
-                            searchMa: _searchMa,
-                            searchTen: _searchQuan,
-                            searchLoai: _searchLoai,
-                            hindText1: 'Nhập mã đại lý',
-                            hindText2: 'Nhập quận',
-                            hindText3: 'Nhập loại đại lý',
-                          ),
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: TimKiem(
+                                  formKey: formKeySearch,
+                                  searchMa: _searchMa,
+                                  searchTen: _searchGioiTinh,
+                                  searchLoai: _searchChucvu,
+                                  hindText1: 'Nhập mã nhân viên',
+                                  hindText2: 'Nhập giới tính',
+                                  hindText3: "Nhập chức vụ")),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.blueGrey[800]),
                               onPressed: () {
-                                // sort = !sort;
                                 setState(() {});
                               },
                               child: Text('Search')),
@@ -124,128 +121,113 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                   primary: Colors.blueGrey[800]),
                               onPressed: () {
                                 _searchMa.clear();
-                                _searchLoai.clear();
-                                _searchQuan.clear();
+                                _searchGioiTinh.clear();
+                                _searchChucvu.clear();
                                 setState(() {});
                               },
                               child: Text('Home')),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
                 Expanded(child: Container()),
-                // Tạo nút thêm (thêm đại lý)
+                // Tạo nút thêm (thêm NHÂN VIÊN)
                 GestureDetector(
-                  key: Key('ThemDL'),
                   onTap: () {
-                    _newDate.text =
-                        '${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().year}';
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          key: Key('themdl'),
-                          scrollable: true,
                           title: Text(
-                            'THÊM ĐẠI LÝ',
+                            'THÊM NHÂN VIÊN',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[800]),
                           ),
-                          content: ThemDaiLy(
-                            formkey: formKey,
-                            checksua: true,
-                            maDL: _newMaDL,
-                            tenDL: _newName,
-                            loaiDL: _newType,
-                            quan: _newLoca,
-                            email: _newEmail,
-                            sodtDL: _newPhone,
-                            tienno: _newTienno,
-                            ngaytiepnhan: _newDate,
-                            dateSub: dateSub,
-                          ),
+                          content: GiaoDienThemNhanVien(
+                              formKey: formKey,
+                              isCheck: false,
+                              newmaNV: _manhanvien,
+                              newtenNB: _tennhanvien,
+                              newGioiTinh: _gioitinh,
+                              newChucVu: _chucvu,
+                              newSodienthoai: _sodienthoai,
+                              newEmail: _email),
                           actions: [
-                            TextButton(
-                              key: Key('ThemSubmit'),
+                            ElevatedButton(
                               onPressed: () async {
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
-                                  var addData = await supabaseManager.addData(
-                                      int.parse(_newMaDL.text),
-                                      _newName.text,
-                                      int.parse(_newType.text),
-                                      int.parse(_newPhone.text),
-                                      _newDate.text,
-                                      _newEmail.text,
-                                      _newLoca.text);
+                                  var addData =
+                                      await NhanVien().addNhanVien(
+                                          int.parse(_manhanvien.text),
+                                          _tennhanvien.text,
+                                          _gioitinh.text,
+                                          int.parse(_sodienthoai.text),
+                                          _email.text,
+                                          _chucvu.text);
                                   if (addData != null) {
                                     _showTopFlash(
                                         Colors.white,
                                         TextStyle(
                                             color: Colors.red,
                                             fontWeight: FontWeight.bold),
-                                        'Không thể thêm đại lý');
+                                        'Thêm nhân viên không thành công');
                                   } else {
                                     _showTopFlash(
                                         Colors.green,
                                         TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
-                                        'Thêm đại lý thành công!!!');
+                                        'Thêm nhân viên thành công');
                                   }
+                                  _manhanvien.clear();
+                                  _tennhanvien.clear();
+                                  _gioitinh.clear();
+                                  _chucvu.clear();
+                                  _sodienthoai.clear();
+                                  _email.clear();
+                                  selectedData.clear();
+                                  selectedRow.clear();
                                   setState(() {
-                                    _newMaDL.clear();
-                                    _newName.clear();
-                                    _newLoca.clear();
-                                    _newLoca.clear();
-                                    _newPhone.clear();
-                                    _newType.clear();
-                                    _newEmail.clear();
-                                    _newDate.clear();
-                                    dateSub.value = null;
                                     Navigator.pop(context);
                                   });
                                 }
                               },
-                              style: TextButton.styleFrom(
-                                  backgroundColor: Colors.blueGrey[800]),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey),
                               child: Text(
                                 'Submit',
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                            TextButton(
-                                key: Key('ThemCancel'),
+                            ElevatedButton(
                                 onPressed: () {
-                                  _newMaDL.text = '';
-                                  _newName.text = '';
-                                  _newType.text = '';
-                                  _newPhone.text = '';
-                                  _newLoca.text = '';
-                                  _newEmail.text = '';
-                                  _newDate.text = '';
-                                  dateSub.value = null;
-                                  setState(() {
-                                    Navigator.pop(context);
-                                  });
+                                  _manhanvien.clear();
+                                  _tennhanvien.clear();
+                                  _gioitinh.clear();
+                                  _chucvu.clear();
+                                  _sodienthoai.clear();
+                                  _email.clear();
+                                  selectedData.clear();
+                                  selectedRow.clear();
+                                  Navigator.pop(context);
                                 },
-                                style: TextButton.styleFrom(
-                                    backgroundColor: Colors.blueGrey[800]),
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text('Cancel',
                                     style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)))
+                                      color: Colors.white,
+                                    )))
                           ],
                         );
                       },
                     );
-                    setState(() {});
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -266,9 +248,8 @@ class _TableDaiLyState extends State<TableDaiLy> {
                   width: 5,
                 ),
 
-                // Tạo nút xóa (xóa đại lý)
+                // Tạo nút xóa (xóa NHÂN VIÊN)
                 GestureDetector(
-                  key: Key('xoaDL'),
                   onTap: () {
                     if (selectedData.isEmpty) {
                       showDialog(
@@ -282,15 +263,17 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               content:
                                   Text('Bạn vẫn chưa chọn đối tượng để xóa'),
                               actions: [
-                                TextButton(
+                                ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey),
                                     child: Text(
                                       'OK',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold),
+                                        color: Colors.white,
+                                      ),
                                     ))
                               ],
                             );
@@ -302,13 +285,12 @@ class _TableDaiLyState extends State<TableDaiLy> {
                           return AlertDialog(
                             title: Text('Bạn chắc chắn muốn xóa?'),
                             actions: [
-                              TextButton(
-                                key: Key('xoaDLBut'),
+                              ElevatedButton(
                                 onPressed: () async {
                                   var data;
                                   while (selectedData.isNotEmpty) {
-                                    data =
-                                        await supabaseManager.deleteDataDaiLy(
+                                    data = await NhanVien()
+                                        .deleteNhanVien(
                                             selectedData.removeLast());
                                     if (data != null) {
                                       _showTopFlash(
@@ -316,7 +298,7 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                           TextStyle(
                                               color: Colors.red,
                                               fontWeight: FontWeight.bold),
-                                          'Xóa đại lý không thành công');
+                                          'Xóa nhân viên không thành công');
                                       break;
                                     }
                                   }
@@ -326,29 +308,34 @@ class _TableDaiLyState extends State<TableDaiLy> {
                                         TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
-                                        'Xóa đại lý thành công!!!');
+                                        'Xóa nhân viên thành công');
                                   }
                                   setState(() {
+                                    selectedData.clear();
                                     selectedRow.clear();
                                     Navigator.pop(context);
                                   });
                                 },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text(
                                   'YES',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              TextButton(
+                              ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text(
                                   'NO',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               )
                             ],
@@ -380,7 +367,6 @@ class _TableDaiLyState extends State<TableDaiLy> {
 
                 // Tạo nút sửa (sửa đại lý)
                 GestureDetector(
-                  key: Key('suaDL'),
                   onTap: () {
                     if (selectedRow.length < 1) {
                       showDialog(
@@ -393,15 +379,17 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               ),
                               content: Text('Bạn chưa chọn đối tượng để sửa'),
                               actions: [
-                                TextButton(
+                                ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey),
                                     child: Text(
                                       'OK',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold),
+                                        color: Colors.white,
+                                      ),
                                     ))
                               ],
                             );
@@ -417,126 +405,121 @@ class _TableDaiLyState extends State<TableDaiLy> {
                               ),
                               content: Text('Bạn chỉ được chọn MỘT đối tượng'),
                               actions: [
-                                TextButton(
+                                ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey),
                                     child: Text(
                                       'OK',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold),
+                                        color: Colors.white,
+                                      ),
                                     ))
                               ],
                             );
                           });
                     } else {
-                      _newMaDL.text = selectedRow[0][0].toString();
-                      _newName.text = selectedRow[0][1].toString();
-                      _newType.text = selectedRow[0][2].toString();
-                      _newPhone.text = selectedRow[0][3].toString();
-                      _newEmail.text = selectedRow[0][4].toString();
-                      _newLoca.text = selectedRow[0][5].toString();
-                      _newDate.text = selectedRow[0][6].toString();
-                      _newTienno.text = selectedRow[0][7].toString();
+                      _manhanvien.text = selectedRow[0][0].toString();
+                      _tennhanvien.text = selectedRow[0][1].toString();
+                      _gioitinh.text = selectedRow[0][2].toString();
+                      _chucvu.text = selectedRow[0][3].toString();
+                      _sodienthoai.text = selectedRow[0][4].toString();
+                      _email.text = selectedRow[0][5].toString();
+
                       showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            scrollable: true,
                             title: Text(
-                              'SỬA ĐẠI LÝ',
+                              'SỬA THÔNG TIN NHÂN VIÊN',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blueGrey[800]),
                             ),
-                            content: ThemDaiLy(
-                              checksua: false,
-                              formkey: formKey,
-                              maDL: _newMaDL,
-                              tenDL: _newName,
-                              loaiDL: _newType,
-                              email: _newEmail,
-                              sodtDL: _newPhone,
-                              ngaytiepnhan: _newDate,
-                              quan: _newLoca,
-                              tienno: _newTienno,
-                              dateSub: dateSub,
-                            ),
+                            content: GiaoDienThemNhanVien(
+                                formKey: formKey,
+                                isCheck: true,
+                                newmaNV: _manhanvien,
+                                newtenNB: _tennhanvien,
+                                newGioiTinh: _gioitinh,
+                                newChucVu: _chucvu,
+                                newSodienthoai: _sodienthoai,
+                                newEmail: _email),
                             actions: [
-                              TextButton(
-                                key: Key('suaSubmit'),
+                              ElevatedButton(
                                 onPressed: () async {
                                   final isValid =
                                       formKey.currentState!.validate();
                                   if (isValid) {
-                                    var updateData =
-                                        await supabaseManager.updateDaiLyData(
-                                            int.parse(_newMaDL.text),
-                                            _newName.text,
-                                            int.parse(_newType.text),
-                                            int.parse(_newPhone.text),
-                                            _newDate.text,
-                                            _newEmail.text,
-                                            _newLoca.text);
-                                    if (updateData != null) {
+                                    var data = await NhanVien()
+                                        .updateNhanVien(
+                                            int.parse(_manhanvien.text),
+                                            _tennhanvien.text,
+                                            _gioitinh.text,
+                                            int.parse(_sodienthoai.text),
+                                            _email.text,
+                                            _chucvu.text);
+
+                                    if (data != null) {
                                       _showTopFlash(
                                           Colors.white,
                                           TextStyle(
                                               color: Colors.red,
                                               fontWeight: FontWeight.bold),
-                                          'Sửa đại lý không thành công');
+                                          'Sửa không thành công');
                                     } else {
                                       _showTopFlash(
                                           Colors.green,
                                           TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold),
-                                          'Sửa đại lý thành công!!!');
+                                          'Sửa thành công');
                                     }
                                     setState(() {
-                                      _newMaDL.clear();
-                                      _newName.clear();
-                                      _newType.clear();
-                                      _newLoca.clear();
-                                      _newEmail.clear();
-                                      _newPhone.clear();
-                                      _newDate.clear();
-                                      dateSub.value = null;
+                                      _manhanvien.clear();
+                                      _tennhanvien.clear();
+                                      _gioitinh.clear();
+                                      _chucvu.clear();
+                                      _sodienthoai.clear();
+                                      _email.clear();
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
                                     });
                                   }
                                 },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey),
                                 child: Text(
                                   'Submit',
                                   style: TextStyle(
-                                      color: Colors.blueGrey[800],
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              TextButton(
+                              ElevatedButton(
                                   onPressed: () {
                                     setState(() {
-                                      _newMaDL.clear();
-                                      _newName.clear();
-                                      _newType.clear();
-                                      _newLoca.clear();
-                                      _newEmail.clear();
-                                      _newPhone.clear();
-                                      _newDate.clear();
-                                      dateSub.value = null;
+                                      _manhanvien.clear();
+                                      _tennhanvien.clear();
+                                      _gioitinh.clear();
+                                      _chucvu.clear();
+                                      _sodienthoai.clear();
+                                      _email.clear();
                                       selectedData.clear();
                                       selectedRow.clear();
                                       Navigator.pop(context);
                                     });
                                   },
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.blueGrey),
                                   child: Text('Cancel',
                                       style: TextStyle(
-                                          color: Colors.blueGrey[800],
-                                          fontWeight: FontWeight.bold)))
+                                        color: Colors.white,
+                                      )))
                             ],
                           );
                         },
@@ -567,64 +550,15 @@ class _TableDaiLyState extends State<TableDaiLy> {
             ),
           ),
           Expanded(
-              child: Container(
-                  alignment: Alignment.topCenter,
-                  margin: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.blueGrey[100],
-                      borderRadius: BorderRadius.all(Radius.circular(5))),
-                  child: Row(
-                    children: [
-                      Container(
-                          width: MediaQuery.of(context).size.width * 3 / 4,
-                          margin: EdgeInsets.only(left: 2, top: 2, bottom: 2),
-                          padding: EdgeInsets.all(10),
-                          height: double.maxFinite,
-                          decoration: BoxDecoration(
-                              color: Colors.blueGrey[200],
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                              boxShadow: [
-                                BoxShadow(
-                                    spreadRadius: 2,
-                                    blurRadius: 2,
-                                    color: Colors.blueGrey.shade400)
-                              ]),
-                          child: ScrollableWidget(child: buildDataTable())),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'TỔNG QUÁT',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 30,
-                                color: Colors.blueGrey[600]),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          soluongdaily(),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          soluongloaidl(),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          soluongquan(),
-                        ],
-                      )),
-                      const SizedBox(
-                        width: 5,
-                      )
-                    ],
-                  )))
+            child: Container(
+              alignment: Alignment.topCenter,
+              margin: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: Colors.blueGrey[200],
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              child: ScrollableWidget(child: buildDataTable()),
+            ),
+          )
         ],
       ),
     );
@@ -632,37 +566,26 @@ class _TableDaiLyState extends State<TableDaiLy> {
 
   Widget buildDataTable() {
     final columns = [
-      'MÃ ĐẠI LÝ',
-      'TÊN ĐẠI LÝ',
-      'LOẠI ĐẠI LÝ',
+      'MÃ NHÂN VIÊN',
+      'HỌ VÀ TÊN',
+      'GIỚI TÍNH',
+      'CHỨC VỤ',
       'SỐ ĐIỆN THOẠI',
       'EMAIL',
-      'QUẬN',
-      'NGÀY TIẾP NHẬN',
-      'TIỀN NỢ'
     ];
+
     return FutureBuilder(
-      future: supabaseManager.readDataDaiLy(
-          _searchMa.text, _searchQuan.text, _searchLoai.text),
-      // future: supabaseManager.readData('DAILY'),
+      future: NhanVien().readNhanVien(
+          _searchMa.text, _searchGioiTinh.text, _searchChucvu.text),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = this.datasets;
-        datasets['Supabase Query'] = doc.data as List<dynamic>? ?? <dynamic>[];
-
         return Builder(
           builder: (context) {
             return DataTable(
-              dividerThickness: 2,
               columns: getColumns(columns),
-              rows: getRows((datasets['Supabase Query'] as List<dynamic>)),
+              rows: getRows((snapshot.data as List<NhanVien>)),
             );
           },
         );
@@ -682,25 +605,23 @@ class _TableDaiLyState extends State<TableDaiLy> {
           ))
       .toList();
 
-  List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
-        final temp = (user as Map<String, dynamic>);
+  List<DataRow> getRows(List<NhanVien> users) => users.map((NhanVien user) {
         final cells = [
-          temp['madaily'],
-          temp['tendaily'],
-          temp['loaidaily'],
-          temp['sodienthoai'],
-          temp['email'],
-          temp['quan'],
-          temp['ngaytiepnhan'],
-          temp['tienno']
+          user.manhanvien,
+          user.hoten,
+          user.gioitinh,
+          user.chucvu,
+          user.sodienthoai,
+          user.email
         ];
+
         return DataRow(
           cells: getCells(cells),
           selected: selectedData.contains(cells[0]),
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[0])
+                ? selectedData.add(cells[0] as int)
                 : selectedData.remove(cells[0]);
 
             isAdding
@@ -713,94 +634,4 @@ class _TableDaiLyState extends State<TableDaiLy> {
   List<DataCell> getCells(List<dynamic> cells) => cells.map((data) {
         return DataCell(Text('$data'));
       }).toList();
-
-  Widget soluongdaily() {
-    int sldl;
-    return FutureBuilder(
-      future: supabaseManager.readDataSoluongDL(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const CircularProgressIndicator();
-        }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = <String, dynamic>{};
-        datasets['Supabase Query'] = doc.data as int;
-        sldl = datasets['Supabase Query'];
-        return Builder(
-          builder: (context) {
-            return cardInfor(
-                'Tổng số đại lý',
-                sldl,
-                Colors.lightGreen.withOpacity(0.8),
-                Colors.white,
-                Icons.location_on_outlined);
-          },
-        );
-      },
-    );
-  }
-
-  Widget soluongloaidl() {
-    int slloaidl;
-    return FutureBuilder(
-      future: supabaseManager.readDataSoluongLoaiDL(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const CircularProgressIndicator();
-        }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = <String, dynamic>{};
-        datasets['Supabase Query'] = doc.data as int;
-        slloaidl = datasets['Supabase Query'];
-        return Builder(
-          builder: (context) {
-            return cardInfor(
-                'Tổng số loại đại lý',
-                slloaidl,
-                Colors.brown.withOpacity(0.8),
-                Colors.white,
-                Icons.account_tree_outlined);
-          },
-        );
-      },
-    );
-  }
-
-  Widget soluongquan() {
-    int slquan;
-    return FutureBuilder(
-      future: supabaseManager.readDataSoluongQuan(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const CircularProgressIndicator();
-        }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = <String, dynamic>{};
-        datasets['Supabase Query'] = doc.data as int;
-        slquan = datasets['Supabase Query'];
-        return Builder(
-          builder: (context) {
-            return cardInfor(
-                'Tổng số quận có đại lý',
-                slquan,
-                Colors.red.withOpacity(0.8),
-                Colors.white,
-                Icons.location_city_outlined);
-          },
-        );
-      },
-    );
-  }
 }

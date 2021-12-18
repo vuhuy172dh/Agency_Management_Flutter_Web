@@ -1,6 +1,6 @@
-import 'package:do_an/Kho_hang_Manager/Hang_hoa_list.dart';
-import 'package:do_an/Kho_hang_Manager/phieu_nhap_list.dart';
-import 'package:do_an/Kho_hang_Manager/phieu_xuat_list.dart';
+import 'package:do_an/KhoHangManager/GiaoDienDSHangHoa.dart';
+import 'package:do_an/KhoHangManager/GiaoDienDSPhieuNhap.dart';
+import 'package:do_an/KhoHangManager/GiaoDienDSPhieuXuat.dart';
 import 'package:do_an/Widget/navigate_bar.dart';
 import 'package:flutter/material.dart';
 

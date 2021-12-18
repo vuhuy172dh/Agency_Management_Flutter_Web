@@ -1,14 +1,14 @@
 import 'package:do_an/Widget/build_datatime_picker.dart';
 import 'package:flutter/material.dart';
 
-class ThemPhieuNhapKho extends StatefulWidget {
+class GiaoDienThemPhieuNhapKho extends StatefulWidget {
   final GlobalKey<FormState> formkey;
   final bool isCheck;
   final TextEditingController newMaPhieuNhap;
   final TextEditingController newThanhTien;
   final TextEditingController newNgayNhap;
   final ValueNotifier<DateTime?> ngaynhapSub;
-  const ThemPhieuNhapKho(
+  const GiaoDienThemPhieuNhapKho(
       {Key? key,
       required this.formkey,
       required this.isCheck,
@@ -19,10 +19,10 @@ class ThemPhieuNhapKho extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ThemPhieuNhapKhoState createState() => _ThemPhieuNhapKhoState();
+  _GiaoDienThemPhieuNhapKhoState createState() => _GiaoDienThemPhieuNhapKhoState();
 }
 
-class _ThemPhieuNhapKhoState extends State<ThemPhieuNhapKho> {
+class _GiaoDienThemPhieuNhapKhoState extends State<GiaoDienThemPhieuNhapKho> {
   @override
   Widget build(BuildContext context) {
     return Container(

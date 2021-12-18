@@ -2,11 +2,11 @@ import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
-class ThemMHCTPN extends StatefulWidget {
+class GiaoDienThemMHCTPX extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController maMH;
   final TextEditingController soluong;
-  const ThemMHCTPN(
+  const GiaoDienThemMHCTPX(
       {Key? key,
       required this.formKey,
       required this.maMH,
@@ -14,10 +14,10 @@ class ThemMHCTPN extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ThemMHCTPNState createState() => _ThemMHCTPNState();
+  _GiaoDienThemMHCTPXState createState() => _GiaoDienThemMHCTPXState();
 }
 
-class _ThemMHCTPNState extends State<ThemMHCTPN> {
+class _GiaoDienThemMHCTPXState extends State<GiaoDienThemMHCTPX> {
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   @override

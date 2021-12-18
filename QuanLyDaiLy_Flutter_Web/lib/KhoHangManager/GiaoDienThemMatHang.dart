@@ -1,7 +1,7 @@
 import 'package:do_an/Widget/build_datatime_picker.dart';
 import 'package:flutter/material.dart';
 
-class ThemMatHang extends StatefulWidget {
+class GiaoDienThemMatHang extends StatefulWidget {
   final formKey;
   final bool isCheck;
   final TextEditingController newMaMH;
@@ -14,7 +14,7 @@ class ThemMatHang extends StatefulWidget {
   final TextEditingController newHanSuDung;
   final ValueNotifier<DateTime?> nsxSub;
   final ValueNotifier<DateTime?> hsdSub;
-  const ThemMatHang(
+  const GiaoDienThemMatHang(
       {Key? key,
       required this.isCheck,
       required this.formKey,
@@ -31,10 +31,10 @@ class ThemMatHang extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ThemMatHangState createState() => _ThemMatHangState();
+  _GiaoDienThemMatHangState createState() => _GiaoDienThemMatHangState();
 }
 
-class _ThemMatHangState extends State<ThemMatHang> {
+class _GiaoDienThemMatHangState extends State<GiaoDienThemMatHang> {
   @override
   Widget build(BuildContext context) {
     return Container(

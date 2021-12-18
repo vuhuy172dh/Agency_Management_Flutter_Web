@@ -1,4 +1,6 @@
-import 'package:do_an/QuyDinh_CaiDat.dart/them_quy_dinh.dart';
+import 'package:do_an/Models/QuyCheToChucClass.dart';
+import 'package:do_an/Models/QuyDinhTienNoClass.dart';
+import 'package:do_an/QuyDinh_CaiDat.dart/GiaoDienThemQuyDinh.dart';
 import 'package:do_an/Supabase/supabase_mange.dart';
 import 'package:do_an/Widget/card_information.dart';
 import 'package:do_an/Widget/widget.scrollable.dart';
@@ -119,7 +121,7 @@ class _QuyDinhState extends State<QuyDinh> {
                                                 fontWeight: FontWeight.bold),
                                             textAlign: TextAlign.center,
                                           ),
-                                          content: ThemQuyDinh(
+                                          content: GiaoDienThemQuyDinh(
                                               isChecked: false,
                                               formKey: formKeyToChuc,
                                               ten: _quan,
@@ -134,8 +136,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                       .validate();
                                                   if (isValid) {
                                                     var data =
-                                                        await supabaseManager
-                                                            .addDataQCTC(
+                                                        await QuyCheToChuc()
+                                                            .addQuyCheToChuc(
                                                                 _quan.text,
                                                                 int.parse(
                                                                     _soluong
@@ -217,7 +219,7 @@ class _QuyDinhState extends State<QuyDinh> {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
-                                            content: ThemQuyDinh(
+                                            content: GiaoDienThemQuyDinh(
                                               isChecked: true,
                                               formKey: formKeyToChuc,
                                               noidung: _soluong,
@@ -233,8 +235,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                         .validate();
                                                     if (isValid) {
                                                       var Updatedata =
-                                                          await supabaseManager
-                                                              .updateQCTC(
+                                                          await QuyCheToChuc()
+                                                              .updateQuyCheToChuc(
                                                                   _quan.text,
                                                                   int.parse(
                                                                       _soluong
@@ -375,8 +377,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                     var data;
                                                     while (selectedData
                                                         .isNotEmpty) {
-                                                      data = await supabaseManager
-                                                          .deleteQCTC(
+                                                      data = await QuyCheToChuc()
+                                                          .deleteQuyCheToChuc(
                                                               selectedData
                                                                   .removeLast());
                                                       if (data != null) {
@@ -565,7 +567,7 @@ class _QuyDinhState extends State<QuyDinh> {
                                                 fontWeight: FontWeight.bold),
                                             textAlign: TextAlign.center,
                                           ),
-                                          content: ThemQuyDinh(
+                                          content: GiaoDienThemQuyDinh(
                                               isChecked: false,
                                               formKey: formKeyTienNo,
                                               ten: _loai,
@@ -580,8 +582,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                       .validate();
                                                   if (isValid) {
                                                     var data =
-                                                        await supabaseManager
-                                                            .addDataQDTN(
+                                                        await QuyDinhTienNo()
+                                                            .addQuyDinhTienNo(
                                                                 int.parse(
                                                                     _loai.text),
                                                                 int.parse(
@@ -658,7 +660,7 @@ class _QuyDinhState extends State<QuyDinh> {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
-                                            content: ThemQuyDinh(
+                                            content: GiaoDienThemQuyDinh(
                                               isChecked: true,
                                               formKey: formKeyTienNo,
                                               noidung: _tienno,
@@ -674,8 +676,8 @@ class _QuyDinhState extends State<QuyDinh> {
                                                         .validate();
                                                     if (isValid) {
                                                       var Updatedata =
-                                                          await supabaseManager
-                                                              .updateQDTN(
+                                                          await QuyDinhTienNo()
+                                                              .updateQuyDinhTienNo(
                                                                   int.parse(_loai
                                                                       .text),
                                                                   int.parse(
@@ -819,8 +821,8 @@ class _QuyDinhState extends State<QuyDinh> {
 
                                                     while (selectedLoaiData
                                                         .isNotEmpty) {
-                                                      dataLoai = await supabaseManager
-                                                          .deleteQDTN(
+                                                      dataLoai = await QuyDinhTienNo()
+                                                          .deleteQuyDinhTienNo(
                                                               selectedLoaiData
                                                                   .removeLast());
                                                       if (dataLoai != null) {
@@ -965,24 +967,16 @@ class _QuyDinhState extends State<QuyDinh> {
     final columns = ['QUẬN', 'SỐ LƯỢNG ĐẠI LÝ TỐI ĐA'];
 
     return FutureBuilder(
-      future: supabaseManager.readDataQuyCheToChuc(),
+      future: QuyCheToChuc().readQuyCheToChuc(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = this.datasets;
-        datasets['Supabase Query'] = doc.data as List<dynamic>? ?? <dynamic>[];
-
         return Builder(
           builder: (context) {
             return DataTable(
               columns: getColumns(columns),
-              rows: getRows((datasets['Supabase Query'] as List<dynamic>)),
+              rows: getRows((snapshot.data as List<QuyCheToChuc>)),
             );
           },
         );
@@ -994,24 +988,16 @@ class _QuyDinhState extends State<QuyDinh> {
     final columns = ['LOẠI ĐẠI LÝ', 'SỐ TIỀN NỢ TỐI ĐA'];
 
     return FutureBuilder(
-      future: supabaseManager.readDataQuyDinhTienNo(),
+      future: QuyDinhTienNo().readQuyDinhTienNo(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
-        final doc = snapshot.data as PostgrestResponse?;
-        if (doc == null) {
-          return const SizedBox();
-        }
-
-        final datasets = this.datasets;
-        datasets['Supabase Query'] = doc.data as List<dynamic>? ?? <dynamic>[];
-
         return Builder(
           builder: (context) {
             return DataTable(
               columns: getColumns(columns),
-              rows: getLoaiRows((datasets['Supabase Query'] as List<dynamic>)),
+              rows: getLoaiRows((snapshot.data as List<QuyDinhTienNo>)),
             );
           },
         );
@@ -1031,9 +1017,8 @@ class _QuyDinhState extends State<QuyDinh> {
           ))
       .toList();
 
-  List<DataRow> getRows(List<dynamic> users) => users.map((dynamic user) {
-        final temp = (user as Map<String, dynamic>);
-        final cells = [temp['quan'], temp['soluongDL']];
+  List<DataRow> getRows(List<QuyCheToChuc> users) => users.map((QuyCheToChuc user) {
+        final cells = [user.quan, user.soluongdaily];
 
         return DataRow(
           cells: getCells(cells),
@@ -1041,7 +1026,7 @@ class _QuyDinhState extends State<QuyDinh> {
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedData.add(cells[0])
+                ? selectedData.add(cells[0] as String)
                 : selectedData.remove(cells[0]);
 
             isAdding
@@ -1051,9 +1036,8 @@ class _QuyDinhState extends State<QuyDinh> {
         );
       }).toList();
 
-  List<DataRow> getLoaiRows(List<dynamic> users) => users.map((dynamic user) {
-        final temp = (user as Map<String, dynamic>);
-        final cells = [temp['loaiDL'], temp['maxtienno']];
+  List<DataRow> getLoaiRows(List<QuyDinhTienNo> users) => users.map((QuyDinhTienNo user) {
+        final cells = [user.loaidaily, user.tiennotoida];
 
         return DataRow(
           cells: getCells(cells),
@@ -1061,7 +1045,7 @@ class _QuyDinhState extends State<QuyDinh> {
           onSelectChanged: (isSelected) => setState(() {
             final isAdding = isSelected != null && isSelected;
             isAdding
-                ? selectedLoaiData.add(cells[0])
+                ? selectedLoaiData.add(cells[0] as int)
                 : selectedLoaiData.remove(cells[0]);
 
             isAdding

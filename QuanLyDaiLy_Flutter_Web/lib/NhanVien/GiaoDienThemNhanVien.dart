@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ThemNhanVien extends StatefulWidget {
+class GiaoDienThemNhanVien extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final bool isCheck;
   final TextEditingController newmaNV;
@@ -10,7 +10,7 @@ class ThemNhanVien extends StatefulWidget {
   final TextEditingController newSodienthoai;
   final TextEditingController newEmail;
 
-  const ThemNhanVien(
+  const GiaoDienThemNhanVien(
       {Key? key,
       required this.formKey,
       required this.isCheck,
@@ -23,10 +23,10 @@ class ThemNhanVien extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ThemNhanVienState createState() => _ThemNhanVienState();
+  _GiaoDienThemNhanVienState createState() => _GiaoDienThemNhanVienState();
 }
 
-class _ThemNhanVienState extends State<ThemNhanVien> {
+class _GiaoDienThemNhanVienState extends State<GiaoDienThemNhanVien> {
   final gioitinh = ['Nam', 'Nữ'];
   final chucvu = [
     'QUẢN LÝ ĐẠI LÝ',

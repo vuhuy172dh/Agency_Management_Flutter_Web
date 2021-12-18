@@ -1,6 +1,6 @@
-import 'package:do_an/TaiChinh/bao_cao_cong_no.dart';
-import 'package:do_an/TaiChinh/bao_cao_thang.dart';
-import 'package:do_an/TaiChinh/hoa_don_list.dart';
+import 'package:do_an/TaiChinhManager/GiaoDienBCCongNo.dart';
+import 'package:do_an/TaiChinhManager/GiaoDienBCThang.dart';
+import 'package:do_an/TaiChinhManager/GiaoDienDSPhieuThuTien.dart';
 import 'package:do_an/Widget/navigate_bar.dart';
 import 'package:flutter/material.dart';
 

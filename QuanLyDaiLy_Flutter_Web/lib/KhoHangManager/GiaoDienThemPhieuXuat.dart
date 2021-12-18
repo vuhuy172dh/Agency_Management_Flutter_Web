@@ -3,7 +3,7 @@ import 'package:do_an/Widget/build_datatime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 
-class ThemPhieuXuatKho extends StatefulWidget {
+class GiaoDienThemPhieuXuatKho extends StatefulWidget {
   final GlobalKey<FormState> formkey;
   final bool isCheck;
   final TextEditingController newMaPhieuXuat;
@@ -12,7 +12,7 @@ class ThemPhieuXuatKho extends StatefulWidget {
   final TextEditingController newMaDaiLy;
   final TextEditingController newSoTienNo;
   final ValueNotifier<DateTime?> ngayxuatSub;
-  const ThemPhieuXuatKho(
+  const GiaoDienThemPhieuXuatKho(
       {Key? key,
       required this.formkey,
       required this.isCheck,
@@ -25,10 +25,10 @@ class ThemPhieuXuatKho extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ThemPhieuXuatKhoState createState() => _ThemPhieuXuatKhoState();
+  _GiaoDienThemPhieuXuatKhoState createState() => _GiaoDienThemPhieuXuatKhoState();
 }
 
-class _ThemPhieuXuatKhoState extends State<ThemPhieuXuatKho> {
+class _GiaoDienThemPhieuXuatKhoState extends State<GiaoDienThemPhieuXuatKho> {
   SupabaseManager supabaseManager = SupabaseManager();
   final datasets = <String, dynamic>{};
   @override
