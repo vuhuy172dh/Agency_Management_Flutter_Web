@@ -24,3 +24,5 @@ Nhóm sử dụng:
 Tài khoản Admin để đăng nhập vào app: 
 + Tên đăng nhập: quochuy123dh@tql.com
 + Mật khẩu: 123456789
+
+Link Demo App: https://youtu.be/U6D0xeOGMko
